@@ -33,12 +33,6 @@ ul.nav.navbar-nav {
   list-style: none;
 }
 
-/*li {
-    margin-bottom:3%;
-
-}*/
-
-
 .rotate90 {
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(90deg);
@@ -47,140 +41,97 @@ ul.nav.navbar-nav {
     transform: rotate(deg);
 }
 
-/*
-.nav-tabs{
-  background-color:#0a6cc5;
-  color: white;
-}
-.nav-tabs .nav-item{
-  color: white;
-}
+/*~~~~~CSS for carousel~~~~~*/
 
-.tab-content{
-    background-color:#d3d3d3;
-    padding:5px
-}
-.nav-tabs > li > a{
-  color: white;
-}
-.nav-tabs > li > a:hover{
-
-    background-color: #d3d3d3;
-    color:#0a6cc5;
-}*/
-
-/*Entire homepage carousel+search*/
-.carousel-fade {
-    position: relative;
-    height: 100vh;
-}
-.carousel-fade  .carousel-inner .item {
-    height: 100vh;
-}
-.carousel-fade  .carousel-indicators > li {
-    margin: 0 2px;
-    background-color: #f39c12;
-    border-color: #f39c12;
-    opacity: .7;
-}
-.carousel-fade  .carousel-indicators > li.active {
-  width: 10px;
-  height: 10px;
-  opacity: 1;
-}
-
-.carousel-fade .carousel-inner .item {
-  opacity: 0;
-  transition-property: opacity;
-    overflow:hidden;
-}
-.item.active img {
-    transition: transform 5000ms linear 0s;
-    /* This should be based on your carousel setting. For bs, it should be 5second*/
-    transform: scale(1.05, 1.05);
-}
-.carousel-fade .carousel-inner .active {
-  opacity: 1;
-}
-
-.carousel-fade .carousel-inner .active.left,
-.carousel-fade .carousel-inner .active.right {
-  left: 0;
-  opacity: 0;
-  z-index: 1;
-}
-
-.carousel-fade .carousel-inner .next.left,
-.carousel-fade .carousel-inner .prev.right {
-  opacity: 1;
-}
-
-.carousel-fade .carousel-control {
-  z-index: 2;
-}
-
-.carousel-fade .slides .slide-1,
-.carousel-fade .slides .slide-2,
-.carousel-fade .slides .slide-3 {
-  height: 100vh;
-  background-size: cover;
-  background-position: center center;
-  background-repeat: no-repeat;
-  width: auto;
-}
-.carousel-fade .slides .slide-1 {
-  background-image: url("wp1_1.jpg") ;
+#myCarousel img.d-block {
   width: 100vw;
-  height:100vh;
-  position: absolute;
-  z-index: 1;
-  top:0%;
-}
-.carousel-fade .slides .slide-2 {
-  background-image: url("wp5.jpg");
-  width: 100%;
-}
-.carousel-fade .slides .slide-3 {
-  background-image: url("wp4.jpg");
-  width: 100%;
+  height: 100vh;
+  object-fit: cover;
+  margin: 0;
+  padding: 0;
 }
 
 .overlay {
-    width: 100%;
-    height: 100%;
-    z-index: 3;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2;
     background-color: rgba(27, 32, 38, 0.2);
     opacity: .8;
-    position: relative;
+    position: absolute;
     top:0%;
 }
 
-/*
-.topnavbar {
+ul#searchbarNav  {
+  background-color: none;
+font-size: .8em;
+}
+
+#searchbarNav a{
+  color: white;
+}
+
+/*~~~~~CSS for FIND COURSE~~~~~*/
+#findcourse {
+  z-index: 2;
   position: absolute;
-  top: 10%;
-  left: 50%;
-  z-index: 3;
-  color: black;
+  left: 0%;
+  top: 30%;
+  width: 100vw;
   text-align: center;
-    -webkit-transform: translate3d(-50%,-50%,0);
-       -moz-transform: translate3d(-50%,-50%,0);
-        -ms-transform: translate3d(-50%,-50%,0);
-         -o-transform: translate3d(-50%,-50%,0);
-            transform: translate3d(-50%,-50%,0);
+  color: white;
+}
+
+#findcourse #searchBoxNav ul {
+  white-space:nowrap;
+  margin-top: 10px;
 
 }
-*/
+
+#findcourse #searchBoxNav ul li.navLi  {
+  display: inline-block;
+  border-right: 1pt solid white;
+  padding: 5px 10px;
+    color: white;
+}
+
+.gi-3x{font-size: 3em;}
+
+.searchbox #findCourseF h2{
+  font-family: "Franklin Gothic Book","Century Gothic";
+}
+.searchbox .navbar-nav li a{
+  font-family: "Franklin Gothic Book","Century Gothic";
+  font-weight: bolder;
+  font-size: 15px;
+  color: #2b2b2b;
+}
+
+.searchbox .navbar-nav li {
+  border-right: 1px solid #2b2b2b;
+}
+
+.searchbox .navbar-nav {
+  border-spacing: 10px;
+}
+
+.searchbox .navbar-nav li a {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
 
 /*~~~~~CSS for NAVIGATION BAR~~~~~*/
 .navbar-nav .nav-link {
   color: rgb(60,60,60 );
   font-size: 1.5vw;
 }
-.navbar{
-  background: linear-gradient(rgba(255,255,255,.9), rgba(204, 204, 204 ,0))
+
+#mainNav{
+  background: linear-gradient(rgba(255,255,255,.9), rgba(204, 204, 204 ,0));
 }
 
+#navbarResponsive{
+  background-color: transparent;
+}
 
 .img-fluid{
   width: 20%;
@@ -200,6 +151,15 @@ ul.nav.navbar-nav {
   background-color: transparent;
   border-color: #000000;
 }
+
+#topnav2logo{
+  max-width:20%;
+}
+
+#topnav2logo .img-fluid{
+  width: 70%;
+}
+
 
  /*~~~~~CSS FOR LOGINBUTTON~~~~~*/
 #login-dropdown-list {
@@ -292,6 +252,51 @@ ul.nav.navbar-nav {
 
 }
 
+/*~~~~~CSS FOR searchbar~~~~~*/
+#search_icon {
+  font-size: 2em;
+}
+
+#search_size input{
+  font-size: 1.2em;
+  padding: 1px;
+  margin-top: 5px;
+  margin-right: 10px;
+}
+
+ #inputGroupbtn{
+   margin-top: 5px;
+ }
+
+ /*~~~~~CSS FOR background~~~~~*/
+.bgcolor {
+  background-color: rgba(124, 210, 254, 0.86);
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  margin: 0;
+  padding: 0;
+}
+
+button#editpersonalinfo:hover{
+  border: 1pt solid grey;
+  background-color: transparent;
+}
+
+#defaultimg {
+  padding-left: 40px;
+}
+
+#profile_icon {
+  font-size: 1.5em;
+  background-color: transparent;
+}
+
+#profile_icon {
+  font-size: 1.5em;
+  background-color: transparent;
+}
+
 @media only screen and (max-width: 800px){
   .img-fluid{
     width:40%;
@@ -322,12 +327,14 @@ ul.nav.navbar-nav {
     font-size: 3.5vw;
     float:right;
   }
-  .navbar-nav{
+
+  #navbarResponsive{
     background-color: rgba(247, 247, 247,0.9);
     width:50%;
     border-radius: 3pt;
     padding: 5pt 10pt;
   }
+
   .navbar-toggler i{
     font-size: 4vw;
   }
@@ -387,34 +394,6 @@ ul.nav.navbar-nav {
 
 }
 
-.searchbox ul.nav li {
-  display: inline-block;
-}
-
-.gi-3x{font-size: 3em;}
-
-.searchbox #findCourseF h2{
-  font-family: "Franklin Gothic Book","Century Gothic";
-}
-.searchbox .navbar-nav li a{
-  font-family: "Franklin Gothic Book","Century Gothic";
-  font-weight: bolder;
-  font-size: 15px;
-  color: #2b2b2b;
-}
-
-.searchbox .navbar-nav li {
-  border-right: 1px solid #2b2b2b;
-}
-
-.searchbox .navbar-nav {
-  border-spacing: 10px;
-}
-
-.searchbox .navbar-nav li a {
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
 
 /*Homepage nav-tab*/
 
@@ -428,7 +407,7 @@ ul.nav.navbar-nav {
 }
 
 .tab-content{
-    background-color:#d3d3d3;
+    background-color:white;
     color:#fff;
     padding:5px
 }
@@ -437,7 +416,7 @@ ul.nav.navbar-nav {
 }
 .nav-tabs > li > a:hover{
 
-    background-color: #d3d3d3;
+    background-color: white;
     color:#0a6cc5;
 }
 
