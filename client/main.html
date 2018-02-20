@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
 
+  <link rel="stylesheet" href="dist/css/bootstrap-responsive-tabs.css">
+<script src="dist/js/jquery.bootstrap-responsive-tabs.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script>
@@ -79,7 +81,7 @@
         <i class="fa fa-bars" aria-hidden="true"></i>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav text-uppercase ml-auto" id>
+        <ul class="navbar-nav text-capitalize ml-auto" id>
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="#services" >{{> loginButtons}}</a>
           </li>
@@ -112,7 +114,9 @@
   </div>
 
   <div class = "col-xs-12 col-sm-12 col-md-6 col-lg-6 ">
-    <input type="text" class="form-control" name = "searchCourse" id="inputSearch" placeholder="">
+    <form id="search">
+      <input type="text" class="form-control" name = "searchCourse" id="inputSearch" placeholder="">
+    </form>
   </div>
 
   <div class="col-xs-12 col-sm-12 col-lg-12" id="searchBoxNav">
@@ -218,7 +222,7 @@
                   <img src="https://www.svgimages.com/svg-image/s5/man-passportsize-silhouette-icon-256x256.png" width="75%" alt="stack photo" class="img" style = "padding-top:20%" id="defaultimg">
               </div>
               <div class="col-md-8 col-xs-12 col-sm-6 col-lg-8">
-                <button type="button" class="btn float-lg-right" data-toggle="modal" id="editpersonalinfo" data-target="#editModal">
+                <button type="button" class="btn float-lg-right float-sm-right float-md-right" data-toggle="modal" id="editpersonalinfo" data-target="#editModal">
                   <span class="glyphicon glyphicon-pencil" aria-hidden="true" id="profile_icon"></span>
                 </button>
 
@@ -226,16 +230,16 @@
                   <div class="modal fade" id="editModal" role="dialog">
                     {{> updatePI}}
                   </div>
-                  <div class="container" style="border-bottom:1px solid black; padding-left:0; padding-bottom:10px;">
+                  <div class="container" style="border-bottom:1px solid black; padding-left:10px; padding-bottom:10px;">
                       <h2>{{ currentUser.username}}</h2>
                   </div>
                   <br>
                   {{#if currentUser}}
-                  <ul class="container details" style = "padding-left:0">
-                    <li><h4><span class="glyphicon glyphicon-earphone one" style="width:50px;"></span>{{contactNo}}</h4></li>
-                    <li><h4><span class="glyphicon glyphicon-gift one" style="width:50px;"></span>{{dob_date}} {{dob_month}} {{dob_year}}</h4></li>
-                    <li><h4><span class="glyphicon glyphicon-map-marker one" style="width:50px;"></span>{{location}}</h4></li>
-                    <li><h4><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span>{{ currentUser.emails.[0].address}}</h4></li>
+                  <ul class="container details" style = "padding-left:0" id="personalInfo">
+                    <li><h4><span class="glyphicon glyphicon-earphone one" ></span>{{contactNo}}</h4></li>
+                    <li><h4><span class="glyphicon glyphicon-gift one" ></span>{{dob_date}} {{dob_month}} {{dob_year}}</h4></li>
+                    <li><h4><span class="glyphicon glyphicon-map-marker one" ></span>{{location}}</h4></li>
+                    <li><h4><span class="glyphicon glyphicon-envelope one" ></span>{{ currentUser.emails.[0].address}}</h4></li>
                   </ul>
                   {{/if}}
               </div>
@@ -498,7 +502,7 @@
 
 <template name="classTab">
 
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <ul class="nav nav-tabs responsive-tabs" id="myTab" role="tablist">
       <li class="nav-item"><a class="nav-link active" id="yourClass-tab" data-toggle="tab" href="#yourClass" role="tab" aria-controls="yourClass" aria-selected="true">YOUR CLASS</a></li>
       <li class="nav-item"><a class="nav-link" id="enrolled-tab" data-toggle="tab" href="#enrolled" role="tab" aria-controls="enrolled" aria-selected="false">ENROLLED CLASS</a></li>
       <li class="nav-item"><a class="nav-link" id="requests-tab" data-toggle="tab" href="#requests" role="tab" aria-controls="requests" aria-selected="false">REQUESTS</a></li>
@@ -543,7 +547,7 @@
               <h6>RM 20/class</h6>
 
               <p>
-                <a href="#" class=" btn btn-primary " role="button">More</a>
+                <a href="/classpage" class=" btn btn-primary " role="button">More</a>
 
               </p>
             </div>
@@ -716,6 +720,8 @@
                   <label class = "control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-2">Location:</label>
                   <div class="col-xs-12 col-sm-12 col-lg-5 col-md-5">
                     <input type="text" name = "location" class="form-control" id="inputLocation" placeholder="Enter a location" required>
+                    {{> map}}
+
                   </div>
               </div>
           </div>
@@ -729,6 +735,7 @@
                 <textarea name = "desc" class = "form-control" id = "inputDesc" rows = "7" placeholder = "" required></textarea>
               </div>
             </div>
+
             <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
             <!--Submit Button-->
@@ -750,6 +757,115 @@
 
 </template>
 
+<template name="classpage">
+  <div class="bgcolor">
+    {{> header}}
+    <br />
+
+    <div class="container" >
+      {{#with class}}
+      <div id="containerStyle">
+        <div class="row" id="title">
+          {{title}}
+        </div>
+
+        <div class="row" id="horizontalLine">
+          Category :  <a href="#">{{skill}}</a>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-6 col-sm-12">
+            <div class="img">
+              <img class= "img-fluid " src="{{fileSource}}" id="classImg" alt="{{fileSource}}" />
+            </div>
+          </div>
+
+          <div class="col-lg-6 col-sm-12">
+          <ul id="classListStyle">
+            <li>Tutor: <a href="#"> {{owner}}</a></li>
+            <li>Day: {{day}}</li>
+            <li>Time: {{time}}</li>
+            <li>Price: RM{{price}}/class</li>
+          </ul>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-lg-8 col-md-12 col-sm-12">
+            <!-- Nav tabs -->
+              <ul class="nav nav-tabs" role="tablist" id="classPageTab">
+                <li class="nav-item">
+                  <a class="nav-link active" data-toggle="tab" href="#about" role="tab">About</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#photos" role="tab">Photos</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#review" role="tab">Review</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" data-toggle="tab" href="#location" role="tab">Location</a>
+                </li>
+              </ul>
+
+              <!-- Tab panes -->
+              <div class="tab-content" id="classPageTabContent">
+                <div class="tab-pane active" id="about" role="tabpanel">
+                  <h3>About This Class</h3>
+                  <p>
+                    {{description}}
+                  </p>
+                </div>
+                <div class="tab-pane" id="photos" role="tabpanel">...</div>
+                <div class="tab-pane" id="review" role="tabpanel">...</div>
+                <div class="tab-pane" id="location" role="tabpanel">...</div>
+              </div>
+
+          </div>
+          <div class="col-lg-4">
+            <div class="row" id="rating">
+              <table>
+                <tr>
+                  <th>
+                    <span class="glyphicon glyphicon-user"></span> 100
+                  </th>
+                  <th>
+                    <span class="glyphicon glyphicon-thumbs-up"></span> 4.5/5
+                  </th>
+                </tr>
+                <tr>
+                  <td id="tableFont">
+                    <center>
+                      Students
+                    </center>
+                  </td>
+                  <td  id="tableFont">
+                    <center>
+                      Rating
+                    </center>
+                  </td>
+                </tr>
+              </table>
+
+            </div>
+          </div>
+        </div>
+
+        </div>
+
+            {{/with}}
+
+    </div>
+
+  </div>
+
+</template>
+
+
+<template name="map">
+
+</template>
+
 <!--Posts from User-->
 <template name='post'>
 <div class = "row" style = "margin-right:25px">
@@ -768,7 +884,7 @@
             <h4>Category: {{skill}}</h4>
             <h4>RM {{price}} / Class</h4>
             <p>
-              <a href="#" class=" btn btn-primary " role="button">More</a>
+              <a href="#" class=" btn btn-primary " role="button" id="moreDetails">More</a>
             </p>
             <!--
             <p>
@@ -1017,7 +1133,7 @@
             <h4>Category: {{skill}}</h4>
             <h4>RM {{price}} / Class</h4>
             <p>
-              <a href="#" class=" btn btn-primary " role="button">More</a>
+              <a href="/classpage" class=" btn btn-primary " role="button">More</a>
             </p>
             <!--
             <p>
@@ -1166,4 +1282,19 @@
       <br />
       <input type="submit" name = "submitExp" class="btn btn-warning" >
   </form>
+</template>
+
+<template name="resultpage">
+  <div class="bgcolor">
+    {{> header}}
+    <br />
+
+    <div class="container" >
+      <div class="containerStyle">
+        
+
+      </div>
+    </div>
+  </div>
+
 </template>
