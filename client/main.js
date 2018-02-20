@@ -5,7 +5,8 @@ import './main.html';
 
 Router.route('/profile');
 Router.route('/main');
-
+Router.route('/classpage');
+Router.route('/resultpage');
 /*
 Router.configure({
     layoutTemplate: 'main'
@@ -172,6 +173,37 @@ Template.request.helpers({
 
 
 //Roushan's Part
+/*NEWW*/
+Template.request.events({
+  'click .requestClasses': function(){
+    var classID = this._id;
+    Session.set('selectedRequest', classID);
+    var selectedPlayer = Session.get('selectedRequest');
+    console.log(selectedPlayer);
+  }
+});
+
+Template.classpage.helpers({
+  class: function(){
+    return requestList.findOne({"_id": Session.get('selectedRequest')});
+  }
+
+});
+
+Template.classpage.events({
+
+});
+
+Template.classpage.events({
+  'keypress #inputSearch':function(event){
+    event.preventDefault();
+    var talentTitle = $('[name="searchCourse"]').val();
+
+  }
+});
+
+/*END OF NEW*/
+
 Template.updatePI.helpers({
   currentUpload: function () {
     return Template.instance().currentUpload.get();
@@ -412,3 +444,27 @@ Template.addExp.events({
     }
 }
 });
+
+/*****THIS IS FOR GOOGLE MAP-LOCATION*****/
+
+
+
+/*****THIS IS FOR searchbox*****
+Template.findCourse.events({
+    "keypress #search": function (e) {
+      e.preventDefault();
+      Session.set("searchValue", $("#inputSearch").val());
+    }
+  });
+
+  Template.findCourse.helpers({
+    messages: function() {
+      Meteor.subscribe("search", Session.get("searchValue"));
+      if (Session.get("searchValue")) {
+        return Messages.find({}, { sort: [["score", "desc"]] });
+      } else {
+        return Messages.find({});
+      }
+    }
+  });
+*/
