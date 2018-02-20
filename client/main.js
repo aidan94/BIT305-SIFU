@@ -185,23 +185,52 @@ Template.request.events({
 
 Template.classpage.helpers({
   class: function(){
-    return requestList.findOne({"_id": Session.get('selectedRequest')});
+    if(Session.get('selectedRequest')){
+        return requestList.findOne({"_id": Session.get('selectedRequest')});
+    } else
+    if(Session.get('selectedClass')){
+      return postList.findOne({"_id": Session.get('selectedClass')});
+    }
   }
-
 });
 
 Template.classpage.events({
 
 });
 
-Template.classpage.events({
-  'keypress #inputSearch':function(event){
+Template.findCourse.events({
+  'submit #search':function(event){
     event.preventDefault();
     var talentTitle = $('[name="searchCourse"]').val();
+    Session.set('query',talentTitle)
+    Router.go('/resultpage');
 
   }
 });
 
+Template.resultpage.helpers({
+  searchResult:function(){
+    var query=Session.get('query');
+    var allPost = postList.find();
+    if(query){
+        return postList.find({"title": { $regex: ".*"+ query + ".*", $options: 'i' }}).fetch();
+      }else
+       {
+        return allPost;
+      }
+
+  },
+  searchCount: function() {
+    var query=Session.get('query');
+    var count=postList.find({"title": { $regex: ".*"+ query + ".*", $options: 'i' }}).count();
+        return count;
+  },
+  oriQuery:function(){
+    var query=Session.get('query');
+    return query;
+  }
+
+});
 /*END OF NEW*/
 
 Template.updatePI.helpers({
