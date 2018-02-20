@@ -14,13 +14,11 @@
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
-
   <link rel="stylesheet" href="dist/css/bootstrap-responsive-tabs.css">
-<script src="dist/js/jquery.bootstrap-responsive-tabs.min.js"></script>
+  <script src="dist/js/jquery.bootstrap-responsive-tabs.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script>
-
   </script>
   <title>Sifu</title>
 </head>
@@ -33,6 +31,7 @@
   {{> topnavbar}}
   {{> findCourse}}
   {{> carousel_bg}}
+
 </template>
 
 <template name="carousel_bg">
@@ -104,6 +103,20 @@
   </nav>
 </template>
 
+<template name = "footer">
+  <hr>
+      <!-- Footer -->
+      <footer>
+          <div class="row">
+              <div class="col-lg-12">
+                  <p>Copyright &copy; Your Website 2018</p>
+              </div>
+              <!-- /.col-lg-12 -->
+          </div>
+          <!-- /.row -->
+      </footer>
+
+</template>
 
 <template name="findCourse">
   <div class="" id="findcourse">
@@ -115,8 +128,8 @@
 
   <div class = "col-xs-12 col-sm-12 col-md-6 col-lg-6 ">
     <form id="search">
-      <input type="text" class="form-control" name = "searchCourse" id="inputSearch" placeholder="">
-    </form>
+	     <input type="text" class="form-control" name = "searchCourse" id="inputSearch" placeholder="">
+	   </form>
   </div>
 
   <div class="col-xs-12 col-sm-12 col-lg-12" id="searchBoxNav">
@@ -230,16 +243,16 @@
                   <div class="modal fade" id="editModal" role="dialog">
                     {{> updatePI}}
                   </div>
-                  <div class="container" style="border-bottom:1px solid black; padding-left:10px; padding-bottom:10px;">
+                  <div class="container" style="border-bottom:1px solid black; padding-left:0; padding-bottom:10px;">
                       <h2>{{ currentUser.username}}</h2>
                   </div>
                   <br>
                   {{#if currentUser}}
-                  <ul class="container details" style = "padding-left:0" id="personalInfo">
-                    <li><h4><span class="glyphicon glyphicon-earphone one" ></span>{{contactNo}}</h4></li>
-                    <li><h4><span class="glyphicon glyphicon-gift one" ></span>{{dob_date}} {{dob_month}} {{dob_year}}</h4></li>
-                    <li><h4><span class="glyphicon glyphicon-map-marker one" ></span>{{location}}</h4></li>
-                    <li><h4><span class="glyphicon glyphicon-envelope one" ></span>{{ currentUser.emails.[0].address}}</h4></li>
+                  <ul class="container details" style = "padding-left:0">
+                    <li><h4><span class="glyphicon glyphicon-earphone one" style="width:50px;"></span>{{contactNo}}</h4></li>
+                    <li><h4><span class="glyphicon glyphicon-gift one" style="width:50px;"></span>{{dob_date}} {{dob_month}} {{dob_year}}</h4></li>
+                    <li><h4><span class="glyphicon glyphicon-map-marker one" style="width:50px;"></span>{{location}}</h4></li>
+                    <li><h4><span class="glyphicon glyphicon-envelope one" style="width:50px;"></span>{{ currentUser.emails.[0].address}}</h4></li>
                   </ul>
                   {{/if}}
               </div>
@@ -247,6 +260,7 @@
       </div>
       {{> talentTab}}
       {{> classTab}}
+      {{> footer}}
     </div>
   </div>
 
@@ -263,21 +277,19 @@
 
         </div>
         <div class="modal-body">
-              <div class="row">
-                <div class="form-group ">
-                  <div class="col-lg-3">
+                <div class="row form-group ">
+                  <div class="col-lg-12">
                     <label for="contactNo">Contact: </label>
                     </div>
-                    <div class="col-lg-9">
+                    <div class="col-lg-3">
                       <input type="text" class="form-control" name="contactNo" id="contactNo" placeholder="012-3456789" pattern="[0-9]{3,}-[0-9]{7,}$" maxlength="11">
                     </div>
                 </div>
-                <br /><br />
-              </div>
+                <br />
 
-              <div class="row">
-                <div class="form-group ">
-                  <div class="col-lg-3">
+
+                <div class="row form-group ">
+                  <div class="col-lg-12">
                     <label for="dob">Date of Birth: </label>
                   </div>
                     <div class="col-lg-9">
@@ -397,12 +409,12 @@
 
                   </div>
 
-                  <br /><br />
+                  <br />
 
-              </div>
-              <div class="row">
+
+
                 <div class="form-group">
-                  <div class="col-lg-3">
+                  <div class="col-lg-12">
                     <label for="location">Location: </label>
                   </div>
                   <div class="col-lg-3">
@@ -425,10 +437,10 @@
                     </select>
                   </div>
                 </div>
-              </div>
+
         </div>
         <div class="modal-footer">
-          <div class="row">
+          <div class="row" style = "margin:0%;">
             <center><input type="submit" name = "submit" class="btn btn-warning" ></center>
 
           </div>
@@ -459,9 +471,9 @@
           <p>
           {{#if currentUser}}
           {{#each talents}}
-            <li style="margin:0px; padding:5px">
+            <label class = "talentsTags" style="margin:0px; padding:5px">
               {{title}}
-            </li>
+            </label>
           {{/each}}
           {{/if}}
         </p>
@@ -547,7 +559,7 @@
               <h6>RM 20/class</h6>
 
               <p>
-                <a href="/classpage" class=" btn btn-primary " role="button">More</a>
+                <a href="#" class=" btn btn-primary " role="button">More</a>
 
               </p>
             </div>
@@ -559,12 +571,12 @@
 <template name="newClass">
 
 
-        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-          <a data-toggle = "modal" href = "#addClass" class="thumbnail" id="image" width ="" >
-            <div class="img">
-              <img class = "img-responsive center-block" src="add.png"  alt="" width="100px" height="100px" />
+        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="margin-top:2%">
+          <a data-toggle = "modal" href = "#addClass" class="thumbnail" id="image" width ="" style = "border: 1px solid #ced4da;" >
+            <div class="img.center" style="margin:auto; margin-bottom:10%;">
+              <img class = "img-responsive" src="add.png"  alt="" width="100px" height="100px" />
             </div>
-            <div class="caption">
+            <div class="captionCreate">
               <h4 align = "center">Create A New Class</h4>
             </div>
           </a>
@@ -591,15 +603,15 @@
       <!--Add Class-->
 
       <div class ="panel-group">
-        <div class = "panel panel-default">
-          <div class = "panel-heading text-center"   style="color: #fff; background-color: rgb(51, 122, 183);"><img src="classIcon.png" width ="5%"><strong> Add Class</strong></div>
+        <div class = "panel panel-default" style = "border: 1px solid #ced4da; border-radius: 1%">
+          <div class = "panel-heading text-center"   style="color: #fff; background-color: rgb(51, 122, 183); border-radius: 1%"><img src="classIcon.png" width ="5%"><strong> Add Class</strong></div>
           <div class = "panel-body">
 
             <div class = "row form-group" style = "margin-bottom: 0%">
-
+              <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
               <!--Title-->
-              <label  class="control-label col-sm-1 col-xs-12 col-lg-2 col-md-2">Title:</label>
-              <div class="col-xs-12 col-sm-12 col-lg-9 col-md-9">
+              <label  class="control-label col-sm-1 col-xs-12 col-lg-2 col-md-12">Title:</label>
+              <div class="col-xs-12 col-sm-12 col-lg-9 col-md-12">
                 <input type="text" name = "title" class="form-control" id="inputTitle" placeholder="Title" required><br>
 
                 <!--<br><div class="help-block with-errors" style = "margin-top: -15px;"></div>-->
@@ -609,25 +621,27 @@
 
             <!--Image-->
             <div class = "row form-group">
-            <label class="control-label col-sm-1 col-xs-12 col-lg-2 col-md-2">Image Source:</label>
-              <div class="col-xs-12 col-sm-12 col-lg-9 col-md-9">
+            <label class="control-label col-sm-1 col-xs-12 col-lg-2 col-md-12">Image Source:</label>
+              <div class="col-xs-12 col-sm-12 col-lg-9 col-md-12">
                 <input type="text" name = "imageSource" class="form-control" id="inputImage" placeholder="example.jpg/png/gif" required>
               </div>
             </div>
-
+            <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
             <!--Price & Target Audience-->
-            <div class = "row">
-              <div class = "form-group" style = "margin:0%">
-              <label class="control-label col-sm-12 col-xs-12 col-lg-2 col-md-">Price per Class:</label>
-              <div class="col-xs-12 col-sm-12 col-lg-3 col-md-3">
+            <div class = "row form-group">
+
+              <label class="control-label col-sm-12 col-xs-12 col-lg-2 col-md-12">Price per Class:</label>
+              <div class="col-xs-12 col-sm-12 col-lg-9 col-md-12">
                 <input type="number" name = "price" class="form-control" id="inputPrice"  placeholder="Enter price" required>
               </div>
-            </div>
 
-              <div class = "form-group">
-              <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-3 col-md-3" style = "margin-right:-9%;">Target Audience:</label>
-              <div class = "col-xs-12 col-sm-12 col-lg-4 col-md-4">
+          </div>
+          <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
+
+              <div class = "row form-group">
+              <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-2 col-md-12">Target Audience:</label>
+              <div class = "col-xs-12 col-sm-12 col-lg-9 col-md-12">
 
                 <!--Audience-->
                 <select name ="selectAudience" class = "form-control" id = "selAudience" required = "required">
@@ -643,66 +657,17 @@
                 </select>
                 </div>
               </div>
-            </div>
+
             <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
 
 
-
-              <!--Choice-->
-              <div class = "row form-group">
-                <label class = "control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-2">Day & Time:</label>
-
-                <div class="btn-toolbar">
-                    <div class="btn-group col-lg-8 col-xs-12 col-md-8" style = "padding-left: 0; margin-left: 0;">
-                      <!--Day-->
-                      <div class = "col-lg-6 col-md-6 col-xs-12 col-sm-12">
-                        <select name ="day" class = "form-control selectpicker" title = "- Day -" id = "selDay"  required = "required" multiple>
-
-                            <option value="Sunday" class="">Sunday</option>
-                            <option value="Monday" class="">Monday</option>
-                            <option value="Tuesday" class="">Tuesday</option>
-                            <option value="Wednesday" class="">Wednesday</option>
-                            <option value="Thursday" class="">Thursday</option>
-                            <option value="Friday" class="">Friday</option>
-                            <option value="Saturday" class="">Saturday</option>
-                        </select>
-                      </div>
-                      <!--Time-->
-                      <div class = "col-lg-6 col-md-6 col-xs-12 col-sm-12">
-                        <select name ="time" class = "form-control selectpicker" title ="- Time am/pm -" id = "selTime" required = "required" multiple>
-
-                            <option value="7:00am" class="">7:00am</option>
-                            <option value="8:00am" class="">8:00am</option>
-                            <option value="9:00am" class="">9:00am</option>
-                            <option value="10:00am" class="">10:00am</option>
-                            <option value="11:00am" class="">11:00am</option>
-                            <option value="12:00pm" class="">12:00pm</option>
-                            <option value="1:00pm" class="">1:00pm</option>
-                            <option value="2:00pm" class="">2:00pm</option>
-                            <option value="3:00pm" class="">3:00pm</option>
-                            <option value="4:00pm" class="">4:00pm</option>
-                            <option value="5:00pm" class="">5:00pm</option>
-                            <option value="6:00pm" class="">6:00pm</option>
-                            <option value="7:00pm" class="">7:00pm</option>
-                            <option value="8:00pm" class="">8:00pm</option>
-                            <option value="9:00pm" class="">9:00pm</option>
-                            <option value="10:00pm" class="">10:00pm</option>
-                            <option value="11:00pm" class="">11:00pm</option>
-                        </select>
-                      </div>
-                      </div>
-                      </div>
-                    </div>
-                  <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
-
         <!--Skill Category & Location-->
         <div class = "row form-group">
-          <label class = "control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-2">Skill Category:</label>
+          <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-2 col-md-12">Skill Category:</label>
 
-          <div class="btn-toolbar">
-              <div class="btn-group col-lg-8 col-xs-12 col-md-8" style = "padding-left: 0; margin-left: 0;">
-                  <div class = "col-xs-12 col-sm-12 col-lg-5 col-md-5">
+
+                  <div class = "col-xs-12 col-sm-12 col-lg-4 col-md-12">
 
                   <!--Skills-->
                   <select name ="selectSkill" class = "form-control" id = "selSkill" required = "required">
@@ -717,29 +682,26 @@
                       <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
                   </select>
                   </div>
-                  <label class = "control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-2">Location:</label>
-                  <div class="col-xs-12 col-sm-12 col-lg-5 col-md-5">
+                  <label class = "control-label col-sm-12 col-xs-12 col-lg-1 col-md-12">Location:</label>
+                  <div class="col-xs-12 col-sm-12 col-lg-4 col-md-12">
                     <input type="text" name = "location" class="form-control" id="inputLocation" placeholder="Enter a location" required>
-                    {{> map}}
-
                   </div>
-              </div>
-          </div>
+
+
         </div>
         <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
             <!--Description-->
             <div class = "row form-group">
-              <label class="control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-2">Description:</label>
-              <div class="col-xs-12 col-sm-12 col-lg-9 col-md-10">
+              <label class="control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-12">Description:</label>
+              <div class="col-xs-12 col-sm-12 col-lg-9 col-md-12">
                 <textarea name = "desc" class = "form-control" id = "inputDesc" rows = "7" placeholder = "" required></textarea>
               </div>
             </div>
-
             <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
             <!--Submit Button-->
-            <center><button type="submit" name = "submit" class="btn btn-warning" style="" contenteditable="false">Submit</button></center>
+            <center><button type="submit" name = "submit" class="btn btn-warning" style="margin-bottom: 3%" contenteditable="false">Submit</button></center>
           </div>
       </div>
     </div>
@@ -758,123 +720,121 @@
 </template>
 
 <template name="classpage">
-  <div class="bgcolor">
-    {{> header}}
-    <br />
+	  <div class="bgcolor">
+	    {{> header}}
+	    <br />
 
-    <div class="container" >
-      {{#with class}}
-      <div id="containerStyle">
-        <div class="row" id="title">
-          {{title}}
-        </div>
+	    <div class="container" >
+	      {{#with class}}
+	      <div id="containerStyle">
+	        <div class="row" id="title">
+	          {{title}}
+	        </div>
 
-        <div class="row" id="horizontalLine">
-          Category :  <a href="#">{{skill}}</a>
-        </div>
+	        <div class="row" id="horizontalLine">
+	          Category :  <a href="#">{{skill}}</a>
+	        </div>
 
-        <div class="row">
-          <div class="col-lg-6 col-sm-12">
-            <div class="img">
-              <img class= "img-fluid " src="{{fileSource}}" id="classImg" alt="{{fileSource}}" />
-            </div>
-          </div>
+	        <div class="row">
+	          <div class="col-lg-6 col-sm-12">
+	            <div class="img">
+	              <img class= "img-fluid " src="{{fileSource}}" id="classImg" alt="{{fileSource}}" />
+	            </div>
+	          </div>
 
-          <div class="col-lg-6 col-sm-12">
-          <ul id="classListStyle">
-            <li>Tutor: <a href="#"> {{owner}}</a></li>
-            <li>Day: {{day}}</li>
-            <li>Time: {{time}}</li>
-            <li>Price: RM{{price}}/class</li>
-          </ul>
-          </div>
-        </div>
+	          <div class="col-lg-6 col-sm-12">
+	          <ul id="classListStyle">
+	            <li>Tutor: <a href="#"> {{owner}}</a></li>
+	            <li>Day: {{day}}</li>
+	            <li>Time: {{time}}</li>
+	            <li>Price: RM{{price}}/class</li>
+	          </ul>
+	          </div>
+	        </div>
 
-        <div class="row">
-          <div class="col-lg-8 col-md-12 col-sm-12">
-            <!-- Nav tabs -->
-              <ul class="nav nav-tabs" role="tablist" id="classPageTab">
-                <li class="nav-item">
-                  <a class="nav-link active" data-toggle="tab" href="#about" role="tab">About</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" data-toggle="tab" href="#photos" role="tab">Photos</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" data-toggle="tab" href="#review" role="tab">Review</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" data-toggle="tab" href="#location" role="tab">Location</a>
-                </li>
-              </ul>
+	        <div class="row">
+	          <div class="col-lg-8 col-md-12 col-sm-12">
+	            <!-- Nav tabs -->
+	              <ul class="nav nav-tabs" role="tablist" id="classPageTab">
+	                <li class="nav-item">
+	                  <a class="nav-link active" data-toggle="tab" href="#about" role="tab">About</a>
+	                </li>
+	                <li class="nav-item">
+	                  <a class="nav-link" data-toggle="tab" href="#photos" role="tab">Photos</a>
+	                </li>
+	                <li class="nav-item">
+	                  <a class="nav-link" data-toggle="tab" href="#review" role="tab">Review</a>
+	                </li>
+	                <li class="nav-item">
+	                  <a class="nav-link" data-toggle="tab" href="#location" role="tab">Location</a>
+	                </li>
+	              </ul>
 
-              <!-- Tab panes -->
-              <div class="tab-content" id="classPageTabContent">
-                <div class="tab-pane active" id="about" role="tabpanel">
-                  <h3>About This Class</h3>
-                  <p>
-                    {{description}}
-                  </p>
-                </div>
-                <div class="tab-pane" id="photos" role="tabpanel">...</div>
-                <div class="tab-pane" id="review" role="tabpanel">...</div>
-                <div class="tab-pane" id="location" role="tabpanel">...</div>
-              </div>
+	              <!-- Tab panes -->
+	              <div class="tab-content" id="classPageTabContent">
+	                <div class="tab-pane active" id="about" role="tabpanel">
+	                  <h3>About This Class</h3>
+	                  <p>
+	                    {{description}}
+	                  </p>
+	                </div>
+	                <div class="tab-pane" id="photos" role="tabpanel">...</div>
+	                <div class="tab-pane" id="review" role="tabpanel">...</div>
+	                <div class="tab-pane" id="location" role="tabpanel">...</div>
+	              </div>
 
-          </div>
-          <div class="col-lg-4">
-            <div class="row" id="rating">
-              <table>
-                <tr>
-                  <th>
-                    <span class="glyphicon glyphicon-user"></span> 100
-                  </th>
-                  <th>
-                    <span class="glyphicon glyphicon-thumbs-up"></span> 4.5/5
-                  </th>
-                </tr>
-                <tr>
-                  <td id="tableFont">
-                    <center>
-                      Students
-                    </center>
-                  </td>
+	          </div>
+	          <div class="col-lg-4">
+	            <div class="row" id="rating">
+	              <table>
+	                <tr>
+	                  <th>
+	                    <span class="glyphicon glyphicon-user"></span> 100
+	                  </th>
+	                  <th>
+	                    <span class="glyphicon glyphicon-thumbs-up"></span> 4.5/5
+	                  </th>
+	                </tr>
+	                <tr>
+	                  <td id="tableFont">
+	                    <center>
+	                      Students
+	                    </center>
+	                  </td>
                   <td  id="tableFont">
-                    <center>
-                      Rating
-                    </center>
-                  </td>
-                </tr>
-              </table>
+	                    <center>
+	                      Rating
+	                    </center>
+	                  </td>
+	                </tr>
+	              </table>
 
-            </div>
-          </div>
-        </div>
+	            </div>
+	          </div>
+	        </div>
 
-        </div>
+	        </div>
 
-            {{/with}}
+	            {{/with}}
 
-    </div>
+	    </div>
 
-  </div>
+	  </div>
 
-</template>
+	</template>
 
+	<template name="map">
 
-<template name="map">
-
-</template>
-
+	</template>
 <!--Posts from User-->
 <template name='post'>
-<div class = "row" style = "margin-right:25px">
+<div class = "row">
     {{#if currentUser}}
       {{#each postClasses}}
-      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-        <div class="thumbnail" id="image" >
+      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style = "margin-top:2%">
+        <div class="thumbnail" id="image">
           <div class="img">
-            <img class = "postClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="200px" height="200px" />
+            <img class = "postClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="100%" height="200px" />
           </div>
           <div class="caption">
 
@@ -884,19 +844,16 @@
             <h4>Category: {{skill}}</h4>
             <h4>RM {{price}} / Class</h4>
             <p>
-              <a href="#" class=" btn btn-primary " role="button" id="moreDetails">More</a>
+              <a href="/classpage" class=" btn btn-primary " role="button" id="moreDetails">More</a>
             </p>
             <!--
             <p>
               {{>starsRating mutable = true class = "rating" size=30 id = _id}}
-
             </p>>
-
             <p>
               <a href="#" class="remove btn btn-primary " role="button">Delete</a>
               <a href="#editImg" data-toggle="modal" id = "edit" class="btn btn-default" role="button">Edit Image</a>
             </p>
-
             <div class="modal fade" id="editImg" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -908,13 +865,13 @@
                   <div class="modal-body">
                     {{> editForm}}
                   </div>
-
               </div>
             </div>-->
 
           </div>
         </div>
       </div>
+
       {{/each}}
     {{/if}}
     {{> newClass}}
@@ -923,195 +880,153 @@
 
 <template name="newRequest">
 
-    <div class="row">
 
-        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
-          <a data-toggle = "modal" href = "#addRClass" class="thumbnail" id="image" width ="" >
-            <div class="img">
-              <img class = "img-responsive center-block" src="add.png"  alt="" width="100px" height="100px" />
+  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style = "margin-top:2%">
+    <a data-toggle = "modal" href = "#addRClass" class="thumbnail" id="image" width ="" style = "border: 1px solid #ced4da;" >
+      <div class="img.center" style="margin:auto; margin-bottom:10%;">
+        <img class = "img-responsive" src="add.png"  alt="" width="100px" height="100px" />
+      </div>
+      <div class="captionCreate">
+        <h4 align = "center">Create A New Request</h4>
+      </div>
+    </a>
+  </div>
+
+
+
+  <!--Add Request Modal-->
+  <div class="container-fluid">
+        <!-- Trigger the modal with a button -->
+
+
+        <!-- Modal -->
+        <div class="modal fade" id="addRClass" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <div class="modal-body">
+            <!--Content-->
+          <div class = "container" style = "width: 100%">
+            <form class="custom-form-horizontal" id ="addRForm" data-toggle="validator" role="form">
+
+    <!--Add Request-->
+
+    <div class ="panel-group">
+      <div class = "panel panel-default" style = "border: 1px solid #ced4da; border-radius: 1%">
+        <div class = "panel-heading text-center"   style="color: #fff; background-color: rgb(51, 122, 183); border-radius: 1%"><img src="classIcon.png" width ="5%"><strong> Add Request</strong></div>
+        <div class = "panel-body">
+
+          <div class = "row form-group" style = "margin-bottom: 0%">
+            <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
+            <!--Title-->
+            <label  class="control-label col-sm-1 col-xs-12 col-lg-2 col-md-12">Title:</label>
+            <div class="col-xs-12 col-sm-12 col-lg-9 col-md-12">
+              <input type="text" name = "Rtitle" class="form-control" id="inputTitle" placeholder="Title" required><br>
+
+              <!--<br><div class="help-block with-errors" style = "margin-top: -15px;"></div>-->
+
             </div>
-            <div class="caption">
-              <h4 align = "center">Create A New Request</h4>
+          </div>
+
+          <!--Image-->
+          <div class = "row form-group">
+          <label class="control-label col-sm-1 col-xs-12 col-lg-2 col-md-12">Image Source:</label>
+            <div class="col-xs-12 col-sm-12 col-lg-9 col-md-12">
+              <input type="text" name = "RimageSource" class="form-control" id="inputImage" placeholder="example.jpg/png/gif" required>
             </div>
-          </a>
+          </div>
+          <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
+
+          <!--Price & Target Audience-->
+          <div class = "row form-group">
+
+            <label class="control-label col-sm-12 col-xs-12 col-lg-2 col-md-12">Price per Class:</label>
+            <div class="col-xs-12 col-sm-12 col-lg-9 col-md-12">
+              <input type="number" name = "Rprice" class="form-control" id="inputPrice"  placeholder="Enter price" required>
+            </div>
+
         </div>
-    </div>
-
-    <!--Add Request Modal-->
-    <div class="container-fluid">
-          <!-- Trigger the modal with a button -->
-
-
-          <!-- Modal -->
-          <div class="modal fade" id="addRClass" role="dialog">
-          <div class="modal-dialog modal-lg">
-
-            <!-- Modal content-->
-            <div class="modal-content">
-              <button type="button" class="close" data-dismiss="modal">&times;</button>
-            <div class="modal-body">
-              <!--Content-->
-            <div class = "container" style = "width: 100%">
-              <form class="custom-form-horizontal" id ="addRForm" data-toggle="validator" role="form">
-
-      <!--Add Request-->
-
-      <div class ="panel-group">
-        <div class = "panel panel-default">
-          <div class = "panel-heading text-center"   style="color: #fff; background-color: rgb(51, 122, 183);"><img src="classIcon.png" width ="5%"><strong> Request Class</strong></div>
-          <div class = "panel-body">
+        <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
             <div class = "row form-group">
+            <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-2 col-md-12">Target Audience:</label>
+            <div class = "col-xs-12 col-sm-12 col-lg-9 col-md-12">
 
-              <!--Request Title-->
-              <label  class="control-label col-sm-1 col-xs-12 col-lg-2 col-md-2">Title:</label>
-              <div class="col-xs-12 col-sm-12 col-lg-9 col-md-9">
-                <input type="text" name = "Rtitle" class="form-control" id="inputTitle" placeholder="Title" required>
+              <!--Audience-->
+              <select name ="RselectAudience" class = "form-control" id = "selAudience" required = "required">
+                  <option value="" class="">- Select at least one -</option>
+                  <option value="Anyone" class="">Anyone</option>
+                  <option value="Students" class="">Students</option>
+                  <option value="Businessman" class="">Businessman</option>
+                  <option value="Musicians" class="">Musicians</option>
+                  <option value="" class=""></option>
+                  <option value="" class=""></option>
+                  <option value="" class=""></option>
+                  <option value="" class=""></option>
+              </select>
               </div>
             </div>
 
-            <!--Request Image-->
-            <div class = "row form-group">
-            <label class="control-label col-sm-1 col-xs-12 col-lg-2 col-md-2">Image Source:</label>
-              <div class="col-xs-12 col-sm-12 col-lg-9 col-md-9">
-                <input type="text" name = "RimageSource" class="form-control" id="inputImage" placeholder="example.jpg/png/gif" required>
-              </div>
-            </div>
+          <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
 
-            <!--Request Price & Target Audience-->
-            <div class = "row">
-              <div class = "form-group" style = "margin:0%">
-              <label class="control-label col-sm-12 col-xs-12 col-lg-2 col-md-2">Price per Class:</label>
-              <div class="col-xs-12 col-sm-12 col-lg-3 col-md-3">
-                <input type="number" name = "Rprice" class="form-control" id="inputPrice" placeholder="Enter price" required>
-              </div>
-            </div>
 
-              <div class = "form-group">
-              <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-3 col-md-3" style = "margin-right:-9%;">Target Audience:</label>
-              <div class = "col-xs-12 col-sm-12 col-lg-4 col-md-4">
+      <!--Skill Category & Location-->
+      <div class = "row form-group">
+        <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-2 col-md-12">Skill Category:</label>
 
-                <!--Request Audience-->
 
-                <select name ="RselectAudience" class = "form-control" id = "selAudience" required = "required">
+                <div class = "col-xs-12 col-sm-12 col-lg-4 col-md-12">
+
+                <!--Skills-->
+                <select name ="RselectSkill" class = "form-control" id = "selSkill" required = "required">
                     <option value="" class="">- Select at least one -</option>
-                    <option value="Anyone" class="">Anyone</option>
-                    <option value="Students" class="">Students</option>
-                    <option value="Businessman" class="">Businessman</option>
-                    <option value="Musicians" class="">Musicians</option>
-                    <option value="" class=""></option>
-                    <option value="" class=""></option>
-                    <option value="" class=""></option>
-                    <option value="" class=""></option>
+                    <option value="Graphics & Design" class="">Graphics & Design</option>
+                    <option value="Digital Marketing" class="">Digital Marketing</option>
+                    <option value="Writing & Translation" class="">Writing & Translation</option>
+                    <option value="Video Animation" class="">Video Animation</option>
+                    <option value="Music & Audio" class="">Music & Audio</option>
+                    <option value="Programming & Tech" class="">Programming & Tech</option>
+                    <option value="Business" class="">Business</option>
+                    <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
                 </select>
                 </div>
-              </div>
+                <label class = "control-label col-sm-12 col-xs-12 col-lg-1 col-md-12">Location:</label>
+                <div class="col-xs-12 col-sm-12 col-lg-4 col-md-12">
+                  <input type="text" name = "Rlocation" class="form-control" id="inputLocation" placeholder="Enter a location" required>
+                </div>
+
+
+      </div>
+      <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
+
+          <!--Description-->
+          <div class = "row form-group">
+            <label class="control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-12">Description:</label>
+            <div class="col-xs-12 col-sm-12 col-lg-9 col-md-12">
+              <textarea name = "Rdesc" class = "form-control" id = "inputDesc" rows = "7" placeholder = "" required></textarea>
             </div>
-            <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
-
-
-
-              <!--Request First Choice-->
-              <div class = "row form-group">
-                <label class = "control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-2">Day & Time:</label>
-
-                <div class="btn-toolbar">
-                    <div class="btn-group col-lg-8 col-xs-12 col-md-8" style = "padding-left: 0; margin-left: 0;">
-                      <!--Request Day-->
-                      <div class = "col-lg-6 col-md-6 col-xs-12 col-sm-12">
-                        <select name ="Rday" class = "form-control selectpicker" title ="- Day -" id = "selRDay" required = "required" multiple>
-                            <option value="Sunday" class="">Sunday</option>
-                            <option value="Monday" class="">Monday</option>
-                            <option value="Tuesday" class="">Tuesday</option>
-                            <option value="Wednesday" class="">Wednesday</option>
-                            <option value="Thursday" class="">Thursday</option>
-                            <option value="Friday" class="">Friday</option>
-                            <option value="Saturday" class="">Saturday</option>
-                        </select>
-                      </div>
-                      <!--Request Time-->
-                      <div class = "col-lg-6 col-md-6 col-xs-12 col-sm-12">
-                        <select name ="Rtime" class = "form-control selectpicker" title ="- Time am/pm -" id = "selRTime" required = "required" multiple>
-                          <option value="7:00am" class="">7:00am</option>
-                          <option value="8:00am" class="">8:00am</option>
-                          <option value="9:00am" class="">9:00am</option>
-                          <option value="10:00am" class="">10:00am</option>
-                          <option value="11:00am" class="">11:00am</option>
-                          <option value="12:00pm" class="">12:00pm</option>
-                          <option value="1:00pm" class="">1:00pm</option>
-                          <option value="2:00pm" class="">2:00pm</option>
-                          <option value="3:00pm" class="">3:00pm</option>
-                          <option value="4:00pm" class="">4:00pm</option>
-                          <option value="5:00pm" class="">5:00pm</option>
-                          <option value="6:00pm" class="">6:00pm</option>
-                          <option value="7:00pm" class="">7:00pm</option>
-                          <option value="8:00pm" class="">8:00pm</option>
-                          <option value="9:00pm" class="">9:00pm</option>
-                          <option value="10:00pm" class="">10:00pm</option>
-                          <option value="11:00pm" class="">11:00pm</option>
-                        </select>
-                      </div>
-                      </div>
-                      </div>
-                    </div>
-                  <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
-
-        <!--Request Skill Category & Location-->
-        <div class = "row form-group">
-          <label class = "control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-2">Skill Category:</label>
-
-          <div class="btn-toolbar">
-              <div class="btn-group col-lg-8 col-xs-12 col-md-8" style = "padding-left: 0; margin-left: 0;">
-                  <div class = "col-xs-12 col-sm-12 col-lg-5 col-md-5">
-
-                  <!--Request Skills-->
-                  <select name ="RselectSkill" class = "form-control" id = "selSkill" required = "required">
-                      <option value="" class="">- Select at least one -</option>
-                      <option value="Graphics & Design" class="">Graphics & Design</option>
-                      <option value="Digital Marketing" class="">Digital Marketing</option>
-                      <option value="Writing & Translation" class="">Writing & Translation</option>
-                      <option value="Video Animation" class="">Video Animation</option>
-                      <option value="Music & Audio" class="">Music & Audio</option>
-                      <option value="Programming & Tech" class="">Programming & Tech</option>
-                      <option value="Business" class="">Business</option>
-                      <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
-                  </select>
-                  </div>
-                  <label class = "control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-2">Location:</label>
-                  <div class="col-xs-12 col-sm-12 col-lg-5 col-md-5">
-                    <input type="text" name = "Rlocation" class="form-control" id="inputLocation" placeholder="Enter a location" required>
-                  </div>
-              </div>
           </div>
+          <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
+
+          <!--Submit Button-->
+          <center><button type="submit" name = "submit" class="btn btn-warning" style="margin-bottom: 3%" contenteditable="false">Submit</button></center>
         </div>
-  <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
-
-            <!--Request Description-->
-            <div class = "row form-group">
-              <label class="control-label col-xs-12 col-sm-3 col-xs-12 col-lg-2 col-md-2">Description:</label>
-              <div class="col-xs-12 col-sm-12 col-lg-9 col-md-10">
-                <textarea name = "Rdesc" class = "form-control" id = "inputDesc" rows = "7" placeholder = "" required></textarea>
-              </div>
-            </div>
-            <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
-
-            <!--Request Submit Button-->
-            <center><button type="submit" name = "submit" class="btn btn-warning" style="" contenteditable="false">Submit</button></center>
+    </div>
+  </div>
+  </form>
+</div>
           </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+          </div>
+
+        </div>
       </div>
     </div>
-    </form>
-  </div>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-            </div>
-            </div>
-
-          </div>
-        </div>
-      </div>
 
 </template>
 
@@ -1120,10 +1035,10 @@
 <div class = "row" style = "margin-right:25px">
     {{#if currentUser}}
       {{#each requestClasses}}
-      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12">
+      <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style = "margin-top:2%">
         <div class="thumbnail" id="image" >
           <div class="img">
-            <img class = "requestClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="200px" height="200px" />
+            <img class = "requestClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="100%" height="200px" />
           </div>
           <div class="caption">
 
@@ -1138,14 +1053,11 @@
             <!--
             <p>
               {{>starsRating mutable = true class = "rating" size=30 id = _id}}
-
             </p>>
-
             <p>
               <a href="#" class="remove btn btn-primary " role="button">Delete</a>
               <a href="#editImg" data-toggle="modal" id = "edit" class="btn btn-default" role="button">Edit Image</a>
             </p>
-
             <div class="modal fade" id="editImg" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -1157,7 +1069,6 @@
                   <div class="modal-body">
                     {{> editForm}}
                   </div>
-
               </div>
             </div>-->
 
@@ -1193,7 +1104,7 @@
                         {{/each}}
                         {{/if}}
                   </div>
-                  <div class="col-lg-6">
+                  <div class="col-lg-6" style = "max-width:100%">
                     {{> addTalents}}
                   </div>
                 </div>
@@ -1211,7 +1122,7 @@
                         {{/if}}
 
                   </div>
-                  <div class="col-lg-6">
+                  <div class="col-lg-6" style = "max-width:100%">
                     {{> addAch}}
                   </div>
                 </div>
@@ -1232,7 +1143,7 @@
                       {{/each}}
                       {{/if}}
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-6" style = "max-width:100%">
                   {{> addExp}}
                 </div>
               </div>
@@ -1243,7 +1154,7 @@
       </div>
       </div>
       <div class="modal-footer">
-        <div class="row">
+        <div class="row" style="margin:0%">
           <center><input type="submit" name = "submit" class="btn btn-warning" ></center>
 
         </div>
@@ -1291,7 +1202,7 @@
 
     <div class="container" >
       <div class="containerStyle">
-        
+
 
       </div>
     </div>
