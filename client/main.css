@@ -33,30 +33,6 @@ ul.nav.navbar-nav {
   list-style: none;
 }
 
-.row.form-group{
-  margin-left: 0%;
-  margin-right: 0%;
-}
-
-.close{
-  text-align: right;
-  margin-right: 0.5%;
-}
-.captionCreate{
-  margin: auto;
-  margin-top: 0%;
-}
-
-.thumbnail{
-  border: 1px solid #ced4da;
-
-}
-
-.caption{
-  margin-left: 3%;
-  color: gray;
-}
-
 .rotate90 {
     -webkit-transform: rotate(-90deg);
     -moz-transform: rotate(90deg);
@@ -294,10 +270,12 @@ font-size: .8em;
 
  /*~~~~~CSS FOR background~~~~~*/
 .bgcolor {
-  background-image:url(wp1_1.jpg);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-attachment: fixed;
+  background-color: rgba(124, 210, 254, 0.86);
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  margin: 0;
+  padding: 0;
 }
 
 button#editpersonalinfo:hover{
@@ -361,11 +339,15 @@ button#editpersonalinfo:hover{
     font-size: 4vw;
   }
 
+  #editpersonalinfo {
+    float:right;
+
+  }
 }
 
 @media only screen and (max-width: 1025px){
-  .img-fluid{
-    width:40%;
+  #topnav2logo .img-fluid{
+    width:100%;
     margin-left: 20pt;
   }
   #login-dropdown-list {
@@ -390,7 +372,7 @@ button#editpersonalinfo:hover{
   }
 
   .navbar-nav .nav-link{
-    font-size: 3.5vw;
+    font-size: 2vw;
     float:right;
   }
 
@@ -419,22 +401,21 @@ button#editpersonalinfo:hover{
 
 /*Homepage nav-tab*/
 
-
 .nav-tabs{
-  background-color:#0a6cc5;
-  color: white;
+  background-color:white;
+  color: grey;
 }
 .nav-tabs .nav-item{
-  color: white;
+  color: grey;
 }
 
 .tab-content{
     background-color:white;
-    color:#fff;
+    color:grey;
     padding:5px
 }
 .nav-tabs > li > a{
-  color: white;
+  color: grey;
 }
 .nav-tabs > li > a:hover{
 
@@ -443,7 +424,7 @@ button#editpersonalinfo:hover{
 }
 
 .haha {
-  padding-left: 5%;
+  padding-left: 30px;
   font-size: 20px;
 }
 
@@ -460,8 +441,16 @@ button#editpersonalinfo:hover{
 }
 
 #upForm input#contactNo {
-  width:100%;
+  width:30%;
 }
+
+/*HEADER maps*/
+
+
+#personalInfo .glyphicon{
+  padding: 10px;
+}
+
 /*****CLASS PAGE*****/
 #title {
   font-size: 4em;
@@ -498,3 +487,22 @@ ul#classListStyle{
 
 #tableFont {
   font-size: 1em;
+}
+
+#classImg{
+  width: 100%;
+}
+
+#rating {
+  margin: 1.8em 1em;
+  font-size: 2em;
+}
+#rating span{
+  color: grey;
+  font-size: 1em;
+}
+
+#rating td, th{
+  font-size: 0.8em;
+  padding: 1px 7px;
+}
