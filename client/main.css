@@ -10,9 +10,6 @@
   display: flex;
   flex-wrap: wrap;
 }
-.thumbnail {
-  height: 100%;
-}
 
 .list-unstyled >li {
   margin-bottom: :0%;
@@ -31,6 +28,31 @@ ul.nav.navbar-nav {
 }
 .details li {
   list-style: none;
+}
+
+.row.form-group{
+  margin-left: 0%;
+  margin-right: 0%;
+}
+
+.close{
+  text-align: right;
+  margin-right: 0.5%;
+}
+.captionCreate{
+  margin: auto;
+  margin-top: 0%;
+}
+
+.thumbnail{
+  border: 1px solid #ced4da;
+  height: 100%;
+
+}
+
+.caption{
+  margin-left: 3%;
+  color: gray;
 }
 
 .rotate90 {
@@ -270,12 +292,10 @@ font-size: .8em;
 
  /*~~~~~CSS FOR background~~~~~*/
 .bgcolor {
-  background-color: rgba(124, 210, 254, 0.86);
-  width: 100vw;
-  height: 100vh;
-  object-fit: cover;
-  margin: 0;
-  padding: 0;
+  background-image:url(wp1_1.jpg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-attachment: fixed;
 }
 
 button#editpersonalinfo:hover{
@@ -424,7 +444,7 @@ button#editpersonalinfo:hover{
 }
 
 .haha {
-  padding-left: 30px;
+  padding-left: 5%;
   font-size: 20px;
 }
 
@@ -441,7 +461,7 @@ button#editpersonalinfo:hover{
 }
 
 #upForm input#contactNo {
-  width:30%;
+  width:100%;
 }
 
 /*HEADER maps*/
