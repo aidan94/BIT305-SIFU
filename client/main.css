@@ -45,14 +45,21 @@ ul.nav.navbar-nav {
 }
 
 .thumbnail{
+  display: flex;
+  flex-direction: column;
   border: 1px solid #ced4da;
   height: 100%;
 
 }
 
 .caption{
-  margin-left: 3%;
+  margin: 6%;
   color: gray;
+}
+
+.btn.btn-danger{
+  float:right;
+  margin-right: 4%;
 }
 
 .rotate90 {
@@ -292,6 +299,8 @@ font-size: .8em;
 
  /*~~~~~CSS FOR background~~~~~*/
 .bgcolor {
+  width: 100vw;
+  height: 150vh;
   background-image:url(wp1_1.jpg);
   background-repeat: no-repeat;
   background-position: center;
@@ -300,6 +309,11 @@ font-size: .8em;
 
 button#editpersonalinfo:hover{
   border: 1pt solid grey;
+  background-color: transparent;
+}
+
+button#editClass:hover{
+  border: 0.7pt solid grey;
   background-color: transparent;
 }
 
@@ -546,4 +560,5 @@ ul#classListStyle{
   padding: 5px 30px;
   height:5%;
 }
+
 
