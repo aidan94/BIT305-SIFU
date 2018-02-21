@@ -6,7 +6,7 @@ import './main.html';
 Router.route('/profile');
 Router.route('/main');
 Router.route('/classpage');
-Router.route('/resultpage');
+	Router.route('/resultpage');
 /*
 Router.configure({
     layoutTemplate: 'main'
@@ -38,27 +38,21 @@ Template.newClass.events({
     //var dayVar = event.target.day.value;
 
     //Insert multiple select dropdown into array
-    var dayVar = document.getElementById("selDay");
-    var daysVal = new Array();
-      for (i = 0; i < dayVar.length; i++) {
-          if (dayVar .options[i].selected) daysVal.push(dayVar.options[i].value);
-      }
+    //var dayVar = document.getElementById("selDay");
+
 
     //var timeVar = event.target.time.value;
 
     //Insert multiple select dropdown into array
-    var timeVar = document.getElementById("selTime");
-    var timeArray = new Array();
-      for (i = 0; i < timeVar.length; i++) {
-          if (timeVar .options[i].selected) timeArray.push(timeVar.options[i].value);
-      }
+    //var timeVar = document.getElementById("selTime");
+
     var skillVar = event.target.selectSkill.value;
     var locationVar = event.target.location.value
     var descVar = event.target.desc.value;
-    console.log(titleVar,imgSource,priceVar,audienceVar,daysVal,timeArray,skillVar,locationVar, descVar);
-    if (titleVar != "",imgSource != "",priceVar!= "",audienceVar!= "",daysVal!= "",timeArray!= "",skillVar != "",locationVar!= "", descVar!= "")
+    console.log(titleVar,imgSource,priceVar,audienceVar,skillVar,locationVar, descVar);
+    if (titleVar != "",imgSource != "",priceVar!= "",audienceVar!= "",skillVar != "",locationVar!= "", descVar!= "")
     {
-      Meteor.call('insertClassData', titleVar,imgSource,priceVar,audienceVar,daysVal,timeArray,skillVar, locationVar, descVar)
+      Meteor.call('insertClassData', titleVar,imgSource,priceVar,audienceVar,skillVar, locationVar, descVar)
     }
 
     document.getElementById("addForm").reset();
@@ -113,32 +107,32 @@ Template.newRequest.events({
     var imgSourceR = event.target.RimageSource.value;
     var priceVarR = event.target.Rprice.value;
     var audienceVarR = event.target.RselectAudience.value;
-    var dayVarR = event.target.Rday.value;
+    //var dayVarR = event.target.Rday.value;
 
     //var dayVar = document.getElementById("selDay");
 
     //Insert multiple select dropdown into array
-    var dayVarR = document.getElementById("selRDay");
-    var daysValR = new Array();
-      for (i = 0; i < dayVarR.length; i++) {
-          if (dayVarR .options[i].selected) daysValR.push(dayVarR.options[i].value);
-      }
+    //var dayVarR = document.getElementById("selRDay");
+    //var daysValR = new Array();
+      //for (i = 0; i < dayVarR.length; i++) {
+          //if (dayVarR .options[i].selected) daysValR.push(dayVarR.options[i].value);
+      //}
 
     //var timeVarR = event.target.Rtime.value;
 
     //Insert multiple select dropdown into array
-    var timeVarR = document.getElementById("selRTime");
-    var timeArrayR = new Array();
-      for (i = 0; i < timeVarR.length; i++) {
-          if (timeVarR .options[i].selected) timeArrayR.push(timeVarR.options[i].value);
-      }
+    //var timeVarR = document.getElementById("selRTime");
+    //var timeArrayR = new Array();
+      //for (i = 0; i < timeVarR.length; i++) {
+          //if (timeVarR .options[i].selected) timeArrayR.push(timeVarR.options[i].value);
+      //}
     var skillVarR = event.target.RselectSkill.value;
     var locationVarR = event.target.Rlocation.value
     var descVarR = event.target.Rdesc.value;
-    console.log(titleVarR,imgSourceR,priceVarR,audienceVarR,daysValR,timeArrayR,skillVarR,locationVarR, descVarR);
-    if (titleVarR != "",imgSourceR != "",priceVarR!= "",audienceVarR!= "",daysValR!= "",timeArrayR!= "",skillVarR != "",locationVarR!= "", descVarR!= "")
+    console.log(titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR);
+    if (titleVarR != "",imgSourceR != "",priceVarR!= "",audienceVarR!= "",skillVarR != "",locationVarR!= "", descVarR!= "")
     {
-    Meteor.call('insertRequestData', titleVarR,imgSourceR,priceVarR,audienceVarR,daysValR,timeArrayR,skillVarR,locationVarR, descVarR)
+    Meteor.call('insertRequestData', titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR)
   }
     document.getElementById("addRForm").reset();
     $('.selectpicker').selectpicker('render');
@@ -174,13 +168,54 @@ Template.request.helpers({
 
 //Roushan's Part
 /*NEWW*/
+Template.post.events({
+  'click .postClasses': function(){
+    var classID = this._id;
+    Session.set('selectedClass', classID);
+    var selectedClass = Session.get('selectedClass');
+    console.log(selectedClass);
+  },
+
+  'click #removeClass': function(){
+    var classId = this._id;
+    Session.set('selectedRemoveClass', classId);
+    var selectedRemoveClass = Session.get('selectedRemoveClass');
+    console.log(selectedRemoveClass);
+    var answer = confirm("Do you want to delete that class?")
+    if (answer == true){
+      Meteor.call('removeClass', selectedRemoveClass);
+    }
+    else{
+      console.log("cancel");
+    }
+  }
+
+});
+
+
+
 Template.request.events({
   'click .requestClasses': function(){
-    var classID = this._id;
-    Session.set('selectedRequest', classID);
-    var selectedPlayer = Session.get('selectedRequest');
-    console.log(selectedPlayer);
+    var requestID = this._id;
+    Session.set('selectedRequest', requestID);
+    var selectedRequest = Session.get('selectedRequest');
+    console.log(selectedRequest);
+  },
+
+  'click #removeRequest': function(){
+    var classId = this._id;
+    Session.set('selectedRemoveRequest', classId);
+    var selectedRemoveRequest = Session.get('selectedRemoveRequest');
+    console.log(selectedRemoveRequest);
+    var answer = confirm("Do you want to delete that request?")
+    if (answer == true){
+      Meteor.call('removeRequest', selectedRemoveRequest);
+    }
+    else{
+      console.log("cancel");
+    }
   }
+
 });
 
 Template.classpage.helpers({
@@ -193,6 +228,7 @@ Template.classpage.helpers({
     }
   }
 });
+
 
 Template.classpage.events({
 
@@ -260,7 +296,6 @@ Template.updatePI.events({
     var phoneno = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
     if((contactNo.match(phoneno))
           {
-
         };)
         else
           {
@@ -485,7 +520,6 @@ Template.findCourse.events({
       Session.set("searchValue", $("#inputSearch").val());
     }
   });
-
   Template.findCourse.helpers({
     messages: function() {
       Meteor.subscribe("search", Session.get("searchValue"));
@@ -497,3 +531,4 @@ Template.findCourse.events({
     }
   });
 */
+
