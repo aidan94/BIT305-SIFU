@@ -41,7 +41,7 @@ Meteor.publish('theRequest',function(){
 });
 
 Meteor.methods({
-  'insertClassData':function(titleVar,imgSource,priceVar,audienceVar,daysVal,timeArray,skillVar, locationVar, descVar){
+  'insertClassData':function(titleVar,imgSource,priceVar,audienceVar,skillVar, locationVar, descVar){
     var currentUserId=this.userId;
     var user = Meteor.user().username;
     postList.insert({
@@ -49,8 +49,7 @@ Meteor.methods({
           fileSource:imgSource,
           price:priceVar,
           audience:audienceVar,
-          days:daysVal,
-          time:timeArray,
+
           skill:skillVar,
           location:locationVar,
           description:descVar,
@@ -62,7 +61,7 @@ Meteor.methods({
         });
       },
 
-  'insertRequestData':function(titleVarR,imgSourceR,priceVarR,audienceVarR,daysValR,timeArrayR,skillVarR,locationVarR, descVarR){
+  'insertRequestData':function(titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR){
     var currentUserId=this.userId;
     var user = Meteor.user().username;
     requestList.insert({
@@ -70,8 +69,7 @@ Meteor.methods({
           fileSource:imgSourceR,
           price:priceVarR,
           audience:audienceVarR,
-          day:daysValR,
-          time:timeArrayR,
+
           skill:skillVarR,
           location:locationVarR,
           description:descVarR,
@@ -81,5 +79,14 @@ Meteor.methods({
           owner: user,
           type: "request"
         });
+      },
+
+      'removeClass': function(selectedClass){
+        postList.remove(selectedClass);
+      },
+
+      'removeRequest': function(selectedRequest){
+        requestList.remove(selectedRequest);
       }
     });
+
