@@ -201,6 +201,7 @@ Template.editForm.helpers({
 Template.setMap.onCreated(function() {
   var self= this;
   var infowindow;
+
     // We can use the `ready` callback to interact with the map API once the map is ready.
     GoogleMaps.ready('exampleMap', function(map) {
       var markers = [];
@@ -208,8 +209,10 @@ Template.setMap.onCreated(function() {
         var latitude=event.latLng.lat();
         var longitude=event.latLng.lng();
         Markers.insert({ lat: event.latLng.lat(), lng: event.latLng.lng() });
-
+        console.log("latitude:"+latitude)
        });
+
+
 
 
 
@@ -233,14 +236,19 @@ Template.setMap.onCreated(function() {
           });
           // Store this marker instance within the markers object.
           markers[document._id] = marker;
+
+          google.maps.event.addListener(marker,'dblclick', function(event){
+            console.log("hello");
+
+            Markers.remove(marker.id);
+
+           });
+
       },
       changed: function(newDocument, oldDocument) {
           markers[newDocument._id].setPosition({ lat: newDocument.lat, lng: newDocument.lng });
       },
       removed: function(oldDocument) {
-        google.maps.event.addListener(marker, 'dbclick', function(event){
-
-          Markers.remove(_id=marker.id);
 
           // Remove the marker from the map
           markers[oldDocument._id].setMap(null);
@@ -250,11 +258,15 @@ Template.setMap.onCreated(function() {
           // Remove the reference to this marker instance
           delete markers[oldDocument._id];
 
-         });
+
 
       }
 
+
+
       });
+
+
       var input = document.getElementById('pac-input');
 
               var autocomplete = new google.maps.places.Autocomplete(input);
@@ -309,6 +321,8 @@ Template.setMap.onCreated(function() {
 Template.setMap.events({
     'click #deleteMarker':function(){
       event.preventDefault();
+
+      Markers.remove({});
 
     }
 });
