@@ -561,4 +561,21 @@ ul#classListStyle{
   height:5%;
 }
 
+/*NEW*/
+.map-container {
+  width: 800px;
+  max-width: 100%;
+  height: 500px;
+}
 
+#infowindow-content .title {
+       font-weight: bold;
+     }
+
+     #infowindow-content {
+       display: none;
+     }
+
+.map-container #infowindow-content {
+       display: inline;
+     }
