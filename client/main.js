@@ -6,7 +6,7 @@ import './main.html';
 Router.route('/profile');
 Router.route('/main');
 Router.route('/classpage');
-	Router.route('/resultpage');
+Router.route('/resultpage');
 /*
 Router.configure({
     layoutTemplate: 'main'
@@ -20,6 +20,8 @@ Meteor.subscribe("users");
 Resume = new Mongo.Collection('Resume');
 postList = new Mongo.Collection('postList');
 requestList=new Mongo.Collection('requestList');
+Markers = new Mongo.Collection('markers');
+
 
 Accounts.ui.config({
   passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
@@ -28,7 +30,7 @@ Accounts.ui.config({
 
 //Aidan's Part
 Template.newClass.events({
-  'submit form':function(event){
+  'click #submitPostClass':function(event){
   event.preventDefault();
     var titleVar = event.target.title.value;
     var imgSource = event.target.imageSource.value;
@@ -38,33 +40,42 @@ Template.newClass.events({
     //var dayVar = event.target.day.value;
 
     //Insert multiple select dropdown into array
-    //var dayVar = document.getElementById("selDay");
-
+    var dayVar = document.getElementById("selDay");
+    var daysVal = new Array();
+      for (i = 0; i < dayVar.length; i++) {
+          if (dayVar .options[i].selected) daysVal.push(dayVar.options[i].value);
+      }
 
     //var timeVar = event.target.time.value;
 
     //Insert multiple select dropdown into array
-    //var timeVar = document.getElementById("selTime");
-
+    var timeVar = document.getElementById("selTime");
+    var timeArray = new Array();
+      for (i = 0; i < timeVar.length; i++) {
+          if (timeVar .options[i].selected) timeArray.push(timeVar.options[i].value);
+      }
     var skillVar = event.target.selectSkill.value;
     var locationVar = event.target.location.value
     var descVar = event.target.desc.value;
-    console.log(titleVar,imgSource,priceVar,audienceVar,skillVar,locationVar, descVar);
-    if (titleVar != "",imgSource != "",priceVar!= "",audienceVar!= "",skillVar != "",locationVar!= "", descVar!= "")
+    console.log(titleVar,imgSource,priceVar,audienceVar,daysVal,timeArray,skillVar,locationVar, descVar);
+    if (titleVar != "",imgSource != "",priceVar!= "",audienceVar!= "",daysVal!= "",timeArray!= "",skillVar != "",locationVar!= "", descVar!= "")
     {
-      Meteor.call('insertClassData', titleVar,imgSource,priceVar,audienceVar,skillVar, locationVar, descVar)
+      Meteor.call('insertClassData', titleVar,imgSource,priceVar,audienceVar,daysVal,timeArray,skillVar, locationVar, descVar)
     }
 
     document.getElementById("addForm").reset();
     $('.selectpicker').selectpicker('render');
+  }
 
-}});
+
+});
 
 Template.newClass.onRendered(function() {
   $('.selectpicker').selectpicker({
     size: 3
   });
   $('#addForm').validator();
+
 });
 
 Template.post.helpers({
@@ -90,7 +101,9 @@ Template.post.helpers({
   {
     return "selected"
   }
-},
+  },
+
+
 });
 
 Template.newRequest.onRendered(function() {
@@ -107,32 +120,32 @@ Template.newRequest.events({
     var imgSourceR = event.target.RimageSource.value;
     var priceVarR = event.target.Rprice.value;
     var audienceVarR = event.target.RselectAudience.value;
-    //var dayVarR = event.target.Rday.value;
+    var dayVarR = event.target.Rday.value;
 
     //var dayVar = document.getElementById("selDay");
 
     //Insert multiple select dropdown into array
-    //var dayVarR = document.getElementById("selRDay");
-    //var daysValR = new Array();
-      //for (i = 0; i < dayVarR.length; i++) {
-          //if (dayVarR .options[i].selected) daysValR.push(dayVarR.options[i].value);
-      //}
+    var dayVarR = document.getElementById("selRDay");
+    var daysValR = new Array();
+      for (i = 0; i < dayVarR.length; i++) {
+          if (dayVarR .options[i].selected) daysValR.push(dayVarR.options[i].value);
+      }
 
     //var timeVarR = event.target.Rtime.value;
 
     //Insert multiple select dropdown into array
-    //var timeVarR = document.getElementById("selRTime");
-    //var timeArrayR = new Array();
-      //for (i = 0; i < timeVarR.length; i++) {
-          //if (timeVarR .options[i].selected) timeArrayR.push(timeVarR.options[i].value);
-      //}
+    var timeVarR = document.getElementById("selRTime");
+    var timeArrayR = new Array();
+      for (i = 0; i < timeVarR.length; i++) {
+          if (timeVarR .options[i].selected) timeArrayR.push(timeVarR.options[i].value);
+      }
     var skillVarR = event.target.RselectSkill.value;
     var locationVarR = event.target.Rlocation.value
     var descVarR = event.target.Rdesc.value;
-    console.log(titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR);
-    if (titleVarR != "",imgSourceR != "",priceVarR!= "",audienceVarR!= "",skillVarR != "",locationVarR!= "", descVarR!= "")
+    console.log(titleVarR,imgSourceR,priceVarR,audienceVarR,daysValR,timeArrayR,skillVarR,locationVarR, descVarR);
+    if (titleVarR != "",imgSourceR != "",priceVarR!= "",audienceVarR!= "",daysValR!= "",timeArrayR!= "",skillVarR != "",locationVarR!= "", descVarR!= "")
     {
-    Meteor.call('insertRequestData', titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR)
+    Meteor.call('insertRequestData', titleVarR,imgSourceR,priceVarR,audienceVarR,daysValR,timeArrayR,skillVarR,locationVarR, descVarR)
   }
     document.getElementById("addRForm").reset();
     $('.selectpicker').selectpicker('render');
@@ -167,55 +180,185 @@ Template.request.helpers({
 
 
 //Roushan's Part
-/*NEWW*/
+/*NEWW 10 MArch*/
 Template.post.events({
-  'click .postClasses': function(){
+  'click button#editClassBtn': function(){
     var classID = this._id;
-    Session.set('selectedClass', classID);
-    var selectedClass = Session.get('selectedClass');
-    console.log(selectedClass);
-  },
-
-  'click #removeClass': function(){
-    var classId = this._id;
-    Session.set('selectedRemoveClass', classId);
-    var selectedRemoveClass = Session.get('selectedRemoveClass');
-    console.log(selectedRemoveClass);
-    var answer = confirm("Do you want to delete that class?")
-    if (answer == true){
-      Meteor.call('removeClass', selectedRemoveClass);
-    }
-    else{
-      console.log("cancel");
-    }
+    Session.set('selectedEdClass', classID);
+    var selectedEdClass = Session.get('selectedEdClass');
+    console.log(selectedEdClass);
   }
+});
+
+Template.editForm.helpers({
+  selEdClass: function(){
+    return postList.findOne({"_id": Session.get('selectedEdClass')});
+  },
 
 });
 
 
+Template.setMap.onCreated(function() {
+  var self= this;
+  var infowindow;
+    // We can use the `ready` callback to interact with the map API once the map is ready.
+    GoogleMaps.ready('exampleMap', function(map) {
+      var markers = [];
+      google.maps.event.addListener(map.instance, 'click', function(event){
+        var latitude=event.latLng.lat();
+        var longitude=event.latLng.lng();
+        Markers.insert({ lat: event.latLng.lat(), lng: event.latLng.lng() });
 
-Template.request.events({
-  'click .requestClasses': function(){
-    var requestID = this._id;
-    Session.set('selectedRequest', requestID);
-    var selectedRequest = Session.get('selectedRequest');
-    console.log(selectedRequest);
+       });
+
+
+
+      Markers.find().observe({
+      added: function(document) {
+        // Create a marker for this document
+          var marker = new google.maps.Marker({
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          position: new google.maps.LatLng(document.lat, document.lng),
+          map: map.instance,
+          // We store the document _id on the marker in order
+          // to update the document within the 'dragend' event below.
+          id: document._id
+          });
+
+          // This listener lets us drag markers on the map and update their corresponding document.
+          google.maps.event.addListener(marker, 'dragend', function(event) {
+
+          Markers.update(marker.id, { $set: { lat: event.latLng.lat(), lng: event.latLng.lng() }});
+          });
+          // Store this marker instance within the markers object.
+          markers[document._id] = marker;
+      },
+      changed: function(newDocument, oldDocument) {
+          markers[newDocument._id].setPosition({ lat: newDocument.lat, lng: newDocument.lng });
+      },
+      removed: function(oldDocument) {
+        google.maps.event.addListener(marker, 'dbclick', function(event){
+
+          Markers.remove(_id=marker.id);
+
+          // Remove the marker from the map
+          markers[oldDocument._id].setMap(null);
+          // Clear the event listener
+          google.maps.event.clearInstanceListeners(
+          markers[oldDocument._id]);
+          // Remove the reference to this marker instance
+          delete markers[oldDocument._id];
+
+         });
+
+      }
+
+      });
+      var input = document.getElementById('pac-input');
+
+              var autocomplete = new google.maps.places.Autocomplete(input);
+              autocomplete.bindTo('bounds', map);
+
+              map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+              var infowindow = new google.maps.InfoWindow();
+              var infowindowContent = document.getElementById('infowindow-content');
+              infowindow.setContent(infowindowContent);
+              var marker = new google.maps.Marker({
+                map: map
+              });
+              marker.addListener('click', function() {
+                infowindow.open(map, marker);
+              });
+
+              autocomplete.addListener('place_changed', function() {
+                infowindow.close();
+                var place = autocomplete.getPlace();
+                if (!place.geometry) {
+                  return;
+                }
+
+                if (place.geometry.viewport) {
+                  map.fitBounds(place.geometry.viewport);
+                } else {
+                  map.setCenter(place.geometry.location);
+                  map.setZoom(17);
+                }
+
+                // Set the position of the marker using the place ID and location.
+                marker.setPlace({
+                  placeId: place.place_id,
+                  location: place.geometry.location
+                });
+                marker.setVisible(true);
+
+                infowindowContent.children['place-name'].textContent = place.name;
+                infowindowContent.children['place-id'].textContent = place.place_id;
+                infowindowContent.children['place-address'].textContent =
+                    place.formatted_address;
+                infowindow.open(map, marker);
+              });
+
+
+
+
+    });
+});
+
+Template.setMap.events({
+    'click #deleteMarker':function(){
+      event.preventDefault();
+
+    }
+});
+
+Template.setMap.onRendered(function() {
+  GoogleMaps.load({
+    key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
+    libraries: 'places'
+  });
+});
+
+Template.setMap.helpers({
+  geolocationError:function(){
+    var error = Geolocation.error();
+    return error && error.message;
   },
+  exampleMapOptions: function() {
+    var latLng=Geolocation.latLng();
+         // Make sure the maps API has loaded
+     if (GoogleMaps.loaded() && latLng) {
+       // Map initialization options
+       return {
+         //center: new google.maps.LatLng(4.210484, 101.975766),
+         center: new google.maps.LatLng(latLng.lat, latLng.lng),
+         zoom: 15,
 
-  'click #removeRequest': function(){
-    var classId = this._id;
-    Session.set('selectedRemoveRequest', classId);
-    var selectedRemoveRequest = Session.get('selectedRemoveRequest');
-    console.log(selectedRemoveRequest);
-    var answer = confirm("Do you want to delete that request?")
-    if (answer == true){
-      Meteor.call('removeRequest', selectedRemoveRequest);
-    }
-    else{
-      console.log("cancel");
-    }
+       };
+     }
+   }
+});
+
+
+Template.topnavbar2.events({
+  'submit #search':function(event){
+    event.preventDefault();
+    var talentTitle = $('[name="searchCourse"]').val();
+    Session.set('query',talentTitle)
+    Router.go('/resultpage');
+
   }
+});
 
+/*END OF NEW*/
+Template.request.events({
+  'click #moreInfo': function(){
+    var classID = this._id;
+    Session.set('selectedRequest', classID);
+    var selectedPlayer = Session.get('selectedRequest');
+    console.log(selectedPlayer);
+  }
 });
 
 Template.classpage.helpers({
@@ -228,7 +371,6 @@ Template.classpage.helpers({
     }
   }
 });
-
 
 Template.classpage.events({
 
@@ -267,7 +409,7 @@ Template.resultpage.helpers({
   }
 
 });
-/*END OF NEW*/
+
 
 Template.updatePI.helpers({
   currentUpload: function () {
@@ -291,18 +433,6 @@ Template.updatePI.events({
       "profile.location":location
     }
     });
-
-    /*
-    var phoneno = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
-    if((contactNo.match(phoneno))
-          {
-        };)
-        else
-          {
-          alert("message");
-          return false;
-          }
-          */
 }});
 
 Template.updatePI.onRendered(function(){
@@ -531,4 +661,3 @@ Template.findCourse.events({
     }
   });
 */
-
