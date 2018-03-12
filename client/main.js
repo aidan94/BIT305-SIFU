@@ -398,6 +398,15 @@ Template.topnavbar2.events({
   }
 });
 
+Template.resultpage.events({
+  'click #moreInfo': function(){
+    var classID = this._id;
+    Session.set('selectedClass', classID);
+    var selectedClass = Session.get('selectedClass');
+    console.log(selectedClass);
+  },
+});
+
 /*END OF NEW*/
 Template.request.events({
   'click #moreInfo': function(){
@@ -480,6 +489,7 @@ Template.findCourse.events({
   }
 });
 
+
 Template.resultpage.helpers({
   searchResult:function(){
     var query=Session.get('query');
@@ -500,7 +510,15 @@ Template.resultpage.helpers({
   oriQuery:function(){
     var query=Session.get('query');
     return query;
+  },
+  'selectedClass':function(){
+  var classID = this._id;
+  var selectedPost = Session.get('selectedClass');
+  if (classID == selectedPost)
+  {
+    return "selected"
   }
+},
 
 });
 
@@ -755,4 +773,3 @@ Template.findCourse.events({
     }
   });
 */
-
