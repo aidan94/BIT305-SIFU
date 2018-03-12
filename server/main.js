@@ -87,6 +87,35 @@ Meteor.methods({
 
       'removeRequest': function(selectedRequest){
         requestList.remove(selectedRequest);
+      },
+
+      'editClassData':function(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,skillVarEdit,locationVarEdit, descVarEdit){
+        postList.update(selectedEdClass, {
+          $set:{
+            title:titleVarEdit,
+            fileSource:imgSourceEdit,
+            price:priceVarEdit,
+            audience:audienceVarEdit,
+            skill:skillVarEdit,
+            location:locationVarEdit,
+            description:descVarEdit
+          },
+        });
+      },
+
+      'editRequestData':function(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,skillVarREdit,locationVarREdit, descVarREdit){
+        requestList.update(selectedEdRequest, {
+          $set:{
+            title:titleVarREdit,
+            fileSource:imgSourceREdit,
+            price:priceVarREdit,
+            audience:audienceVarREdit,
+            skill:skillVarREdit,
+            location:locationVarREdit,
+            description:descVarREdit
+          },
+        });
       }
     });
+
 
