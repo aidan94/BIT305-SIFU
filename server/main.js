@@ -3,6 +3,7 @@ import { Meteor } from 'meteor/meteor';
 Members=new Mongo.Collection('Members');
 postList=new Mongo.Collection('postList');
 requestList=new Mongo.Collection('requestList');
+Markers = new Mongo.Collection('markers');
 
 
 Meteor.publish("users", function() {
