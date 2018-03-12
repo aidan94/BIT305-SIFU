@@ -30,7 +30,7 @@ Accounts.ui.config({
 
 //Aidan's Part
 Template.newClass.events({
-  'click #submitPostClass':function(event){
+  'submit form':function(event){
   event.preventDefault();
     var titleVar = event.target.title.value;
     var imgSource = event.target.imageSource.value;
@@ -40,42 +40,33 @@ Template.newClass.events({
     //var dayVar = event.target.day.value;
 
     //Insert multiple select dropdown into array
-    var dayVar = document.getElementById("selDay");
-    var daysVal = new Array();
-      for (i = 0; i < dayVar.length; i++) {
-          if (dayVar .options[i].selected) daysVal.push(dayVar.options[i].value);
-      }
+    //var dayVar = document.getElementById("selDay");
+
 
     //var timeVar = event.target.time.value;
 
     //Insert multiple select dropdown into array
-    var timeVar = document.getElementById("selTime");
-    var timeArray = new Array();
-      for (i = 0; i < timeVar.length; i++) {
-          if (timeVar .options[i].selected) timeArray.push(timeVar.options[i].value);
-      }
+    //var timeVar = document.getElementById("selTime");
+
     var skillVar = event.target.selectSkill.value;
     var locationVar = event.target.location.value
     var descVar = event.target.desc.value;
-    console.log(titleVar,imgSource,priceVar,audienceVar,daysVal,timeArray,skillVar,locationVar, descVar);
-    if (titleVar != "",imgSource != "",priceVar!= "",audienceVar!= "",daysVal!= "",timeArray!= "",skillVar != "",locationVar!= "", descVar!= "")
+    console.log(titleVar,imgSource,priceVar,audienceVar,skillVar,locationVar, descVar);
+    if (titleVar != "",imgSource != "",priceVar!= "",audienceVar!= "",skillVar != "",locationVar!= "", descVar!= "")
     {
-      Meteor.call('insertClassData', titleVar,imgSource,priceVar,audienceVar,daysVal,timeArray,skillVar, locationVar, descVar)
+      Meteor.call('insertClassData', titleVar,imgSource,priceVar,audienceVar,skillVar, locationVar, descVar)
     }
 
     document.getElementById("addForm").reset();
     $('.selectpicker').selectpicker('render');
-  }
 
-
-});
+}});
 
 Template.newClass.onRendered(function() {
   $('.selectpicker').selectpicker({
     size: 3
   });
   $('#addForm').validator();
-
 });
 
 Template.post.helpers({
@@ -101,9 +92,7 @@ Template.post.helpers({
   {
     return "selected"
   }
-  },
-
-
+},
 });
 
 Template.newRequest.onRendered(function() {
@@ -120,32 +109,32 @@ Template.newRequest.events({
     var imgSourceR = event.target.RimageSource.value;
     var priceVarR = event.target.Rprice.value;
     var audienceVarR = event.target.RselectAudience.value;
-    var dayVarR = event.target.Rday.value;
+    //var dayVarR = event.target.Rday.value;
 
     //var dayVar = document.getElementById("selDay");
 
     //Insert multiple select dropdown into array
-    var dayVarR = document.getElementById("selRDay");
-    var daysValR = new Array();
-      for (i = 0; i < dayVarR.length; i++) {
-          if (dayVarR .options[i].selected) daysValR.push(dayVarR.options[i].value);
-      }
+    //var dayVarR = document.getElementById("selRDay");
+    //var daysValR = new Array();
+      //for (i = 0; i < dayVarR.length; i++) {
+          //if (dayVarR .options[i].selected) daysValR.push(dayVarR.options[i].value);
+      //}
 
     //var timeVarR = event.target.Rtime.value;
 
     //Insert multiple select dropdown into array
-    var timeVarR = document.getElementById("selRTime");
-    var timeArrayR = new Array();
-      for (i = 0; i < timeVarR.length; i++) {
-          if (timeVarR .options[i].selected) timeArrayR.push(timeVarR.options[i].value);
-      }
+    //var timeVarR = document.getElementById("selRTime");
+    //var timeArrayR = new Array();
+      //for (i = 0; i < timeVarR.length; i++) {
+          //if (timeVarR .options[i].selected) timeArrayR.push(timeVarR.options[i].value);
+      //}
     var skillVarR = event.target.RselectSkill.value;
     var locationVarR = event.target.Rlocation.value
     var descVarR = event.target.Rdesc.value;
-    console.log(titleVarR,imgSourceR,priceVarR,audienceVarR,daysValR,timeArrayR,skillVarR,locationVarR, descVarR);
-    if (titleVarR != "",imgSourceR != "",priceVarR!= "",audienceVarR!= "",daysValR!= "",timeArrayR!= "",skillVarR != "",locationVarR!= "", descVarR!= "")
+    console.log(titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR);
+    if (titleVarR != "",imgSourceR != "",priceVarR!= "",audienceVarR!= "",skillVarR != "",locationVarR!= "", descVarR!= "")
     {
-    Meteor.call('insertRequestData', titleVarR,imgSourceR,priceVarR,audienceVarR,daysValR,timeArrayR,skillVarR,locationVarR, descVarR)
+    Meteor.call('insertRequestData', titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR)
   }
     document.getElementById("addRForm").reset();
     $('.selectpicker').selectpicker('render');
@@ -179,16 +168,60 @@ Template.request.helpers({
 });
 
 
+
+
 //Roushan's Part
-/*NEWW 10 MArch*/
+/*NEWW 10 March*/
 Template.post.events({
-  'click button#editClassBtn': function(){
+  'click .postClasses': function(){
     var classID = this._id;
-    Session.set('selectedEdClass', classID);
-    var selectedEdClass = Session.get('selectedEdClass');
-    console.log(selectedEdClass);
+    Session.set('selectedClass', classID);
+    var selectedClass = Session.get('selectedClass');
+    console.log(selectedClass);
+  },
+
+
+	'click button#editClassBtn': function(){
+		var classID = this._id;
+		Session.set('selectedEdClass', classID);
+		var selectedEdClass = Session.get('selectedEdClass');
+		console.log(selectedEdClass);
+	},
+
+  'click #removeClassBtn': function(){
+    var classId = this._id;
+    Session.set('selectedRemoveClass', classId);
+    var selectedRemoveClass = Session.get('selectedRemoveClass');
+    console.log(selectedRemoveClass);
+    var answer = confirm("Do you want to delete that class?")
+    if (answer == true){
+      Meteor.call('removeClass', selectedRemoveClass);
+    }
+    else{
+      console.log("cancel");
+    }
   }
+
 });
+
+Template.editForm.events({
+  'submit form':function(){
+    event.preventDefault();
+		var titleVarEdit = event.target.title.value;
+    var imgSourceEdit = event.target.imageSource.value;
+    var priceVarEdit = event.target.price.value;
+    var audienceVarEdit = event.target.selectAudience.value;
+    var skillVarEdit = event.target.selectSkill.value;
+    var locationVarEdit = event.target.location.value
+    var descVarEdit = event.target.desc.value;
+		var selectedEdClass = Session.get('selectedEdClass');
+    console.log(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,skillVarEdit,locationVarEdit, descVarEdit);
+    if (selectedEdClass !="", titleVarEdit != "",imgSourceEdit != "",priceVarEdit!= "",audienceVarEdit!= "",skillVarEdit != "",locationVarEdit!= "", descVarEdit!= "")
+    {
+      Meteor.call('editClassData', selectedEdClass,titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,skillVarEdit,locationVarEdit, descVarEdit)
+    }
+
+}});
 
 Template.editForm.helpers({
   selEdClass: function(){
@@ -372,8 +405,55 @@ Template.request.events({
     Session.set('selectedRequest', classID);
     var selectedPlayer = Session.get('selectedRequest');
     console.log(selectedPlayer);
-  }
+  },
+
+	'click #removeRequestBtn': function(){
+	 var classId = this._id;
+	 Session.set('selectedRemoveRequest', classId);
+	 var selectedRemoveRequest = Session.get('selectedRemoveRequest');
+	 console.log(selectedRemoveRequest);
+	 var answer = confirm("Do you want to delete that request?")
+	 if (answer == true){
+		 Meteor.call('removeRequest', selectedRemoveRequest);
+	 }
+	 else{
+		 console.log("cancel");
+	 }
+ },
+
+ 'click button#editRequestBtn': function(){
+   var classID = this._id;
+   Session.set('selectedEdRequest', classID);
+   var selectedEdRequest = Session.get('selectedEdRequest');
+   console.log(selectedEdRequest);
+ }
 });
+
+Template.editRequestForm.helpers({
+  selEdRequest: function(){
+    return requestList.findOne({"_id": Session.get('selectedEdRequest')});
+  },
+
+});
+
+Template.editRequestForm.events({
+  'submit form':function(){
+    event.preventDefault();
+		var titleVarREdit = event.target.title.value;
+    var imgSourceREdit = event.target.imageSource.value;
+    var priceVarREdit = event.target.price.value;
+    var audienceVarREdit = event.target.selectAudience.value;
+    var skillVarREdit = event.target.selectSkill.value;
+    var locationVarREdit = event.target.location.value
+    var descVarREdit = event.target.desc.value;
+		var selectedEdRequest = Session.get('selectedEdRequest');
+    console.log(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,skillVarREdit,locationVarREdit, descVarREdit);
+    if (selectedEdRequest !="", titleVarREdit != "",imgSourceREdit != "",priceVarREdit!= "",audienceVarREdit!= "",skillVarREdit != "",locationVarREdit!= "", descVarREdit!= "")
+    {
+      Meteor.call('editRequestData', selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,skillVarREdit,locationVarREdit, descVarREdit)
+    }
+
+}});
 
 Template.classpage.helpers({
   class: function(){
@@ -675,3 +755,4 @@ Template.findCourse.events({
     }
   });
 */
+
