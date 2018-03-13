@@ -30,7 +30,7 @@ Accounts.ui.config({
 
 //Aidan's Part
 Template.newClass.events({
-  'submit form':function(event){
+  'click #submitPostClass':function(event){
   event.preventDefault();
     var titleVar = event.target.title.value;
     var imgSource = event.target.imageSource.value;
@@ -233,19 +233,77 @@ Template.editForm.helpers({
 
 Template.setMap.onCreated(function() {
   var self= this;
-  var infowindow;
 
     // We can use the `ready` callback to interact with the map API once the map is ready.
     GoogleMaps.ready('exampleMap', function(map) {
       var markers = [];
-      google.maps.event.addListener(map.instance, 'click', function(event){
-        var latitude=event.latLng.lat();
-        var longitude=event.latLng.lng();
-        Markers.insert({ lat: event.latLng.lat(), lng: event.latLng.lng() });
-        console.log("latitude:"+latitude)
-       });
+
+       var input = document.getElementById('pac-input');
+       var searchBox = new google.maps.places.SearchBox(input);
+       map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+
+      google.maps.event.addListener(map.instance,'bounds_change', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+      searchBox.addListener('places_changed', function() {
+        var places = searchBox.getPlaces();
+
+        if (places.length == 0) {
+            return ;
+          }
+
+          var bounds = new google.maps.LatLngBounds();
+          places.forEach(function(place) {
+            if (!place.geometry) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+
+            // Create a marker for each place.
+          markers.push(new google.maps.Marker({
+          map: map.instance,
+          title: place.name,
+          position: place.geometry.location,
+          id:document.id,
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+            }));
+
+            Markers.insert({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng(),name:place.name, address:place.formatted_address });
 
 
+            if (place.geometry.viewport) {
+              // Only geocodes have viewport.
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+          google.maps.event.addListenerOnce(map.instance, 'idle', function() {
+              map.fitBounds(markerBounds);
+        });
+        });
+
+        google.maps.event.addListener(map.instance, 'click', function(event){
+          var latitude=event.latLng.lat();
+          var longitude=event.latLng.lng();
+          var geocoder = new google.maps.Geocoder();
+
+          geocoder.geocode({
+            'latLng': event.latLng
+          }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+
+                var address=results[0].formatted_address;
+                console.log(address);
+                var placeName=results[0].name;
+                Markers.insert({ lat: event.latLng.lat(), lng: event.latLng.lng(), name:name, address: address});
+
+       
+     }
+   });
+         });
 
 
 
@@ -265,17 +323,46 @@ Template.setMap.onCreated(function() {
           // This listener lets us drag markers on the map and update their corresponding document.
           google.maps.event.addListener(marker, 'dragend', function(event) {
 
-          Markers.update(marker.id, { $set: { lat: event.latLng.lat(), lng: event.latLng.lng() }});
+          Markers.update(marker.id, { $set: { lat: event.latLng.lat(), lng: event.latLng.lng(), name:place.name, address:place.formatted_address}});
           });
           // Store this marker instance within the markers object.
           markers[document._id] = marker;
 
           google.maps.event.addListener(marker,'dblclick', function(event){
             console.log("hello");
-
             Markers.remove(marker.id);
-
            });
+
+           //testing
+
+
+           var contentString='<div id="content">'+
+                   '<div id="siteNotice">'+
+                   '</div>'+
+                   '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
+                   '<div id="bodyContent">'+
+                   '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
+                   'sandstone rock formation in the southern part of the '+
+                   'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
+                   'south west of the nearest large town, Alice Springs; 450&#160;km '+
+                   '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
+                   'features of the Uluru - Kata Tjuta National Park. Uluru is '+
+                   'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
+                   'Aboriginal people of the area. It has many springs, waterholes, '+
+                   'rock caves and ancient paintings. Uluru is listed as a World '+
+                   'Heritage Site.</p>'+
+                   '</div>'+
+                   '</div>';
+
+           var infowindow = new google.maps.InfoWindow({
+             content:contentString
+           });
+
+           marker.addListener('click', function() {
+               infowindow.open(map.instance, marker);
+           });
+
+
 
       },
       changed: function(newDocument, oldDocument) {
@@ -290,60 +377,8 @@ Template.setMap.onCreated(function() {
           markers[oldDocument._id]);
           // Remove the reference to this marker instance
           delete markers[oldDocument._id];
-
-
-
       }
-
-
-
-      });
-
-
-      var input = document.getElementById('pac-input');
-
-              var autocomplete = new google.maps.places.Autocomplete(input);
-              autocomplete.bindTo('bounds', map);
-
-              map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-              var infowindow = new google.maps.InfoWindow();
-              var infowindowContent = document.getElementById('infowindow-content');
-              infowindow.setContent(infowindowContent);
-              var marker = new google.maps.Marker({
-                map: map
-              });
-              marker.addListener('click', function() {
-                infowindow.open(map, marker);
-              });
-
-              autocomplete.addListener('place_changed', function() {
-                infowindow.close();
-                var place = autocomplete.getPlace();
-                if (!place.geometry) {
-                  return;
-                }
-
-                if (place.geometry.viewport) {
-                  map.fitBounds(place.geometry.viewport);
-                } else {
-                  map.setCenter(place.geometry.location);
-                  map.setZoom(17);
-                }
-
-                // Set the position of the marker using the place ID and location.
-                marker.setPlace({
-                  placeId: place.place_id,
-                  location: place.geometry.location
-                });
-                marker.setVisible(true);
-
-                infowindowContent.children['place-name'].textContent = place.name;
-                infowindowContent.children['place-id'].textContent = place.place_id;
-                infowindowContent.children['place-address'].textContent =
-                    place.formatted_address;
-                infowindow.open(map, marker);
-              });
+    });
 
 
 
