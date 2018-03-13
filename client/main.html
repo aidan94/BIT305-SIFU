@@ -568,8 +568,6 @@
 </template>
 
 <template name="newClass">
-
-
         <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style="margin-top:2%; margin-bottom: 3%">
           <a data-toggle = "modal" href = "#addClass" class="thumbnail" id="image" width ="" style = "border: 1px solid #ced4da;" >
             <div class="img.center" style="margin:auto; margin-bottom:10%;">
@@ -588,11 +586,11 @@
 
 
           <!-- Modal -->
-          <div class="modal fade" id="addClass" role="dialog">
+          <div class="modal fade" id="addClass" role="dialog" >
           <div class="modal-dialog modal-lg">
 
             <!-- Modal content-->
-            <div class="modal-content">
+            <div class="modal-content" style="z-index:2">
               <button type="button" class="close" data-dismiss="modal">&times;</button>
             <div class="modal-body">
               <!--Content-->
@@ -1510,8 +1508,8 @@
       <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
         <input type="text" name = "location" class="form-control" id="inputLocation" placeholder="Enter a location" required>
 
-        <input id="pac-input" class="controls" type="text" placeholder="Search Box">
-        <button id="deleteMarker" value="">Delete Marker</button>
+        <input id="pac-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
+
         <div class="map-container">
           {{#unless geolocationError}}
             {{> googleMap name="exampleMap" options=exampleMapOptions}}
@@ -1519,10 +1517,12 @@
             Geolocation failed: {{geolocationError}}
           {{/unless}}
         </div>
+
+
+
+
         <div id="infowindow-content">
-          <img src="" width="16" height="16" id="place-icon">
-          <span id="place-name"  class="title"></span><br>
-          <span id="place-address"></span>
+
         </div>
 
       </div>
