@@ -238,6 +238,52 @@ Template.setMap.onCreated(function() {
     GoogleMaps.ready('exampleMap', function(map) {
       var markers = [];
 
+      var geocoder = new google.maps.Geocoder();
+      var service = new google.maps.places.PlacesService(map.instance);
+
+
+      google.maps.event.addListener(map.instance, 'click', function(event){
+
+        var latitude=event.latLng.lat();
+        var longitude=event.latLng.lng();
+        var latLng = {lat: latitude, lng: longitude};
+        geocoder.geocode({'location': latLng}, function(results, status) {
+          if (status==='OK') {
+            if( results[0]){
+              var address=results[0].formatted_address;
+              var placeID=results[0].place_id;
+
+            service.getDetails({placeId: placeID}, function(result, status) {
+            console.log(result);
+            if (status === google.maps.places.PlacesServiceStatus.OK) {
+              //if place already marked then cannot mark again
+              if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
+                console.log('Place already exists');
+              }else{
+
+              //  Markers.update({_id: this.id}, { $push:
+              //  {lat:latitude, lng: longitude,  placeID: placeID, name:result.name, address: address}},
+              //Markers.push({_id:this.id}, {$push:{ lat: event.latLng.lat(), lng: event.latLng.lng(),  placeID: placeID, name:result.name, address: address}});
+
+               Markers.insert( {lat: event.latLng.lat(), lng: event.latLng.lng(),  placeID: placeID, name:result.name, address: address});
+              }
+              }
+          });
+            }
+
+          } else {
+            console.log('Cannot determine address at this location.');
+          }
+
+        });
+
+
+
+
+
+      });
+
+
        var input = document.getElementById('pac-input');
        var searchBox = new google.maps.places.SearchBox(input);
        map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -265,12 +311,12 @@ Template.setMap.onCreated(function() {
           map: map.instance,
           title: place.name,
           position: place.geometry.location,
-          id:document.id,
           draggable: true,
           animation: google.maps.Animation.DROP,
             }));
 
             Markers.insert({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng(),name:place.name, address:place.formatted_address });
+
 
 
             if (place.geometry.viewport) {
@@ -285,25 +331,7 @@ Template.setMap.onCreated(function() {
         });
         });
 
-        google.maps.event.addListener(map.instance, 'click', function(event){
-          var latitude=event.latLng.lat();
-          var longitude=event.latLng.lng();
-          var geocoder = new google.maps.Geocoder();
 
-          geocoder.geocode({
-            'latLng': event.latLng
-          }, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-
-                var address=results[0].formatted_address;
-                console.log(address);
-                var placeName=results[0].name;
-                Markers.insert({ lat: event.latLng.lat(), lng: event.latLng.lng(), name:name, address: address});
-
-       
-     }
-   });
-         });
 
 
 
@@ -319,6 +347,8 @@ Template.setMap.onCreated(function() {
           // to update the document within the 'dragend' event below.
           id: document._id
           });
+          map.instance.setZoom(17);
+          map.instance.panTo(marker.position);
 
           // This listener lets us drag markers on the map and update their corresponding document.
           google.maps.event.addListener(marker, 'dragend', function(event) {
@@ -387,12 +417,7 @@ Template.setMap.onCreated(function() {
 });
 
 Template.setMap.events({
-    'click #deleteMarker':function(){
-      event.preventDefault();
 
-      Markers.remove({});
-
-    }
 });
 
 Template.setMap.onRendered(function() {
@@ -413,13 +438,15 @@ Template.setMap.helpers({
      if (GoogleMaps.loaded() && latLng) {
        // Map initialization options
        return {
-         //center: new google.maps.LatLng(4.210484, 101.975766),
          center: new google.maps.LatLng(latLng.lat, latLng.lng),
          zoom: 15,
 
        };
      }
-   }
+   },
+   places: function() {
+     return Markers;
+   },
 });
 
 
