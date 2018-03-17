@@ -30,7 +30,7 @@ Accounts.ui.config({
 
 //Aidan's Part
 Template.newClass.events({
-  'click #submitPostClass':function(event){
+  'submit #addForm':function(event){
   event.preventDefault();
     var titleVar = event.target.title.value;
     var imgSource = event.target.imageSource.value;
@@ -49,18 +49,29 @@ Template.newClass.events({
     //var timeVar = document.getElementById("selTime");
 
     var skillVar = event.target.selectSkill.value;
-    var locationVar = event.target.location.value
+    var locationVar = Markers.find().fetch();
     var descVar = event.target.desc.value;
     console.log(titleVar,imgSource,priceVar,audienceVar,skillVar,locationVar, descVar);
     if (titleVar != "",imgSource != "",priceVar!= "",audienceVar!= "",skillVar != "",locationVar!= "", descVar!= "")
     {
       Meteor.call('insertClassData', titleVar,imgSource,priceVar,audienceVar,skillVar, locationVar, descVar)
     }
+    $('#addClass').modal('hide');
 
     document.getElementById("addForm").reset();
     $('.selectpicker').selectpicker('render');
 
-}});
+},
+  'click #deleteAll':function(event){
+    var markerAr=Markers.find().fetch();
+    if(Markers.find().fetch()!=""){
+      markerAr.forEach(function(element){
+        Markers.remove(element._id);
+      })
+    }
+
+  }
+});
 
 Template.newClass.onRendered(function() {
   $('.selectpicker').selectpicker({
@@ -68,6 +79,8 @@ Template.newClass.onRendered(function() {
   });
   $('#addForm').validator();
 });
+
+
 
 Template.post.helpers({
   'postClasses': function () {
@@ -103,7 +116,7 @@ Template.newRequest.onRendered(function() {
 });
 
 Template.newRequest.events({
-  'submit form':function(event){
+  'submit #addRForm':function(event){
   event.preventDefault();
     var titleVarR = event.target.Rtitle.value;
     var imgSourceR = event.target.RimageSource.value;
@@ -129,13 +142,15 @@ Template.newRequest.events({
           //if (timeVarR .options[i].selected) timeArrayR.push(timeVarR.options[i].value);
       //}
     var skillVarR = event.target.RselectSkill.value;
-    var locationVarR = event.target.Rlocation.value
+    var locationVarR =Markers.find().fetch();
     var descVarR = event.target.Rdesc.value;
     console.log(titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR);
     if (titleVarR != "",imgSourceR != "",priceVarR!= "",audienceVarR!= "",skillVarR != "",locationVarR!= "", descVarR!= "")
     {
     Meteor.call('insertRequestData', titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR)
   }
+  $('#addRClass').modal('hide');
+
     document.getElementById("addRForm").reset();
     $('.selectpicker').selectpicker('render');
 
@@ -212,7 +227,7 @@ Template.editForm.events({
     var priceVarEdit = event.target.price.value;
     var audienceVarEdit = event.target.selectAudience.value;
     var skillVarEdit = event.target.selectSkill.value;
-    var locationVarEdit = event.target.location.value
+    var locationVarEdit = event.target.location.value;
     var descVarEdit = event.target.desc.value;
 		var selectedEdClass = Session.get('selectedEdClass');
     console.log(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,skillVarEdit,locationVarEdit, descVarEdit);
@@ -233,106 +248,72 @@ Template.editForm.helpers({
 
 Template.setMap.onCreated(function() {
   var self= this;
-
+  console.log('haha');
     // We can use the `ready` callback to interact with the map API once the map is ready.
     GoogleMaps.ready('exampleMap', function(map) {
       var markers = [];
-
       var geocoder = new google.maps.Geocoder();
       var service = new google.maps.places.PlacesService(map.instance);
+      var input = document.getElementById('pac-input');
+      var searchBox = new google.maps.places.SearchBox(input);
+      map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
-
-      google.maps.event.addListener(map.instance, 'click', function(event){
-
-        var latitude=event.latLng.lat();
-        var longitude=event.latLng.lng();
-        var latLng = {lat: latitude, lng: longitude};
-        geocoder.geocode({'location': latLng}, function(results, status) {
-          if (status==='OK') {
-            if( results[0]){
-              var address=results[0].formatted_address;
-              var placeID=results[0].place_id;
-
-            service.getDetails({placeId: placeID}, function(result, status) {
-            console.log(result);
-            if (status === google.maps.places.PlacesServiceStatus.OK) {
-              //if place already marked then cannot mark again
-              if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
-                console.log('Place already exists');
-              }else{
-
-              //  Markers.update({_id: this.id}, { $push:
-              //  {lat:latitude, lng: longitude,  placeID: placeID, name:result.name, address: address}},
-              //Markers.push({_id:this.id}, {$push:{ lat: event.latLng.lat(), lng: event.latLng.lng(),  placeID: placeID, name:result.name, address: address}});
-
-               Markers.insert( {lat: event.latLng.lat(), lng: event.latLng.lng(),  placeID: placeID, name:result.name, address: address});
-              }
-              }
-          });
-            }
-
-          } else {
-            console.log('Cannot determine address at this location.');
-          }
-
-        });
-
-
-
-
-
-      });
-
-
-       var input = document.getElementById('pac-input');
-       var searchBox = new google.maps.places.SearchBox(input);
-       map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
       google.maps.event.addListener(map.instance,'bounds_change', function() {
           searchBox.setBounds(map.getBounds());
         });
 
       searchBox.addListener('places_changed', function() {
-        var places = searchBox.getPlaces();
-
-        if (places.length == 0) {
-            return ;
-          }
-
-          var bounds = new google.maps.LatLngBounds();
-          places.forEach(function(place) {
-            if (!place.geometry) {
-              console.log("Returned place contains no geometry");
-              return;
+          var places = searchBox.getPlaces();
+          if (places.length == 0) {
+              return ;
             }
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function(place) {
+              if (!place.geometry) {
+                console.log("Returned place contains no geometry");
+                return;
+              }
 
-            // Create a marker for each place.
-          markers.push(new google.maps.Marker({
-          map: map.instance,
-          title: place.name,
-          position: place.geometry.location,
-          draggable: true,
-          animation: google.maps.Animation.DROP,
-            }));
+              if(Markers.find({'placeID':{$eq:place.place_id}}).count()>0){
+                console.log('Place already exists');
+              }else{
+                Markers.insert({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng(),placeID: place.place_id, name:place.name, address:place.formatted_address });
+              }
 
-            Markers.insert({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng(),name:place.name, address:place.formatted_address });
+            });
 
-
-
-            if (place.geometry.viewport) {
-              // Only geocodes have viewport.
-              bounds.union(place.geometry.viewport);
-            } else {
-              bounds.extend(place.geometry.location);
-            }
           });
-          google.maps.event.addListenerOnce(map.instance, 'idle', function() {
-              map.fitBounds(markerBounds);
-        });
-        });
 
+          google.maps.event.addListener(map.instance, 'click', function(event){
 
+              var latitude=event.latLng.lat();
+              var longitude=event.latLng.lng();
+              var latLng = {lat: latitude, lng: longitude};
 
+            geocoder.geocode({'location': latLng}, function(results, status) {
+                if (status==='OK') {
+                  if( results[0]){
+                    var address=results[0].formatted_address;
+                    var placeID=results[0].place_id;
+                  service.getDetails({placeId: placeID}, function(result, status) {
+                  console.log(result);
+                  if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    //if place already marked then cannot mark again
+                    if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
+                      console.log('Place already exists');
+                    }else{
+
+                   Markers.insert({lat: event.latLng.lat(), lng: event.latLng.lng(), placeID: placeID, name:result.name, address: address});
+                      }
+                    }
+                  });
+                  }
+                } else {
+                  console.log('Cannot determine address at this location.');
+                  }
+              });// end of geocoder
+            });//end of addListner
 
 
       Markers.find().observe({
@@ -350,50 +331,63 @@ Template.setMap.onCreated(function() {
           map.instance.setZoom(17);
           map.instance.panTo(marker.position);
 
-          // This listener lets us drag markers on the map and update their corresponding document.
-          google.maps.event.addListener(marker, 'dragend', function(event) {
-
-          Markers.update(marker.id, { $set: { lat: event.latLng.lat(), lng: event.latLng.lng(), name:place.name, address:place.formatted_address}});
-          });
-          // Store this marker instance within the markers object.
-          markers[document._id] = marker;
-
           google.maps.event.addListener(marker,'dblclick', function(event){
             console.log("hello");
             Markers.remove(marker.id);
            });
 
+          // This listener lets us drag markers on the map and update their corresponding document.
+          google.maps.event.addListener(marker, 'dragend', function(event) {
+            var latitude=event.latLng.lat();
+            var longitude=event.latLng.lng();
+            var latLng = {lat: latitude, lng: longitude};
+
+            geocoder.geocode({'location': latLng}, function(results, status) {
+                if (status==='OK') {
+                  if( results[0]){
+                    var address=results[0].formatted_address;
+                    var placeID=results[0].place_id;
+                  service.getDetails({placeId: placeID}, function(result, status) {
+                  console.log(result);
+                  if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    //if place already marked then cannot mark again
+                    if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
+                      console.log('Place already exists');
+                    }else{
+                  Markers.update(marker.id, { $set: { lat: event.latLng.lat(), lng: event.latLng.lng(), placeID:placeID, name:result.name, address:address}});
+
+                      }
+                    }
+                  });
+                  }
+                } else {
+                  console.log('Cannot determine address at this location.');
+                  }
+              });// end of geocoder
+
+          });
+          // Store this marker instance within the markers object.
+          markers[document._id] = marker;
+
            //testing
 
-
-           var contentString='<div id="content">'+
-                   '<div id="siteNotice">'+
-                   '</div>'+
-                   '<h1 id="firstHeading" class="firstHeading">Uluru</h1>'+
-                   '<div id="bodyContent">'+
-                   '<p><b>Uluru</b>, also referred to as <b>Ayers Rock</b>, is a large ' +
-                   'sandstone rock formation in the southern part of the '+
-                   'Northern Territory, central Australia. It lies 335&#160;km (208&#160;mi) '+
-                   'south west of the nearest large town, Alice Springs; 450&#160;km '+
-                   '(280&#160;mi) by road. Kata Tjuta and Uluru are the two major '+
-                   'features of the Uluru - Kata Tjuta National Park. Uluru is '+
-                   'sacred to the Pitjantjatjara and Yankunytjatjara, the '+
-                   'Aboriginal people of the area. It has many springs, waterholes, '+
-                   'rock caves and ancient paintings. Uluru is listed as a World '+
-                   'Heritage Site.</p>'+
-                   '</div>'+
-                   '</div>';
-
-           var infowindow = new google.maps.InfoWindow({
-             content:contentString
-           });
-
            marker.addListener('click', function() {
+             var markerID=this.id;
+             var thisMarker=Markers.findOne({'_id':{$eq:markerID}});
+             console.log(thisMarker.address);
+             var contentString='<div id="content">'+
+                     '<h2>'+thisMarker.name+'</h2>'+
+                     '<div id="bodyContent">'+
+                     '<p>'+thisMarker.address+'</p>'+
+                     '</div>'+
+                     '</div>';
+
+             var infowindow = new google.maps.InfoWindow({
+               content:contentString
+             });
+             console.log(markerID);
                infowindow.open(map.instance, marker);
            });
-
-
-
       },
       changed: function(newDocument, oldDocument) {
           markers[newDocument._id].setPosition({ lat: newDocument.lat, lng: newDocument.lng });
@@ -417,10 +411,15 @@ Template.setMap.onCreated(function() {
 });
 
 Template.setMap.events({
-
+  'click #deleteLocation':function(){
+      event.preventDefault();
+      var placeID=this._id;
+      Markers.remove(placeID);
+  }
 });
 
 Template.setMap.onRendered(function() {
+  console.log("num2");
   GoogleMaps.load({
     key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
     libraries: 'places'
@@ -433,21 +432,39 @@ Template.setMap.helpers({
     return error && error.message;
   },
   exampleMapOptions: function() {
-    var latLng=Geolocation.latLng();
+    /*
+    navigator.geolocation.watchPosition(function(position) {
+      Session.set('location',{
+        lat:position.coords.latitude,
+        lon:position.coords.longitude
+      });
+      console.log('got current position');
+    },function(err) {
+      console.log(err);
+      console.log(positionError.message)
+    },{timeout:Infinity});
+    */
+  // navigator.geolocation.getCurrentPosition(success,error,);
+    //var latLng=Geolocation.latLng();
+
          // Make sure the maps API has loaded
-     if (GoogleMaps.loaded() && latLng) {
+     if (GoogleMaps.loaded()){
        // Map initialization options
        return {
-         center: new google.maps.LatLng(latLng.lat, latLng.lng),
+         center: new google.maps.LatLng(3.1390, 101.6869),
          zoom: 15,
 
-       };
-     }
+       };}
+
    },
    places: function() {
-     return Markers;
+     var placeName=Markers.find().fetch();
+     return placeName;
+     //console.log( Session.get('location'));
+     //return Session.get('location');
    },
 });
+
 
 
 Template.topnavbar2.events({
@@ -812,26 +829,3 @@ Template.addExp.events({
     }
 }
 });
-
-/*****THIS IS FOR GOOGLE MAP-LOCATION*****/
-
-
-
-/*****THIS IS FOR searchbox*****
-Template.findCourse.events({
-    "keypress #search": function (e) {
-      e.preventDefault();
-      Session.set("searchValue", $("#inputSearch").val());
-    }
-  });
-  Template.findCourse.helpers({
-    messages: function() {
-      Meteor.subscribe("search", Session.get("searchValue"));
-      if (Session.get("searchValue")) {
-        return Messages.find({}, { sort: [["score", "desc"]] });
-      } else {
-        return Messages.find({});
-      }
-    }
-  });
-*/
