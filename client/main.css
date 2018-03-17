@@ -299,12 +299,13 @@ font-size: .8em;
 
  /*~~~~~CSS FOR background~~~~~*/
 .bgcolor {
-  width: 100vw;
-  height: 150vh;
+  width: 100%;
+  height: 90%;
   background-image:url(wp1_1.jpg);
   background-repeat: no-repeat;
   background-position: center;
   background-attachment: fixed;
+  background-size: cover;
 }
 
 button#editpersonalinfo:hover{
@@ -543,13 +544,18 @@ ul#classListStyle{
 
 /***search page***/
 #image1 {
-  padding:20px;
+  padding:10px;
+  width: 100%;
+  height:100%;
 }
-#image1 img{
+#thum-div{
+  margin:5px 0 ;
+  padding: 5px  ;
+}
 
-}
 #capImg1 {
-  margin-top: 20px;
+  margin-top: 10px;
+  font-size: 0.2em;
 }
 
 #searchheader {
@@ -561,7 +567,7 @@ ul#classListStyle{
   height:5%;
 }
 
-/*NEW*/
+/*MAP*/
 .map-container {
   width: 800px;
   max-width: 100%;
@@ -632,7 +638,7 @@ ul#classListStyle{
        font-weight: bold;
      }
 
-     #infowindow-content {
+#infowindow-content {
        display: none;
      }
 
@@ -640,8 +646,14 @@ ul#classListStyle{
        display: inline;
      }
 
+/*modal*/
 .modal {
   z-index: 2;
   position: :absolute;
+
+}
+
+#deleteLocation{
+  background-color: transparent;
 
 }
