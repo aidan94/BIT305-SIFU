@@ -375,15 +375,16 @@ Template.setMap.onCreated(function() {
              var markerID=this.id;
              var thisMarker=Markers.findOne({'_id':{$eq:markerID}});
              console.log(thisMarker.address);
-             var contentString='<div id="content">'+
+             var contentString='<div id="content" >'+
                      '<h2>'+thisMarker.name+'</h2>'+
-                     '<div id="bodyContent">'+
+                     '<div id="bodyContent" >'+
                      '<p>'+thisMarker.address+'</p>'+
                      '</div>'+
                      '</div>';
 
              var infowindow = new google.maps.InfoWindow({
-               content:contentString
+               content:contentString,
+               maxWidth: 250,
              });
              console.log(markerID);
                infowindow.open(map.instance, marker);
