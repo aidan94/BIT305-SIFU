@@ -23,6 +23,7 @@ requestList=new Mongo.Collection('requestList');
 Markers = new Mongo.Collection('markers');
 
 
+
 Accounts.ui.config({
   passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
 });
@@ -49,7 +50,7 @@ Template.newClass.events({
     //var timeVar = document.getElementById("selTime");
 
     var skillVar = event.target.selectSkill.value;
-    var locationVar = Markers.find().fetch();
+    var locationVar = Markers.find({type:{$eq:"post"}}).fetch();
     var descVar = event.target.desc.value;
     console.log(titleVar,imgSource,priceVar,audienceVar,skillVar,locationVar, descVar);
     if (titleVar != "",imgSource != "",priceVar!= "",audienceVar!= "",skillVar != "",locationVar!= "", descVar!= "")
@@ -63,12 +64,15 @@ Template.newClass.events({
 
 },
   'click #deleteAll':function(event){
-    var markerAr=Markers.find().fetch();
-    if(Markers.find().fetch()!=""){
+    var markerAr=Markers.find({type:{$eq:"post"}}).fetch();
+    if(markerAr!=""){
       markerAr.forEach(function(element){
         Markers.remove(element._id);
       })
     }
+    var classtype="post";
+    Session.set('setClassType', classtype);
+    console.log(Session.get('setClassType'))
 
   }
 });
@@ -78,6 +82,7 @@ Template.newClass.onRendered(function() {
     size: 3
   });
   $('#addForm').validator();
+
 });
 
 
@@ -88,9 +93,6 @@ Template.post.helpers({
     Session.set('selectedUserId',currentUserId);
     var selectedUserId = Session.get('selectedUserId');
 
-    /*var selectedUser = Session.get('selectedUser');
-    console.log(selectedUser);
-    if(selectedUser != null){*/
     if (selectedUserId != null){
       return postList.find({createdBy:selectedUserId},{sort: {createdTime:-1}});
     }
@@ -142,7 +144,7 @@ Template.newRequest.events({
           //if (timeVarR .options[i].selected) timeArrayR.push(timeVarR.options[i].value);
       //}
     var skillVarR = event.target.RselectSkill.value;
-    var locationVarR =Markers.find().fetch();
+    var locationVarR =Markers.find({type:{$eq:"request"}}).fetch();
     var descVarR = event.target.Rdesc.value;
     console.log(titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR);
     if (titleVarR != "",imgSourceR != "",priceVarR!= "",audienceVarR!= "",skillVarR != "",locationVarR!= "", descVarR!= "")
@@ -154,7 +156,20 @@ Template.newRequest.events({
     document.getElementById("addRForm").reset();
     $('.selectpicker').selectpicker('render');
 
-}});
+},
+'click #deleteAll':function(event){
+  var markerAr=Markers.find({type:{$eq:"request"}}).fetch();
+  if(markerAr!=""){
+    markerAr.forEach(function(element){
+      Markers.remove(element._id);
+    })
+  }
+
+  var classtype="request";
+  Session.set('setClassType', classtype);
+  console.log(Session.get('setClassType'))
+}
+});
 
 Template.request.helpers({
   'requestClasses': function () {
@@ -187,12 +202,13 @@ Template.request.helpers({
 
 //Roushan's Part
 /*NEWW 10 March*/
+
+
 Template.post.events({
-  'click .postClasses': function(){
+  'click #moreDetails': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
-    var selectedClass = Session.get('selectedClass');
-    console.log(selectedClass);
+    console.log(Session.get('selectedClass'))
   },
 
 
@@ -257,7 +273,7 @@ Template.setMap.onCreated(function() {
       var input = document.getElementById('pac-input');
       var searchBox = new google.maps.places.SearchBox(input);
       map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
+      var classType;
 
       google.maps.event.addListener(map.instance,'bounds_change', function() {
           searchBox.setBounds(map.getBounds());
@@ -278,19 +294,22 @@ Template.setMap.onCreated(function() {
               if(Markers.find({'placeID':{$eq:place.place_id}}).count()>0){
                 console.log('Place already exists');
               }else{
-                Markers.insert({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng(),placeID: place.place_id, name:place.name, address:place.formatted_address });
+                classType=Session.get('setClassType');
+                Markers.insert(
+                { lat: place.geometry.location.lat(),
+                  lng: place.geometry.location.lng(),
+                  placeID: place.place_id,
+                  name:place.name, address:place.formatted_address,
+                  type:classType,
+                });
               }
-
             });
-
           });
 
           google.maps.event.addListener(map.instance, 'click', function(event){
-
               var latitude=event.latLng.lat();
               var longitude=event.latLng.lng();
               var latLng = {lat: latitude, lng: longitude};
-
             geocoder.geocode({'location': latLng}, function(results, status) {
                 if (status==='OK') {
                   if( results[0]){
@@ -303,8 +322,8 @@ Template.setMap.onCreated(function() {
                     if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
                       console.log('Place already exists');
                     }else{
-
-                   Markers.insert({lat: event.latLng.lat(), lng: event.latLng.lng(), placeID: placeID, name:result.name, address: address});
+                      classType=Session.get('setClassType');
+                   Markers.insert({lat: event.latLng.lat(), lng: event.latLng.lng(), placeID: placeID, name:result.name, address: address, type:classType});
                       }
                     }
                   });
@@ -316,17 +335,18 @@ Template.setMap.onCreated(function() {
             });//end of addListner
 
 
-      Markers.find().observe({
+      Markers.find({type:{$eq:"post"}}).observe({
       added: function(document) {
         // Create a marker for this document
           var marker = new google.maps.Marker({
           draggable: true,
           animation: google.maps.Animation.DROP,
           position: new google.maps.LatLng(document.lat, document.lng),
-          map: map.instance,
           // We store the document _id on the marker in order
           // to update the document within the 'dragend' event below.
-          id: document._id
+          map:map.instance,
+          id: document._id,
+          classtype:"post"
           });
           map.instance.setZoom(17);
           map.instance.panTo(marker.position);
@@ -404,11 +424,7 @@ Template.setMap.onCreated(function() {
           delete markers[oldDocument._id];
       }
     });
-
-
-
-
-    });
+  });
 });
 
 Template.setMap.events({
@@ -420,7 +436,6 @@ Template.setMap.events({
 });
 
 Template.setMap.onRendered(function() {
-  console.log("num2");
   GoogleMaps.load({
     key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
     libraries: 'places'
@@ -428,6 +443,19 @@ Template.setMap.onRendered(function() {
 });
 
 Template.setMap.helpers({
+  classType: function(){
+    return Session.get('setClassType');
+  },
+  isPostClass:function(){
+    if(Session.get('setClassType')=="post"){
+      return true;
+    }
+  },
+  isrequestClass:function(){
+    if(Session.get('setClassType')=="request"){
+      return true;
+    }
+  },
   geolocationError:function(){
     var error = Geolocation.error();
     return error && error.message;
@@ -448,18 +476,15 @@ Template.setMap.helpers({
   // navigator.geolocation.getCurrentPosition(success,error,);
     //var latLng=Geolocation.latLng();
 
-         // Make sure the maps API has loaded
-     if (GoogleMaps.loaded()){
-       // Map initialization options
-       return {
-         center: new google.maps.LatLng(3.1390, 101.6869),
-         zoom: 15,
-
-       };}
-
+    if (GoogleMaps.loaded()){
+      return {
+        center: new google.maps.LatLng(3.1390, 101.6869),
+        zoom: 15
+      };
+    }
    },
    places: function() {
-     var placeName=Markers.find().fetch();
+     var placeName=Markers.find({type:{$eq:Session.get("setClassType")}}).fetch();
      return placeName;
      //console.log( Session.get('location'));
      //return Session.get('location');
@@ -467,6 +492,256 @@ Template.setMap.helpers({
 });
 
 
+
+Template.setRMap.onCreated(function() {
+  var self= this;
+    // We can use the `ready` callback to interact with the map API once the map is ready.
+    GoogleMaps.ready('map', function(map) {
+      var markers = [];
+      var geocoder = new google.maps.Geocoder();
+      var service = new google.maps.places.PlacesService(map.instance);
+      var input = document.getElementById('pac-input');
+      var searchBox = new google.maps.places.SearchBox(input);
+      map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+      var classType;
+
+      google.maps.event.addListener(map.instance,'bounds_change', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+      searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+          if (places.length == 0) {
+              return ;
+            }
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function(place) {
+              if (!place.geometry) {
+                console.log("Returned place contains no geometry");
+                return;
+              }
+
+              if(Markers.find({'placeID':{$eq:place.place_id}}).count()>0){
+                console.log('Place already exists');
+              }else{
+                classType=Session.get('setClassType');
+                Markers.insert(
+                { lat: place.geometry.location.lat(),
+                  lng: place.geometry.location.lng(),
+                  placeID: place.place_id,
+                  name:place.name, address:place.formatted_address,
+                  type:classType,
+                });
+              }
+            });
+          });
+
+          google.maps.event.addListener(map.instance, 'click', function(event){
+              var latitude=event.latLng.lat();
+              var longitude=event.latLng.lng();
+              var latLng = {lat: latitude, lng: longitude};
+            geocoder.geocode({'location': latLng}, function(results, status) {
+                if (status==='OK') {
+                  if( results[0]){
+                    var address=results[0].formatted_address;
+                    var placeID=results[0].place_id;
+                  service.getDetails({placeId: placeID}, function(result, status) {
+                  console.log(result);
+                  if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    //if place already marked then cannot mark again
+                    if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
+                      console.log('Place already exists');
+                    }else{
+                      classType=Session.get('setClassType');
+                   Markers.insert({lat: event.latLng.lat(), lng: event.latLng.lng(), placeID: placeID, name:result.name, address: address, type:classType});
+                      }
+                    }
+                  });
+                  }
+                } else {
+                  console.log('Cannot determine address at this location.');
+                  }
+              });// end of geocoder
+            });//end of addListner
+
+      Markers.find({type:{$eq:"request"}}).observe({
+      added: function(document) {
+        // Create a marker for this document
+          var marker = new google.maps.Marker({
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          position: new google.maps.LatLng(document.lat, document.lng),
+          // We store the document _id on the marker in order
+          // to update the document within the 'dragend' event below.
+          map:map.instance,
+          id: document._id,
+          classtype:'request',
+          });
+            map.instance.panTo(marker.position);
+            map.instance.setZoom(17);
+
+            marker.setMap(map.instance);
+
+          google.maps.event.addListener(marker,'dblclick', function(event){
+            console.log("hello");
+            Markers.remove(marker.id);
+           });
+
+          // This listener lets us drag markers on the map and update their corresponding document.
+          google.maps.event.addListener(marker, 'dragend', function(event) {
+            var latitude=event.latLng.lat();
+            var longitude=event.latLng.lng();
+            var latLng = {lat: latitude, lng: longitude};
+
+            geocoder.geocode({'location': latLng}, function(results, status) {
+                if (status==='OK') {
+                  if( results[0]){
+                    var address=results[0].formatted_address;
+                    var placeID=results[0].place_id;
+                  service.getDetails({placeId: placeID}, function(result, status) {
+                  console.log(result);
+                  if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    //if place already marked then cannot mark again
+                    if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
+                      console.log('Place already exists');
+                    }else{
+                  Markers.update(marker.id, { $set: { lat: event.latLng.lat(), lng: event.latLng.lng(), placeID:placeID, name:result.name, address:address}});
+
+                      }
+                    }
+                  });
+                  }
+                } else {
+                  console.log('Cannot determine address at this location.');
+                  }
+              });// end of geocoder
+
+          });
+          // Store this marker instance within the markers object.
+          markers[document._id] = marker;
+
+           //testing
+
+           marker.addListener('click', function() {
+             var markerID=this.id;
+             var thisMarker=Markers.findOne({'_id':{$eq:markerID}});
+             console.log(thisMarker.address);
+             var contentString='<div id="content" >'+
+                     '<h2>'+thisMarker.name+'</h2>'+
+                     '<div id="bodyContent" >'+
+                     '<p>'+thisMarker.address+'</p>'+
+                     '</div>'+
+                     '</div>';
+
+             var infowindow = new google.maps.InfoWindow({
+               content:contentString,
+               maxWidth: 250,
+             });
+             console.log(markerID);
+               infowindow.open(map.instance, marker);
+           });
+      },
+      changed: function(newDocument, oldDocument) {
+          markers[newDocument._id].setPosition({ lat: newDocument.lat, lng: newDocument.lng });
+      },
+      removed: function(oldDocument) {
+
+          // Remove the marker from the map
+          markers[oldDocument._id].setMap(null);
+          // Clear the event listener
+          google.maps.event.clearInstanceListeners(
+          markers[oldDocument._id]);
+          // Remove the reference to this marker instance
+          delete markers[oldDocument._id];
+      }
+    });
+  });
+});
+
+Template.setRMap.events({
+  'click #deleteLocation':function(){
+      event.preventDefault();
+      var placeID=this._id;
+      Markers.remove(placeID);
+  }
+});
+
+Template.setRMap.onRendered(function() {
+  GoogleMaps.load();
+
+  this.autorun(function(c) {
+    if (GoogleMaps.loaded()) {
+      GoogleMaps.create({
+        name: 'map',
+        element: document.getElementById('map'),
+        options: {
+          center: new google.maps.LatLng(3.1390, 101.6869),
+          zoom: 15
+        }
+      });
+      c.stop();
+    }
+  });
+});
+
+Template.setRMap.helpers({
+  classType: function(){
+    return Session.get('setClassType');
+  },
+  geolocationError:function(){
+    var error = Geolocation.error();
+    return error && error.message;
+  },
+   places: function() {
+     var placeName=Markers.find({type:{$eq:Session.get("setClassType")}}).fetch();
+     return placeName;
+     //console.log( Session.get('location'));
+     //return Session.get('location');
+   },
+});
+
+Template.displayMap.helpers({
+  location:function(){
+    if(Session.get('selectedRequest')){
+        return requestList.findOne({"_id": Session.get('selectedRequest')});
+    } else
+    if(Session.get('selectedClass')){
+      return postList.findOne({"_id": Session.get('selectedClass')});
+    }
+  }
+});
+
+Template.displayMap.onRendered(function() {
+  GoogleMaps.load();
+
+  this.autorun(function(c) {
+    if (GoogleMaps.loaded()) {
+      GoogleMaps.create({
+        name: 'dismap',
+        element: document.getElementById('dismap'),
+        options: {
+          center: new google.maps.LatLng(3.1390, 101.6869),
+          zoom: 15
+        }
+      });
+      c.stop();
+    }
+  });
+});
+
+Template.displayMap.onCreated(function(){
+  if(Session.get('selectedRequest')){
+      var smtg= requestList.find({"_id": Session.get('selectedRequest')},{"title":1,"type":1});
+      console.log(smtg);
+      smtg.forEach(function(element){
+        console.log(smtg.location)
+
+      })
+  } else
+  if(Session.get('selectedClass')){
+    return postList.findOne({"_id": Session.get('selectedClass')});
+  }
+})
 
 Template.topnavbar2.events({
   'submit #search':function(event){
