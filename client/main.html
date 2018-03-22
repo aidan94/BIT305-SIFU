@@ -773,7 +773,9 @@
 	                </div>
 	                <div class="tab-pane" id="photos" role="tabpanel">...</div>
 	                <div class="tab-pane" id="review" role="tabpanel">...</div>
-	                <div class="tab-pane" id="location" role="tabpanel">...</div>
+	                <div class="tab-pane" id="location" role="tabpanel">
+                    {{> displayMap}}
+                  </div>
 	              </div>
 
 	          </div>
@@ -816,9 +818,6 @@
 
 	</template>
 
-	<template name="map">
-
-	</template>
 <!--Posts from User-->
 <template name='post'>
 <div class = "row">
@@ -999,7 +998,7 @@
 
 <template name="newRequest">
 
-  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style = "margin-top:2%; margin-bottom:3%">
+  <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" style = "margin-top:2%; margin-bottom:3%" id="deleteAll">
     <a data-toggle = "modal" href = "#addRClass" class="thumbnail" id="image" style = "border: 1px solid #ced4da;" >
       <div class="img.center" style="margin:auto; margin-bottom:10%;">
         <img class = "img-responsive" src="add.png"  alt="" width="100px" height="100px" />
@@ -1471,7 +1470,7 @@
           <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="thum-div">
             <div class="img-thumbnail" id="image1" >
               <div class="img">
-                <img class = "requestClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="200px" height="300px" />
+                <img class = "requestClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}"  />
               </div>
               <div class="caption" id="capImg1">
 
@@ -1509,29 +1508,17 @@
           </button>
           {{/each}}
         </p>
-
-
-        <input id="pac-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
-
-        <div class="map-container">
         <!--  {{#unless geolocationError}}
             {{> googleMap name="exampleMap" options=exampleMapOptions}}
           {{else}}
             Geolocation failed: {{geolocationError}}
           {{/unless}}
         -->
-        {{> googleMap name="exampleMap" options=exampleMapOptions}}
+        <input id="pac-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
 
+        <div class="map-container" id="{{classType}}">
+        {{> googleMap name="exampleMap" options=exampleMapOptions}}
         </div>
-        <!--
-        {{#if currentUser}}
-        {{#each places}}
-          <label class = "talentsTags" style="margin:0px; padding:5px">
-            {{address}}
-          </label>
-        {{/each}}
-        {{/if}}
-      -->
 
       </div>
 </template>
@@ -1549,29 +1536,13 @@
           </button>
           {{/each}}
         </p>
-
-
-        <input id="pac-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
-
-        <div class="map-container">
-        <!--  {{#unless geolocationError}}
-            {{> googleMap name="exampleMap" options=exampleMapOptions}}
-          {{else}}
-            Geolocation failed: {{geolocationError}}
-          {{/unless}}
-        -->
-        {{> googleMap name="exampleMap" options=exampleMapOptions}}
-
-        </div>
-        <!--
-        {{#if currentUser}}
-        {{#each places}}
-          <label class = "talentsTags" style="margin:0px; padding:5px">
-            {{address}}
-          </label>
-        {{/each}}
-        {{/if}}
-      -->
+        <div class="map-container"  id="map"></div>
 
       </div>
+</template>
+
+<template name='displayMap'>
+  <div class="map-container" id="dismap">
+
+  </div>
 </template>
