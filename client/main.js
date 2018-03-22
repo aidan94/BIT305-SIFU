@@ -208,16 +208,11 @@ Template.post.events({
   'click #moreDetails': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
-    console.log(Session.get('selectedClass'))
   },
-
-
 	'click button#editClassBtn': function(){
 		var classID = this._id;
 		Session.set('selectedEdClass', classID);
-		var selectedEdClass = Session.get('selectedEdClass');
-		console.log(selectedEdClass);
-	},
+		},
 
   'click #removeClassBtn': function(){
     var classId = this._id;
@@ -712,7 +707,8 @@ Template.displayMap.helpers({
 });
 
 Template.displayMap.onRendered(function() {
-  GoogleMaps.load();
+  GoogleMaps.load( {  key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
+    libraries: 'places'});
 
   this.autorun(function(c) {
     if (GoogleMaps.loaded()) {
@@ -730,17 +726,38 @@ Template.displayMap.onRendered(function() {
 });
 
 Template.displayMap.onCreated(function(){
-  if(Session.get('selectedRequest')){
-      var smtg= requestList.find({"_id": Session.get('selectedRequest')},{"title":1,"type":1});
-      console.log(smtg);
-      smtg.forEach(function(element){
-        console.log(smtg.location)
+  var self=this;
+  console.log(Session.get('selectedClass'));
+    GoogleMaps.ready('dismap', function(map) {
+      function getMarker(places){
+        for (var j in places)
+        {
+          for (var p in places[j]){
+            for (var i=0; i<places[j][p].length; i++){
+              var coords=places[j][p][i];
+               var latlng=new google.maps.LatLng(coords);
+               marker = new google.maps.Marker({
+                  position: latlng,
+                  map: map.instance,
+              });
+              map.instance.panTo(marker.position);
+              map.instance.setZoom(15);
+            }
+          }
+        }
+      }
+      if(Session.get('selectedRequest')){
+          var places= requestList.find({"_id": Session.get('selectedRequest')},{fields: {"_id":0,"location.lat":1,"location.lng":1}}).fetch();
+          getMarker(places);
 
-      })
-  } else
-  if(Session.get('selectedClass')){
-    return postList.findOne({"_id": Session.get('selectedClass')});
-  }
+        } else if(Session.get('selectedClass')){
+          var places= postList.find({"_id": Session.get('selectedClass')},{fields: {"_id":0,"location.lat":1,"location.lng":1}}).fetch();
+          getMarker(places);
+      }
+
+})
+
+
 })
 
 Template.topnavbar2.events({
@@ -757,8 +774,7 @@ Template.resultpage.events({
   'click #moreInfo': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
-    var selectedClass = Session.get('selectedClass');
-    console.log(selectedClass);
+
   },
 });
 
