@@ -4,6 +4,7 @@ Members=new Mongo.Collection('Members');
 postList=new Mongo.Collection('postList');
 requestList=new Mongo.Collection('requestList');
 Markers = new Mongo.Collection('markers');
+dayTime = new Mongo.Collection('dayTime')
 
 
 Meteor.publish("users", function() {
@@ -42,7 +43,7 @@ Meteor.publish('theRequest',function(){
 });
 
 Meteor.methods({
-  'insertClassData':function(titleVar,imgSource,priceVar,audienceVar,skillVar, locationVar, descVar){
+  'insertClassData':function(titleVar,imgSource,priceVar,audienceVar,dayTimeVar,skillVar, locationVar, descVar){
     var currentUserId=this.userId;
     var user = Meteor.user().username;
     postList.insert({
@@ -50,7 +51,7 @@ Meteor.methods({
           fileSource:imgSource,
           price:priceVar,
           audience:audienceVar,
-
+          dayTimeVar: dayTimeVar,
           skill:skillVar,
           location:locationVar,
           description:descVar,
@@ -62,7 +63,8 @@ Meteor.methods({
         });
       },
 
-  'insertRequestData':function(titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR){
+
+  'insertRequestData':function(titleVarR,imgSourceR,priceVarR,audienceVarR,dayTimeVarR,skillVarR,locationVarR, descVarR){
     var currentUserId=this.userId;
     var user = Meteor.user().username;
     requestList.insert({
@@ -70,7 +72,7 @@ Meteor.methods({
           fileSource:imgSourceR,
           price:priceVarR,
           audience:audienceVarR,
-
+          dayTimeVar: dayTimeVarR,
           skill:skillVarR,
           location:locationVarR,
           description:descVarR,
@@ -82,6 +84,14 @@ Meteor.methods({
         });
       },
 
+      'insertDayTime':function(dayVarR, timeFromR, timeToR){
+        dayTime.insert({
+          day: dayVarR,
+          timeFrom: timeFromR,
+          timeTo: timeToR,
+        });
+      },
+
       'removeClass': function(selectedClass){
         postList.remove(selectedClass);
       },
@@ -90,13 +100,14 @@ Meteor.methods({
         requestList.remove(selectedRequest);
       },
 
-      'editClassData':function(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,skillVarEdit,locationVarEdit, descVarEdit){
+      'editClassData':function(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit){
         postList.update(selectedEdClass, {
           $set:{
             title:titleVarEdit,
             fileSource:imgSourceEdit,
             price:priceVarEdit,
             audience:audienceVarEdit,
+            dayTimeVar:dayTimeVarEdit,
             skill:skillVarEdit,
             location:locationVarEdit,
             description:descVarEdit
@@ -104,7 +115,7 @@ Meteor.methods({
         });
       },
 
-      'editRequestData':function(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,skillVarREdit,locationVarREdit, descVarREdit){
+      'editRequestData':function(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit){
         requestList.update(selectedEdRequest, {
           $set:{
             title:titleVarREdit,
@@ -115,8 +126,7 @@ Meteor.methods({
             location:locationVarREdit,
             description:descVarREdit
           },
+          $push:{dayTimeVar:dayTimeVarREdit},
         });
       }
     });
-
-
