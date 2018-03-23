@@ -21,7 +21,7 @@ Resume = new Mongo.Collection('Resume');
 postList = new Mongo.Collection('postList');
 requestList=new Mongo.Collection('requestList');
 Markers = new Mongo.Collection('markers');
-
+dayTime = new Mongo.Collection('dayTime');
 
 
 Accounts.ui.config({
@@ -48,33 +48,61 @@ Template.newClass.events({
 
     //Insert multiple select dropdown into array
     //var timeVar = document.getElementById("selTime");
-
+    var dayTimeVar = dayTime.find().fetch();
     var skillVar = event.target.selectSkill.value;
     var locationVar = Markers.find({type:{$eq:"post"}}).fetch();
     var descVar = event.target.desc.value;
-    console.log(titleVar,imgSource,priceVar,audienceVar,skillVar,locationVar, descVar);
-    if (titleVar != "",imgSource != "",priceVar!= "",audienceVar!= "",skillVar != "",locationVar!= "", descVar!= "")
+    console.log(titleVar,imgSource,priceVar,audienceVar,dayTimeVar,skillVar,locationVar, descVar);
+    if (titleVar != "",imgSource != "",priceVar!= "",audienceVar!= "",dayTimeVar!="", skillVar != "",locationVar!= "", descVar!= "")
     {
-      Meteor.call('insertClassData', titleVar,imgSource,priceVar,audienceVar,skillVar, locationVar, descVar)
+      Meteor.call('insertClassData', titleVar,imgSource,priceVar,audienceVar,dayTimeVar,skillVar, locationVar, descVar)
     }
+    document.getElementById("addForm").reset();
     $('#addClass').modal('hide');
 
-    document.getElementById("addForm").reset();
-    $('.selectpicker').selectpicker('render');
 
 },
   'click #deleteAll':function(event){
     var markerAr=Markers.find({type:{$eq:"post"}}).fetch();
-    if(markerAr!=""){
+    var dayTimeAr=dayTime.find().fetch();
+    if(markerAr!="" || dayTimeAr!=""){
       markerAr.forEach(function(element){
         Markers.remove(element._id);
+      })
+      dayTimeAr.forEach(function(element){
+        dayTime.remove(element._id);
       })
     }
     var classtype="post";
     Session.set('setClassType', classtype);
     console.log(Session.get('setClassType'))
+  },
 
+  'click button#saveDayTime':function(event){
+    event.preventDefault();
+    var dayVar = document.getElementById("selDay").value;
+    var timeFrom = document.getElementById("classTimeFrom").value;
+    var timeTo = document.getElementById("classTimeTo").value;
+    if (dayVar != "" && timeFrom != "" && timeTo !="")
+    {
+      console.log(dayVar, timeFrom, timeTo);
+      Meteor.call('insertDayTime', dayVar, timeFrom, timeTo);
+    }
+    else
+      {
+        console.log("Empty Values in Input Day & Time")
+      }
+    document.getElementById("selDay").selectedIndex = 0;
+    document.getElementById("classTimeFrom").value = "";
+    document.getElementById("classTimeTo").value = "";
+  },
+
+  'click button#deleteDayTime':function(event){
+    event.preventDefault();
+    var dayTimeId=this._id;
+    dayTime.remove(dayTimeId);
   }
+
 });
 
 Template.newClass.onRendered(function() {
@@ -82,8 +110,17 @@ Template.newClass.onRendered(function() {
     size: 3
   });
   $('#addForm').validator();
-
 });
+
+Template.newClass.helpers({
+  dtOption: function() {
+    var dayTimeOption= dayTime.find().fetch();
+    return dayTimeOption;
+    //console.log( Session.get('location'));
+    //return Session.get('location');
+  }
+});
+
 
 
 
@@ -112,7 +149,7 @@ Template.post.helpers({
 
 Template.newRequest.onRendered(function() {
   $('.selectpicker').selectpicker({
-    size: 3
+    size: 4
   });
   $('#addRForm').validator();
 });
@@ -120,55 +157,94 @@ Template.newRequest.onRendered(function() {
 Template.newRequest.events({
   'submit #addRForm':function(event){
   event.preventDefault();
-    var titleVarR = event.target.Rtitle.value;
-    var imgSourceR = event.target.RimageSource.value;
-    var priceVarR = event.target.Rprice.value;
-    var audienceVarR = event.target.RselectAudience.value;
-    //var dayVarR = event.target.Rday.value;
+  var titleVarR = event.target.Rtitle.value;
+  var imgSourceR = event.target.RimageSource.value;
+  var priceVarR = event.target.Rprice.value;
+  var audienceVarR = event.target.RselectAudience.value;
+  //var dayVarR = event.target.Rday.value;
 
-    //var dayVar = document.getElementById("selDay");
+  //var dayVarR = document.getElementById("selDay");
 
-    //Insert multiple select dropdown into array
-    //var dayVarR = document.getElementById("selRDay");
-    //var daysValR = new Array();
-      //for (i = 0; i < dayVarR.length; i++) {
-          //if (dayVarR .options[i].selected) daysValR.push(dayVarR.options[i].value);
-      //}
+  //Insert multiple select dropdown into array
+  //var dayVarR = document.getElementById("selRDay");
+  //var daysValR = new Array();
+    //for (i = 0; i < dayVarR.length; i++) {
+        //if (dayVarR .options[i].selected) daysValR.push(dayVarR.options[i].value);
+    //}
 
-    //var timeVarR = event.target.Rtime.value;
+  //var timeVarR = event.target.Rtime.value;
 
-    //Insert multiple select dropdown into array
-    //var timeVarR = document.getElementById("selRTime");
-    //var timeArrayR = new Array();
-      //for (i = 0; i < timeVarR.length; i++) {
-          //if (timeVarR .options[i].selected) timeArrayR.push(timeVarR.options[i].value);
-      //}
-    var skillVarR = event.target.RselectSkill.value;
-    var locationVarR =Markers.find({type:{$eq:"request"}}).fetch();
-    var descVarR = event.target.Rdesc.value;
-    console.log(titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR);
-    if (titleVarR != "",imgSourceR != "",priceVarR!= "",audienceVarR!= "",skillVarR != "",locationVarR!= "", descVarR!= "")
-    {
-    Meteor.call('insertRequestData', titleVarR,imgSourceR,priceVarR,audienceVarR,skillVarR,locationVarR, descVarR)
+  //Insert multiple select dropdown into array
+  //var timeVarR = document.getElementById("selRTime");
+  //var timeArrayR = new Array();
+    //for (i = 0; i < timeVarR.length; i++) {
+        //if (timeVarR .options[i].selected) timeArrayR.push(timeVarR.options[i].value);
+    //}
+  var dayTimeVarR = dayTime.find().fetch();
+  var skillVarR = event.target.RselectSkill.value;
+  var locationVarR =Markers.find({type:{$eq:"request"}}).fetch();
+  var descVarR = event.target.Rdesc.value;
+  var requestID = this._id;
+  console.log(titleVarR,imgSourceR,priceVarR,audienceVarR, dayTimeVarR, skillVarR, locationVarR, descVarR, requestID);
+  if (titleVarR != "",imgSourceR != "",priceVarR!= "",audienceVarR!= "",dayTimeVarR!="", skillVarR != "",locationVarR!= "", descVarR!= "")
+  {
+  Meteor.call('insertRequestData', titleVarR,imgSourceR,priceVarR,audienceVarR,dayTimeVarR,skillVarR,locationVarR, descVarR)
   }
+  document.getElementById("addRForm").reset();
   $('#addRClass').modal('hide');
 
-    document.getElementById("addRForm").reset();
-    $('.selectpicker').selectpicker('render');
-
 },
-'click #deleteAll':function(event){
-  var markerAr=Markers.find({type:{$eq:"request"}}).fetch();
-  if(markerAr!=""){
-    markerAr.forEach(function(element){
-      Markers.remove(element._id);
-    })
+
+  'click #deleteAll':function(event){
+    var markerAr=Markers.find({type:{$eq:"request"}}).fetch();
+    var dayTimeAr=dayTime.find().fetch();
+    if(markerAr!="" || dayTimeAr!=""){
+      markerAr.forEach(function(element){
+        Markers.remove(element._id);
+      })
+      dayTimeAr.forEach(function(element){
+        dayTime.remove(element._id);
+      })
+    }
+
+    var classtype="request";
+    Session.set('setClassType', classtype);
+    console.log(Session.get('setClassType'))
+  },
+
+  'click button#saveDayTimeR':function(event){
+    event.preventDefault();
+    var dayVarR = document.getElementById("selRDay").value;
+    var timeFromR = document.getElementById("requestTimeFrom").value;
+    var timeToR = document.getElementById("requestTimeTo").value;
+    if (dayVarR != "" && timeFromR != "" && timeToR !="")
+    {
+      console.log(dayVarR, timeFromR, timeToR);
+      Meteor.call('insertDayTime', dayVarR, timeFromR, timeToR);
+    }
+    else
+      {
+        console.log("Empty Values in Input Day & Time")
+      }
+    document.getElementById("selRDay").selectedIndex = 0;
+    document.getElementById("requestTimeFrom").value = "";
+    document.getElementById("requestTimeTo").value = "";
+  },
+
+  'click button#deleteDayTimeRequest':function(event){
+    event.preventDefault();
+    var dayTimeId=this._id;
+    dayTime.remove(dayTimeId);
   }
 
-  var classtype="request";
-  Session.set('setClassType', classtype);
-  console.log(Session.get('setClassType'))
-}
+});
+
+Template.newRequest.helpers({
+  dtRequestOption: function() {
+    var dayTimeRequestOption= dayTime.find().fetch();
+    return dayTimeRequestOption;
+
+  }
 });
 
 Template.request.helpers({
@@ -202,17 +278,27 @@ Template.request.helpers({
 
 //Roushan's Part
 /*NEWW 10 March*/
-
-
 Template.post.events({
   'click #moreDetails': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
+    console.log(Session.get('selectedClass'))
+
   },
+
+
 	'click button#editClassBtn': function(){
 		var classID = this._id;
 		Session.set('selectedEdClass', classID);
-		},
+		var selectedEdClass = Session.get('selectedEdClass');
+		console.log(selectedEdClass);
+    var dayTimeAr=dayTime.find().fetch();
+    if(dayTimeAr!=""){
+      dayTimeAr.forEach(function(element){
+        dayTime.remove(element._id);
+      })
+    }
+	},
 
   'click #removeClassBtn': function(){
     var classId = this._id;
@@ -231,28 +317,80 @@ Template.post.events({
 });
 
 Template.editForm.events({
-  'submit form':function(){
+  'submit #editForm':function(){
     event.preventDefault();
 		var titleVarEdit = event.target.title.value;
     var imgSourceEdit = event.target.imageSource.value;
     var priceVarEdit = event.target.price.value;
     var audienceVarEdit = event.target.selectAudience.value;
+    var dayTimeVarEdit = dayTime.find().fetch();
     var skillVarEdit = event.target.selectSkill.value;
     var locationVarEdit = event.target.location.value;
     var descVarEdit = event.target.desc.value;
 		var selectedEdClass = Session.get('selectedEdClass');
-    console.log(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,skillVarEdit,locationVarEdit, descVarEdit);
-    if (selectedEdClass !="", titleVarEdit != "",imgSourceEdit != "",priceVarEdit!= "",audienceVarEdit!= "",skillVarEdit != "",locationVarEdit!= "", descVarEdit!= "")
+    console.log(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit);
+    if (selectedEdClass !="", titleVarEdit != "",imgSourceEdit != "",priceVarEdit!= "",audienceVarEdit!= "",dayTimeVarEdit!="",skillVarEdit != "",locationVarEdit!= "", descVarEdit!= "")
     {
-      Meteor.call('editClassData', selectedEdClass,titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,skillVarEdit,locationVarEdit, descVarEdit)
+      Meteor.call('editClassData', selectedEdClass,titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit)
     }
 
-}});
+  },
+
+  'click button#saveDayTimeEdit':function(event){
+    event.preventDefault();
+    var dayVarEdit = document.getElementById("selDayEdit").value;
+    var timeFromEdit = document.getElementById("classTimeFromEdit").value;
+    var timeToEdit = document.getElementById("classTimeToEdit").value;
+    if (dayVarEdit != "" && timeFromEdit != "" && timeToEdit !="")
+    {
+      console.log(dayVarEdit, timeFromEdit, timeToEdit);
+      Meteor.call('insertDayTime', dayVarEdit, timeFromEdit, timeToEdit);
+    }
+    else
+      {
+        console.log("Empty Values in Input Day & Time")
+      }
+    document.getElementById("selDayEdit").selectedIndex = 0;
+    document.getElementById("classTimeFromEdit").value = "";
+    document.getElementById("classTimeToEdit").value = "";
+  },
+
+  'click button#deleteDayTimeEdit':function(event){
+    event.preventDefault();
+    var dayTimeId=this._id;
+    console.log(dayTimeId);
+    postList.update(Session.get('selectedEdClass'),{
+      $pull:
+      {
+        dayTimeVar:{"_id":dayTimeId}
+      }
+    })
+  },
+
+  'click button#deleteDayTimeNewEdit':function(event){
+    event.preventDefault();
+    var dayTimeId=this._id;
+    console.log(dayTimeId);
+    dayTime.remove(dayTimeId);
+  }
+
+
+});
 
 Template.editForm.helpers({
   selEdClass: function(){
     return postList.findOne({"_id": Session.get('selectedEdClass')});
   },
+
+  dtEditOption:function(){
+    return postList.findOne({"_id":Session.get('selectedEdClass')}).dayTimeVar;
+
+  },
+
+  dtNewEditOption: function() {
+    var dayTimeOption= dayTime.find().fetch();
+    return dayTimeOption;
+  }
 
 });
 
@@ -298,13 +436,17 @@ Template.setMap.onCreated(function() {
                   type:classType,
                 });
               }
+
             });
+
           });
 
           google.maps.event.addListener(map.instance, 'click', function(event){
+
               var latitude=event.latLng.lat();
               var longitude=event.latLng.lng();
               var latLng = {lat: latitude, lng: longitude};
+
             geocoder.geocode({'location': latLng}, function(results, status) {
                 if (status==='OK') {
                   if( results[0]){
@@ -318,7 +460,7 @@ Template.setMap.onCreated(function() {
                       console.log('Place already exists');
                     }else{
                       classType=Session.get('setClassType');
-                   Markers.insert({lat: event.latLng.lat(), lng: event.latLng.lng(), placeID: placeID, name:result.name, address: address, type:classType});
+                      Markers.insert({lat: event.latLng.lat(), lng: event.latLng.lng(), placeID: placeID, name:result.name, address: address, type:classType});
                       }
                     }
                   });
@@ -337,6 +479,7 @@ Template.setMap.onCreated(function() {
           draggable: true,
           animation: google.maps.Animation.DROP,
           position: new google.maps.LatLng(document.lat, document.lng),
+
           // We store the document _id on the marker in order
           // to update the document within the 'dragend' event below.
           map:map.instance,
@@ -419,7 +562,11 @@ Template.setMap.onCreated(function() {
           delete markers[oldDocument._id];
       }
     });
-  });
+
+
+
+
+    });
 });
 
 Template.setMap.events({
@@ -431,6 +578,7 @@ Template.setMap.events({
 });
 
 Template.setMap.onRendered(function() {
+
   GoogleMaps.load({
     key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
     libraries: 'places'
@@ -471,12 +619,16 @@ Template.setMap.helpers({
   // navigator.geolocation.getCurrentPosition(success,error,);
     //var latLng=Geolocation.latLng();
 
+
     if (GoogleMaps.loaded()){
-      return {
-        center: new google.maps.LatLng(3.1390, 101.6869),
-        zoom: 15
-      };
-    }
+
+     return {
+       center: new google.maps.LatLng(3.1390, 101.6869),
+       zoom: 15
+
+     };
+   }
+
    },
    places: function() {
      var placeName=Markers.find({type:{$eq:Session.get("setClassType")}}).fetch();
@@ -485,8 +637,6 @@ Template.setMap.helpers({
      //return Session.get('location');
    },
 });
-
-
 
 Template.setRMap.onCreated(function() {
   var self= this;
@@ -746,19 +896,18 @@ Template.displayMap.onCreated(function(){
           }
         }
       }
+
       if(Session.get('selectedRequest')){
-          var places= requestList.find({"_id": Session.get('selectedRequest')},{fields: {"_id":0,"location.lat":1,"location.lng":1}}).fetch();
-          getMarker(places);
+              var places= requestList.find({"_id": Session.get('selectedRequest')},{fields: {"_id":0,"location.lat":1,"location.lng":1}}).fetch();
+              getMarker(places);
 
-        } else if(Session.get('selectedClass')){
-          var places= postList.find({"_id": Session.get('selectedClass')},{fields: {"_id":0,"location.lat":1,"location.lng":1}}).fetch();
-          getMarker(places);
-      }
+            } else if(Session.get('selectedClass')){
+              var places= postList.find({"_id": Session.get('selectedClass')},{fields: {"_id":0,"location.lat":1,"location.lng":1}}).fetch();
+              getMarker(places);
+          }
+        })
+});
 
-})
-
-
-})
 
 Template.topnavbar2.events({
   'submit #search':function(event){
@@ -806,7 +955,13 @@ Template.request.events({
    Session.set('selectedEdRequest', classID);
    var selectedEdRequest = Session.get('selectedEdRequest');
    console.log(selectedEdRequest);
- }
+   var dayTimeAr=dayTime.find().fetch();
+    if(dayTimeAr!=""){
+      dayTimeAr.forEach(function(element){
+        dayTime.remove(element._id);
+      })
+    }
+  }
 });
 
 Template.editRequestForm.helpers({
@@ -814,26 +969,78 @@ Template.editRequestForm.helpers({
     return requestList.findOne({"_id": Session.get('selectedEdRequest')});
   },
 
+  dtREditOption:function(){
+  return requestList.findOne({"_id":Session.get('selectedEdRequest')}).dayTimeVar;
+
+  },
+
+  dtNewREditOption: function() {
+    var dayTimeOption= dayTime.find().fetch();
+    return dayTimeOption;
+  }
+
 });
 
 Template.editRequestForm.events({
-  'submit form':function(){
+  'submit #editRForm':function(){
     event.preventDefault();
 		var titleVarREdit = event.target.title.value;
     var imgSourceREdit = event.target.imageSource.value;
     var priceVarREdit = event.target.price.value;
     var audienceVarREdit = event.target.selectAudience.value;
+    var dayTimeVarREdit = dayTime.find().fetch();
     var skillVarREdit = event.target.selectSkill.value;
     var locationVarREdit = event.target.location.value
     var descVarREdit = event.target.desc.value;
 		var selectedEdRequest = Session.get('selectedEdRequest');
-    console.log(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,skillVarREdit,locationVarREdit, descVarREdit);
-    if (selectedEdRequest !="", titleVarREdit != "",imgSourceREdit != "",priceVarREdit!= "",audienceVarREdit!= "",skillVarREdit != "",locationVarREdit!= "", descVarREdit!= "")
+    console.log(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit);
+    if (selectedEdRequest !="", titleVarREdit != "",imgSourceREdit != "",priceVarREdit!= "",audienceVarREdit!= "",dayTimeVarREdit!="",skillVarREdit != "",locationVarREdit!= "", descVarREdit!= "")
     {
-      Meteor.call('editRequestData', selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,skillVarREdit,locationVarREdit, descVarREdit)
+      Meteor.call('editRequestData', selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit)
     }
+  
 
-}});
+
+  },
+  'click button#saveDayTimeREdit':function(event){
+    event.preventDefault();
+    var dayVarREdit = document.getElementById("selREditDay").value;
+    var timeFromREdit = document.getElementById("requestTimeFromEdit").value;
+    var timeToREdit = document.getElementById("requestTimeToEdit").value;
+    if (dayVarREdit != "" && timeFromREdit != "" && timeToREdit !="")
+    {
+      console.log(dayVarREdit, timeFromREdit, timeToREdit);
+      Meteor.call('insertDayTime', dayVarREdit, timeFromREdit, timeToREdit);
+    }
+    else
+      {
+        console.log("Empty Values in Input Day & Time")
+      }
+    document.getElementById("selREditDay").selectedIndex = 0;
+    document.getElementById("requestTimeFromEdit").value = "";
+    document.getElementById("requestTimeToEdit").value = "";
+  },
+  'click button#deleteDayTimeEdit':function(event){
+    event.preventDefault();
+    var dayTimeId=this._id;
+    console.log(dayTimeId);
+    requestList.update(Session.get('selectedEdRequest'),{
+      $pull:
+      {
+        dayTimeVar:{"_id":dayTimeId}
+      }
+    })
+  },
+
+  'click button#deleteDayTimeNewREdit':function(event){
+    event.preventDefault();
+    var dayTimeId=this._id;
+    console.log(dayTimeId);
+    dayTime.remove(dayTimeId);
+  }
+
+
+});
 
 Template.classpage.helpers({
   class: function(){
