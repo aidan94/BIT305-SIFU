@@ -333,6 +333,7 @@ Template.editForm.events({
     {
       Meteor.call('editClassData', selectedEdClass,titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit)
     }
+    $('#editClass').modal('hide');
 
   },
 
@@ -998,7 +999,7 @@ Template.editRequestForm.events({
     {
       Meteor.call('editRequestData', selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit)
     }
-  
+    $('#editRequest').modal('hide');
 
 
   },
@@ -1020,7 +1021,7 @@ Template.editRequestForm.events({
     document.getElementById("requestTimeFromEdit").value = "";
     document.getElementById("requestTimeToEdit").value = "";
   },
-  'click button#deleteDayTimeEdit':function(event){
+  'click button#deleteDayTimeREdit':function(event){
     event.preventDefault();
     var dayTimeId=this._id;
     console.log(dayTimeId);
