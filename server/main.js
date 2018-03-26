@@ -107,11 +107,11 @@ Meteor.methods({
             fileSource:imgSourceEdit,
             price:priceVarEdit,
             audience:audienceVarEdit,
-            dayTimeVar:dayTimeVarEdit,
             skill:skillVarEdit,
             location:locationVarEdit,
             description:descVarEdit
           },
+          $addToSet:{dayTimeVar:{$each:dayTimeVarEdit}},
         });
       },
 
@@ -126,7 +126,7 @@ Meteor.methods({
             location:locationVarREdit,
             description:descVarREdit
           },
-          $push:{dayTimeVar:dayTimeVarREdit},
+          $addToSet:{dayTimeVar:{$each:dayTimeVarREdit}},
         });
       }
     });
