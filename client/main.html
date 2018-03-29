@@ -905,7 +905,7 @@
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <div class="modal-body">
                       <!--Content-->
-                    <div class = "container" style = "width: 100%">
+                    <div class = "container" style = "width: 100%" id="editButton">
                         {{> editForm}}
                     </div>
                     </div>
@@ -1062,15 +1062,15 @@
             <option value="Business" class="">Business</option>
             <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
         </select>
-        </div>
-        <label class = "control-label col-sm-12 col-xs-12 col-lg-1 col-md-12">Location:</label>
-        <div class="col-xs-12 col-sm-12 col-lg-4 col-md-12">
-          <input type="text" name = "location" class="form-control" id="inputLocation" placeholder="Enter a location" required value = "{{location}}">
+      </div>
+    </div>
+    <div class = "row form-group">
+            {{> editMap}}
+    </div>
 
-        </div>
 
 
-  </div>
+
   <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
   <!--Description-->
@@ -1505,14 +1505,13 @@
             <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
         </select>
         </div>
-        <label class = "control-label col-sm-12 col-xs-12 col-lg-1 col-md-12">Location:</label>
-        <div class="col-xs-12 col-sm-12 col-lg-4 col-md-12">
-          <input type="text" name = "location" class="form-control" id="inputLocation" placeholder="Enter a location" required value = "{{location}}">
+    </div>
+    <div class = "row form-group">
+            {{> editREMap}}
+    </div>
 
-        </div>
 
 
-  </div>
   <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
   <!--Description-->
@@ -1741,8 +1740,52 @@
 
 <template name='displayMap'>
   <div class="map-container" id="dismap">
-
-
-
   </div>
+</template>
+
+<template name='editMap'>
+  <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-2 col-md-12">Location:</label>
+      <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
+
+        <p>
+          {{#each place}}
+          <button class="btn btn-primary " id=smallPlaceTab>
+            {{name}}
+            <button id="deleteLocation" class="btn btn-group"><span class="glyphicon glyphicon-remove"></span></button>
+
+          </button>
+          {{/each}}
+
+        </p>
+        <input id="map-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
+
+        <div class="map-container" id="editmap">
+        </div>
+      </div>
+
+
+</template>
+
+
+<template name='editREMap'>
+  <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-2 col-md-12">Location:</label>
+      <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
+
+        <p>
+          {{#each place}}
+          <button class="btn btn-primary " id=smallPlaceTab>
+            {{name}}
+            <button id="deleteLocation" class="btn btn-group"><span class="glyphicon glyphicon-remove"></span></button>
+
+          </button>
+          {{/each}}
+
+        </p>
+        <input id="map-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
+
+        <div class="map-container" id="editREmap">
+        </div>
+      </div>
+
+
 </template>
