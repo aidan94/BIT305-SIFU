@@ -145,6 +145,7 @@ Template.post.helpers({
     return "selected"
   }
 },
+
 });
 
 Template.newRequest.onRendered(function() {
@@ -278,6 +279,8 @@ Template.request.helpers({
 
 //Roushan's Part
 /*NEWW 10 March*/
+
+
 Template.post.events({
   'click #moreDetails': function(){
     var classID = this._id;
@@ -298,6 +301,19 @@ Template.post.events({
         dayTime.remove(element._id);
       })
     }
+    var classID=Session.get('selectedEdClass');
+    var locationInfo=postList.findOne({"_id":classID}).location;
+    locationInfo.forEach(function(element){
+      console.log(element);
+      Markers.insert({ownerClassID: classID,
+                      id:element._id,
+                      lat:element.lat,
+                      lng:element.lng,
+                      placeId:element.placeID,
+                      name: element.name,
+                      address: element.address});
+    })
+
 	},
 
   'click #removeClassBtn': function(){
@@ -314,6 +330,33 @@ Template.post.events({
     }
   }
 
+
+});
+
+Template.post.onCreated(function(){
+  $(document).ready(function(){
+    $("#editClass").on('hidden.bs.modal', function () {
+      var markerAr=Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
+
+        markerAr.forEach(function(element){
+          Markers.remove(element._id);
+        })
+
+    });
+});
+});
+
+Template.post.onCreated(function(){
+  $(document).ready(function(){
+    $("#editRequest").on('hidden.bs.modal', function () {
+      var markerAr=Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
+
+        markerAr.forEach(function(element){
+          Markers.remove(element._id);
+        })
+
+    });
+});
 });
 
 Template.editForm.events({
@@ -325,7 +368,7 @@ Template.editForm.events({
     var audienceVarEdit = event.target.selectAudience.value;
     var dayTimeVarEdit = dayTime.find().fetch();
     var skillVarEdit = event.target.selectSkill.value;
-    var locationVarEdit = event.target.location.value;
+    var locationVarEdit =Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
     var descVarEdit = event.target.desc.value;
 		var selectedEdClass = Session.get('selectedEdClass');
     console.log(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit);
@@ -333,8 +376,11 @@ Template.editForm.events({
     {
       Meteor.call('editClassData', selectedEdClass,titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit)
     }
-    $('#editClass').modal('hide');
-
+      $('#editClass').modal('hide');
+      var markerAr=Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
+      markerAr.forEach(function(element){
+      Markers.remove(element._id);
+    })
   },
 
   'click button#saveDayTimeEdit':function(event){
@@ -491,7 +537,6 @@ Template.setMap.onCreated(function() {
           map.instance.panTo(marker.position);
 
           google.maps.event.addListener(marker,'dblclick', function(event){
-            console.log("hello");
             Markers.remove(marker.id);
            });
 
@@ -910,6 +955,399 @@ Template.displayMap.onCreated(function(){
 });
 
 
+Template.editMap.helpers({
+  location:function(){
+    if(Session.get('selectedEdClass')){
+        return requestList.findOne({"_id": Session.get('selectedRequest')});
+    }
+  },
+  place: function() {
+    return Markers.find({"ownerClassID":Session.get('selectedEdClass')}).fetch();
+  },
+});
+
+Template.editMap.onRendered(function() {
+  GoogleMaps.load({
+    key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
+    libraries: 'places'});
+
+  this.autorun(function(c) {
+    if (GoogleMaps.loaded()) {
+      GoogleMaps.create({
+        name: 'editmap',
+        element: document.getElementById('editmap'),
+        options: {
+          center: new google.maps.LatLng(3.1390, 101.6869),
+          zoom: 15
+        }
+      });
+      c.stop();
+    }
+  });
+});
+
+Template.editMap.onCreated(function(){
+  var self=this;
+  var classID=Session.get('selectedEdClass');
+  console.log(classID);
+  var locationInfo=postList.findOne({"_id":classID}).location;
+
+    GoogleMaps.ready('editmap', function(map) {
+
+      var markers = [];
+      var geocoder = new google.maps.Geocoder();
+      var service = new google.maps.places.PlacesService(map.instance);
+      var input = document.getElementById('map-input');
+      var searchBox = new google.maps.places.SearchBox(input);
+      //map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+      var classType;
+
+      google.maps.event.addListener(map.instance,'bounds_change', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+      searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+          if (places.length == 0) {
+              return ;
+            }
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function(place) {
+              if (!place.geometry) {
+                console.log("Returned place contains no geometry");
+                return;
+              }
+
+              if(Markers.find({'placeID':{$eq:place.place_id}}).count()>0){
+                console.log('Place already exists');
+              }else{
+                classType=Session.get('setClassType');
+                Markers.insert(
+                { ownerClassID:classID,
+                  lat: place.geometry.location.lat(),
+                  lng: place.geometry.location.lng(),
+                  placeID: place.place_id,
+                  name:place.name,
+                  address:place.formatted_address,
+                });
+              }
+            });
+          });
+
+      google.maps.event.addListener(map.instance, 'click', function(event){
+          var latitude=event.latLng.lat();
+          var longitude=event.latLng.lng();
+          var latLng = {lat: latitude, lng: longitude};
+        geocoder.geocode({'location': latLng}, function(results, status) {
+            if (status==='OK') {
+              if( results[0]){
+                var address=results[0].formatted_address;
+                var placeID=results[0].place_id;
+              service.getDetails({placeId: placeID}, function(result, status) {
+              if (status === google.maps.places.PlacesServiceStatus.OK) {
+                //if place already marked then cannot mark again
+                if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
+                  console.log('Place already exists');
+                }else{
+                  classType=Session.get('setClassType');
+               Markers.insert({ownerClassID: Session.get('selectedEdClass'),lat: event.latLng.lat(), lng: event.latLng.lng(), placeID: placeID, name:result.name, address: address, type:classType});
+                  }
+                }
+              });
+              }
+            } else {
+              console.log('Cannot determine address at this location.');
+              }
+          });// end of geocoder
+        });//end of addListner
+      Markers.find({"ownerClassID":classID}).observe({
+         added: function(document) {
+           var marker;
+             marker = new google.maps.Marker({
+             draggable: true,
+             animation: google.maps.Animation.DROP,
+             position: new google.maps.LatLng(document.lat, document.lng),
+             map:map.instance,
+             id: document._id,
+             });
+
+             map.instance.panTo(marker.position);
+           google.maps.event.addListener(marker,'dblclick', function(event){
+             Markers.remove(marker.id);
+            });
+
+           google.maps.event.addListener(marker, 'dragend', function(event) {
+             var latitude=event.latLng.lat();
+             var longitude=event.latLng.lng();
+             var latLng = {lat: latitude, lng: longitude};
+
+             geocoder.geocode({'location': latLng}, function(results, status) {
+                 if (status==='OK') {
+                   if( results[0]){
+                     var address=results[0].formatted_address;
+                     var placeID=results[0].place_id;
+                   service.getDetails({placeId: placeID}, function(result, status) {
+                   console.log(result);
+                   if (status === google.maps.places.PlacesServiceStatus.OK) {
+                     if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
+                       console.log('Place already exists');
+                     }else{
+                   Markers.update(marker.id, { $set: { lat: event.latLng.lat(), lng: event.latLng.lng(), placeID:placeID, name:result.name, address:address}});
+
+                       }
+                     }
+                   });
+                   }
+                 } else {
+                   console.log('Cannot determine address at this location.');
+                   }
+               });// end of geocoder
+
+           });
+           // Store this marker instance within the markers object.
+           markers[document._id] = marker;
+
+            //testing
+
+            marker.addListener('click', function() {
+              var markerID=this.id;
+              var thisMarker=Markers.findOne({'_id':{$eq:markerID}});
+              console.log(thisMarker.address);
+              var contentString='<div id="content" >'+
+                      '<h2>'+thisMarker.name+'</h2>'+
+                      '<div id="bodyContent" >'+
+                      '<p>'+thisMarker.address+'</p>'+
+                      '</div>'+
+                      '</div>';
+
+              var infowindow = new google.maps.InfoWindow({
+                content:contentString,
+                maxWidth: 250,
+              });
+              console.log(markerID);
+                infowindow.open(map.instance, marker);
+            });
+          },
+         changed: function(newDocument, oldDocument) {
+             markers[newDocument._id].setPosition({ lat: newDocument.lat, lng: newDocument.lng });
+         },
+         removed: function(oldDocument) {
+
+             // Remove the marker from the map
+             markers[oldDocument._id].setMap(null);
+             // Clear the event listener
+             google.maps.event.clearInstanceListeners(
+             markers[oldDocument._id]);
+             // Remove the reference to this marker instance
+             delete markers[oldDocument._id];
+         }
+       })
+})
+})
+
+Template.editMap.events({
+  'click #deleteLocation':function(){
+      event.preventDefault();
+      var placeID=this._id;
+      Markers.remove(placeID);
+  }
+})
+
+/*edit request map*/
+Template.editREMap.helpers({
+  place: function() {
+    return Markers.find({"ownerClassID":Session.get('selectedEdRequest')}).fetch();
+  },
+});
+
+Template.editREMap.onRendered(function() {
+  GoogleMaps.load({
+    key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
+    libraries: 'places'});
+
+  this.autorun(function(c) {
+    if (GoogleMaps.loaded()) {
+      GoogleMaps.create({
+        name: 'editREmap',
+        element: document.getElementById('editREmap'),
+        options: {
+          center: new google.maps.LatLng(3.1390, 101.6869),
+          zoom: 15
+        }
+      });
+      c.stop();
+    }
+  });
+});
+
+Template.editREMap.onCreated(function(){
+  var self=this;
+  var classID=Session.get('selectedEdRequest');
+  console.log(classID);
+  var locationInfo=requestList.findOne({"_id":classID}).location;
+
+    GoogleMaps.ready('editREmap', function(map) {
+
+      var markers = [];
+      var geocoder = new google.maps.Geocoder();
+      var service = new google.maps.places.PlacesService(map.instance);
+      var input = document.getElementById('map-input');
+      var searchBox = new google.maps.places.SearchBox(input);
+      //map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+      var classType;
+
+      google.maps.event.addListener(map.instance,'bounds_change', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+      searchBox.addListener('places_changed', function() {
+          var places = searchBox.getPlaces();
+          if (places.length == 0) {
+              return ;
+            }
+            var bounds = new google.maps.LatLngBounds();
+            places.forEach(function(place) {
+              if (!place.geometry) {
+                console.log("Returned place contains no geometry");
+                return;
+              }
+
+              if(Markers.find({'placeID':{$eq:place.place_id}}).count()>0){
+                console.log('Place already exists');
+              }else{
+                classType=Session.get('setClassType');
+                Markers.insert(
+                { ownerClassID:Session.get('selectedEdRequest'),
+                  lat: place.geometry.location.lat(),
+                  lng: place.geometry.location.lng(),
+                  placeID: place.place_id,
+                  name:place.name,
+                  address:place.formatted_address,
+                });
+              }
+            });
+          });
+
+      google.maps.event.addListener(map.instance, 'click', function(event){
+          var latitude=event.latLng.lat();
+          var longitude=event.latLng.lng();
+          var latLng = {lat: latitude, lng: longitude};
+        geocoder.geocode({'location': latLng}, function(results, status) {
+            if (status==='OK') {
+              if( results[0]){
+                var address=results[0].formatted_address;
+                var placeID=results[0].place_id;
+              service.getDetails({placeId: placeID}, function(result, status) {
+              if (status === google.maps.places.PlacesServiceStatus.OK) {
+                //if place already marked then cannot mark again
+                if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
+                  console.log('Place already exists');
+                }else{
+                  classType=Session.get('setClassType');
+               Markers.insert({ownerClassID: Session.get('selectedEdRequest'),lat: event.latLng.lat(), lng: event.latLng.lng(), placeID: placeID, name:result.name, address: address, type:classType});
+                  }
+                }
+              });
+              }
+            } else {
+              console.log('Cannot determine address at this location.');
+              }
+          });// end of geocoder
+        });//end of addListner
+      Markers.find({"ownerClassID":Session.get('selectedEdRequest')}).observe({
+         added: function(document) {
+           var marker;
+             marker = new google.maps.Marker({
+             draggable: true,
+             animation: google.maps.Animation.DROP,
+             position: new google.maps.LatLng(document.lat, document.lng),
+             map:map.instance,
+             id: document._id,
+             });
+
+             map.instance.panTo(marker.position);
+           google.maps.event.addListener(marker,'dblclick', function(event){
+             Markers.remove(marker.id);
+            });
+
+           google.maps.event.addListener(marker, 'dragend', function(event) {
+             var latitude=event.latLng.lat();
+             var longitude=event.latLng.lng();
+             var latLng = {lat: latitude, lng: longitude};
+
+             geocoder.geocode({'location': latLng}, function(results, status) {
+                 if (status==='OK') {
+                   if( results[0]){
+                     var address=results[0].formatted_address;
+                     var placeID=results[0].place_id;
+                   service.getDetails({placeId: placeID}, function(result, status) {
+                   console.log(result);
+                   if (status === google.maps.places.PlacesServiceStatus.OK) {
+                     if(Markers.find({'placeID':{$eq:placeID}}).count()>0){
+                       console.log('Place already exists');
+                     }else{
+                   Markers.update(marker.id, { $set: { lat: event.latLng.lat(), lng: event.latLng.lng(), placeID:placeID, name:result.name, address:address}});
+
+                       }
+                     }
+                   });
+                   }
+                 } else {
+                   console.log('Cannot determine address at this location.');
+                   }
+               });// end of geocoder
+
+           });
+           // Store this marker instance within the markers object.
+           markers[document._id] = marker;
+
+            //testing
+
+            marker.addListener('click', function() {
+              var markerID=this.id;
+              var thisMarker=Markers.findOne({'_id':{$eq:markerID}});
+              console.log(thisMarker.address);
+              var contentString='<div id="content" >'+
+                      '<h2>'+thisMarker.name+'</h2>'+
+                      '<div id="bodyContent" >'+
+                      '<p>'+thisMarker.address+'</p>'+
+                      '</div>'+
+                      '</div>';
+
+              var infowindow = new google.maps.InfoWindow({
+                content:contentString,
+                maxWidth: 250,
+              });
+              console.log(markerID);
+                infowindow.open(map.instance, marker);
+            });
+          },
+         changed: function(newDocument, oldDocument) {
+             markers[newDocument._id].setPosition({ lat: newDocument.lat, lng: newDocument.lng });
+         },
+         removed: function(oldDocument) {
+
+             // Remove the marker from the map
+             markers[oldDocument._id].setMap(null);
+             // Clear the event listener
+             google.maps.event.clearInstanceListeners(
+             markers[oldDocument._id]);
+             // Remove the reference to this marker instance
+             delete markers[oldDocument._id];
+         }
+       })
+})
+})
+
+Template.editREMap.events({
+  'click #deleteLocation':function(){
+      event.preventDefault();
+      var placeID=this._id;
+      Markers.remove(placeID);
+  }
+})
+
+
 Template.topnavbar2.events({
   'submit #search':function(event){
     event.preventDefault();
@@ -956,12 +1394,25 @@ Template.request.events({
    Session.set('selectedEdRequest', classID);
    var selectedEdRequest = Session.get('selectedEdRequest');
    console.log(selectedEdRequest);
+
    var dayTimeAr=dayTime.find().fetch();
     if(dayTimeAr!=""){
       dayTimeAr.forEach(function(element){
         dayTime.remove(element._id);
       })
     }
+    var classID=Session.get('selectedEdRequest');
+    var locationInfo=requestList.findOne({"_id":classID}).location;
+    locationInfo.forEach(function(element){
+      console.log(element);
+      Markers.insert({ownerClassID: classID,
+                      id:element._id,
+                      lat:element.lat,
+                      lng:element.lng,
+                      placeId:element.placeID,
+                      name: element.name,
+                      address: element.address});
+    })
   }
 });
 
@@ -985,13 +1436,13 @@ Template.editRequestForm.helpers({
 Template.editRequestForm.events({
   'submit #editRForm':function(){
     event.preventDefault();
-		var titleVarREdit = event.target.title.value;
+  		var titleVarREdit = event.target.title.value;
     var imgSourceREdit = event.target.imageSource.value;
     var priceVarREdit = event.target.price.value;
     var audienceVarREdit = event.target.selectAudience.value;
-    var dayTimeVarREdit = dayTime.find().fetch();
+    var dayTimeVarREdit =dayTime.find().fetch();
     var skillVarREdit = event.target.selectSkill.value;
-    var locationVarREdit = event.target.location.value
+    var locationVarREdit =Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
     var descVarREdit = event.target.desc.value;
 		var selectedEdRequest = Session.get('selectedEdRequest');
     console.log(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit);
@@ -999,7 +1450,21 @@ Template.editRequestForm.events({
     {
       Meteor.call('editRequestData', selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit)
     }
+
+    var dayTimeAr=dayTime.find().fetch();
+    if(dayTimeAr!=""){
+
+      dayTimeAr.forEach(function(element){
+        dayTime.remove(element._id);
+      })
+    }
+    var markerAr=Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
+    markerAr.forEach(function(element){
+    Markers.remove(element._id);
+    })
     $('#editRequest').modal('hide');
+
+
 
 
   },
@@ -1033,7 +1498,7 @@ Template.editRequestForm.events({
     })
   },
 
-  'click button#deleteDayTimeNewREdit':function(event){
+  'click button#deleteDayTimeREdit':function(event){
     event.preventDefault();
     var dayTimeId=this._id;
     console.log(dayTimeId);
