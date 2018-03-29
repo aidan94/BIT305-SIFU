@@ -1498,7 +1498,7 @@ Template.editRequestForm.events({
     })
   },
 
-  'click button#deleteDayTimeREdit':function(event){
+  'click button#deleteDayTimeNewREdit':function(event){
     event.preventDefault();
     var dayTimeId=this._id;
     console.log(dayTimeId);
