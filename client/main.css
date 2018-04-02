@@ -555,7 +555,7 @@ ul#classListStyle{
 
 #capImg1 {
   margin-top: 10px;
-  /*font-size: 0.2em;*/
+
 }
 
 #searchheader {
@@ -683,4 +683,166 @@ ul#classListStyle{
 
 #deleteDayTimeNewREdit{
   background-color: transparent;
+}
+
+/*Sidebar CSS*/
+.tab {
+    border-top: none;
+    border: 1px solid #ececec;
+    background-color: #f1f1f1;
+    height: 500px;
+    padding: 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+    border:none;
+
+    display: block;
+    background-color: white;
+    color: black;
+    padding: 10px 16px;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 17px;
+    overflow-x: hidden;
+
+    text-overflow: ellipsis;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current "tab button" class */
+.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    float: left;
+    padding: 0px 12px;
+    border: 1px solid #ccc;
+    width: 70%;
+    border-left: none;
+    height: 300px;
+}
+
+.tabTitle{
+  border: 1px solid #ececec;
+  display: block;
+  background-color: white;
+  color: black;
+  padding: 18px 16px;
+  width: 100%;
+  text-align: center;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+.tabUsername{
+  border: 1px solid #ececec;
+  border-bottom: 1px solid #ccc;
+  display: block;
+  background-color: #f9f9f9;
+  color: black;
+  padding: 10px 16px;
+  width: 100%;
+  text-align: left;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+.vcenter{
+	position: relative;
+	top: 30%;
+	transform: translateY(-50%);
+  padding-left: 2%;
+}
+
+.row.vbottom{
+	position: relative;
+	top: 80%;
+	transform: translateY(-100%);
+  padding-top: 2%;
+  border-top: 1px solid #ececec;
+  margin: 0;
+}
+
+.sendMsg.btn.btn-default{
+  background-color: transparent;
+}
+
+.table {
+    border-bottom:0px !important;
+}
+.table th, .table td {
+    border: 1px !important;
+}
+.fixed-table-container {
+    border:0px !important;
+}
+
+.chatThumbnail{
+  height:50px;
+  width:60px;
+  margin-left: 4%;
+  margin-top: 2%;
+}
+
+.table.chatDetails{
+  max-width:69%;
+  margin-left:4%;
+}
+
+.table td.chatData{
+  padding: 0;
+}
+
+#chatUsername{
+  color: #474747
+}
+
+#titleChat{
+  font-weight: bold;
+  color: #474747;
+  font-size: 11pt;
+  max-width: 0;
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+#lastMsg{
+  font-size: 11pt;
+  color: #6e6e6e;
+  max-width: 0;
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+}
+
+#messageTab{
+  padding:0;
+  border-right:1px solid #ececec;
+  border-bottom:1px solid #ececec;
+}
+
+#inputMsg{
+  margin-bottom: 2%;
+}
+
+#contactMeBtn{
+  margin-top: 10%;
+  height:55px;
+  width: 100%;
+  font-size: 15pt;
+  border-radius: 10px;
 }
