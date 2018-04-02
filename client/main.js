@@ -7,22 +7,27 @@ Router.route('/profile');
 Router.route('/main');
 Router.route('/classpage');
 Router.route('/resultpage');
+Router.route('/messaging');
 /*
 Router.configure({
     layoutTemplate: 'main'
 });
 */
+Tracker.autorun(function(){
+  Meteor.subscribe("chatRooms");
+});
 
 Meteor.subscribe('thePost');
 Meteor.subscribe('theRequest');
 Meteor.subscribe("users");
+
 
 Resume = new Mongo.Collection('Resume');
 postList = new Mongo.Collection('postList');
 requestList=new Mongo.Collection('requestList');
 Markers = new Mongo.Collection('markers');
 dayTime = new Mongo.Collection('dayTime');
-
+chatRooms = new Mongo.Collection('chatRooms');
 
 Accounts.ui.config({
   passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
@@ -145,7 +150,6 @@ Template.post.helpers({
     return "selected"
   }
 },
-
 });
 
 Template.newRequest.onRendered(function() {
@@ -279,13 +283,12 @@ Template.request.helpers({
 
 //Roushan's Part
 /*NEWW 10 March*/
-
-
 Template.post.events({
   'click #moreDetails': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
-    console.log(Session.get('selectedClass'))
+    delete Session.keys['selectedRequest'];
+    console.log(Session.get('selectedClass'));
 
   },
 
@@ -313,7 +316,6 @@ Template.post.events({
                       name: element.name,
                       address: element.address});
     })
-
 	},
 
   'click #removeClassBtn': function(){
@@ -330,7 +332,6 @@ Template.post.events({
     }
   }
 
-
 });
 
 Template.post.onCreated(function(){
@@ -346,7 +347,7 @@ Template.post.onCreated(function(){
 });
 });
 
-Template.post.onCreated(function(){
+Template.request.onCreated(function(){
   $(document).ready(function(){
     $("#editRequest").on('hidden.bs.modal', function () {
       var markerAr=Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
@@ -368,7 +369,7 @@ Template.editForm.events({
     var audienceVarEdit = event.target.selectAudience.value;
     var dayTimeVarEdit = dayTime.find().fetch();
     var skillVarEdit = event.target.selectSkill.value;
-    var locationVarEdit =Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
+    var locationVarEdit = Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
     var descVarEdit = event.target.desc.value;
 		var selectedEdClass = Session.get('selectedEdClass');
     console.log(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit);
@@ -376,11 +377,12 @@ Template.editForm.events({
     {
       Meteor.call('editClassData', selectedEdClass,titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit)
     }
-      $('#editClass').modal('hide');
-      var markerAr=Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
+    $('#editClass').modal('hide');
+    var markerAr=Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
       markerAr.forEach(function(element){
       Markers.remove(element._id);
     })
+
   },
 
   'click button#saveDayTimeEdit':function(event){
@@ -537,6 +539,7 @@ Template.setMap.onCreated(function() {
           map.instance.panTo(marker.position);
 
           google.maps.event.addListener(marker,'dblclick', function(event){
+
             Markers.remove(marker.id);
            });
 
@@ -954,7 +957,6 @@ Template.displayMap.onCreated(function(){
         })
 });
 
-
 Template.editMap.helpers({
   location:function(){
     if(Session.get('selectedEdClass')){
@@ -1363,6 +1365,7 @@ Template.resultpage.events({
     var classID = this._id;
     Session.set('selectedClass', classID);
 
+
   },
 });
 
@@ -1371,7 +1374,8 @@ Template.request.events({
   'click #moreInfo': function(){
     var classID = this._id;
     Session.set('selectedRequest', classID);
-    var selectedPlayer = Session.get('selectedRequest');
+    delete Session.keys['selectedClass'];
+    var selectedRequest = Session.get('selectedRequest');
     console.log(selectedPlayer);
   },
 
@@ -1394,7 +1398,6 @@ Template.request.events({
    Session.set('selectedEdRequest', classID);
    var selectedEdRequest = Session.get('selectedEdRequest');
    console.log(selectedEdRequest);
-
    var dayTimeAr=dayTime.find().fetch();
     if(dayTimeAr!=""){
       dayTimeAr.forEach(function(element){
@@ -1436,13 +1439,13 @@ Template.editRequestForm.helpers({
 Template.editRequestForm.events({
   'submit #editRForm':function(){
     event.preventDefault();
-  		var titleVarREdit = event.target.title.value;
+		var titleVarREdit = event.target.title.value;
     var imgSourceREdit = event.target.imageSource.value;
     var priceVarREdit = event.target.price.value;
     var audienceVarREdit = event.target.selectAudience.value;
-    var dayTimeVarREdit =dayTime.find().fetch();
+    var dayTimeVarREdit = dayTime.find().fetch();
     var skillVarREdit = event.target.selectSkill.value;
-    var locationVarREdit =Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
+    var locationVarREdit = Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
     var descVarREdit = event.target.desc.value;
 		var selectedEdRequest = Session.get('selectedEdRequest');
     console.log(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit);
@@ -1450,7 +1453,6 @@ Template.editRequestForm.events({
     {
       Meteor.call('editRequestData', selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit)
     }
-
     var dayTimeAr=dayTime.find().fetch();
     if(dayTimeAr!=""){
 
@@ -1463,8 +1465,6 @@ Template.editRequestForm.events({
     Markers.remove(element._id);
     })
     $('#editRequest').modal('hide');
-
-
 
 
   },
@@ -1520,7 +1520,44 @@ Template.classpage.helpers({
 });
 
 Template.classpage.events({
+  'click #contactMeBtn': function(){
+    var selectedUserID = this.createdBy;
+    var selectedClassRequestID = this._id;
+    if(this.type == "post")
+    {
+      var fileSource = postList.findOne({"_id":selectedClassRequestID}).fileSource;
+      var title = postList.findOne({"_id":selectedClassRequestID}).title;
+    }
+    else if (this.type == "request"){
+      var fileSource = requestList.findOne({"_id":selectedClassRequestID}).fileSource;
+      var title = requestList.findOne({"_id":selectedClassRequestID}).title;
+    }
+    console.log(Session.get('selectedUserID'))
+    var findChatRoom = chatRooms.findOne({usersIDsCRID:{$all:[selectedUserID,Meteor.userId(),selectedClassRequestID]}});
+    console.log(findChatRoom);
+    if (findChatRoom)
+    {
+      //room already exist and set room
+      Session.set("roomID", findChatRoom._id);
+      console.log(Session.get('roomID'));
+    }
+    else{
+      //room does not exist and create new room
+      var newChatID = chatRooms.insert({
+        usersIDsCRID: [selectedUserID, Meteor.userId(),selectedClassRequestID],
+        classRequestID: selectedClassRequestID,
+        owner:Meteor.users.findOne({"_id":selectedUserID}).username,
+        sender:Meteor.userId(),
+        fileSource:fileSource,
+        title:title,
+        createdBy:Meteor.userId(),
+        createdTime: new Date(),
+        messages:[]
+      });
+      Session.set('roomID', newChatID)
+    }
 
+  }
 });
 
 Template.findCourse.events({
@@ -1793,4 +1830,79 @@ Template.addExp.events({
         alert("This field must contains only alphabets and numbers.[company]");
     }
 }
+});
+
+Template.chatBox.events({
+  'keydown textarea#inputMsg': function(event){
+    if(event.which==13){
+      document.getElementById("sendMsg").click();
+    }
+  },
+
+  'click button#sendMsg':function(event){
+    event.preventDefault();
+    console.log("works")
+    if(Meteor.user())
+    {
+      var username = Meteor.user().username;
+      var message = document.getElementById('inputMsg').value;
+      if (message != "")
+      {
+        chatRooms.update({"_id":Session.get('roomID')},
+        {$push:{messages:{
+          username:username,
+          text:message,
+          createdAt: new Date(),
+        }}});
+        document.getElementById('inputMsg').value="";
+      }
+    }
+    else
+    {
+      alert("Please login into your account to use the message page.")
+    }
+  },
+
+  'click #chats':function(event){
+    var selectedChat = this._id;
+    Session.set('roomID', selectedChat);
+
+  }
+});
+
+Template.chatBox.helpers({
+  'sideChats': function(){
+    var currentUserId = Meteor.userId();
+    Session.set('selectedUserId',currentUserId);
+    var selectedUserId = Session.get('selectedUserId');
+    //var test = chatRooms.find({createdBy:Session.get('selectedUserId')},{sort: {createdAt:-1}});
+    //console.log(test);
+    //return test;
+    return chatRooms.find({usersIDsCRID:currentUserId},{sort: {createdTime:-1}});
+
+
+    //,{sort:{messages.createdAt:-1}}
+    //var findMsg = chatRooms.find({"_id": Session.get('roomID')});
+    //if(findMsg){
+        //return findMsg.messages
+    //}
+  },
+
+  'usernameChat':function(){
+    var un = chatRooms.findOne({"_id": Session.get('roomID')});
+    //console.log(un);
+    return un;
+  },
+
+  'msgs':function(){
+        var findChat = chatRooms.findOne({"_id": Session.get('roomID')}).messages;
+        if(findChat){
+          return findChat;
+        }
+        else{
+          console.log("No chats to be found");
+        }
+    }
+
+
 });
