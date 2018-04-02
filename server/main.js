@@ -4,7 +4,8 @@ Members=new Mongo.Collection('Members');
 postList=new Mongo.Collection('postList');
 requestList=new Mongo.Collection('requestList');
 Markers = new Mongo.Collection('markers');
-dayTime = new Mongo.Collection('dayTime')
+dayTime = new Mongo.Collection('dayTime');
+chatRooms = new Mongo.Collection('chatRooms');
 
 
 Meteor.publish("users", function() {
