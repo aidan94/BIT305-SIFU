@@ -805,7 +805,7 @@ ul#classListStyle{
 }
 
 .table.chatDetails{
-  max-width:69%;
+  max-width:67%;
   margin-left:4%;
 }
 
@@ -840,6 +840,13 @@ ul#classListStyle{
   padding:0;
   border-right:1px solid #ececec;
   border-bottom:1px solid #ececec;
+}
+
+#senderPic{
+  width:36px;
+  height:30px;
+  margin-left: 2%;
+  display:none;
 }
 
 #inputMsg{
