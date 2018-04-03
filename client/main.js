@@ -1541,13 +1541,14 @@ Template.classpage.events({
       Session.set("roomID", findChatRoom._id);
       console.log(Session.get('roomID'));
     }
+
     else{
       //room does not exist and create new room
       var newChatID = chatRooms.insert({
         usersIDsCRID: [selectedUserID, Meteor.userId(),selectedClassRequestID],
         classRequestID: selectedClassRequestID,
         owner:Meteor.users.findOne({"_id":selectedUserID}).username,
-        sender:Meteor.userId(),
+        sender:Meteor.users.findOne({"_id":Meteor.userId()}).username,
         fileSource:fileSource,
         title:title,
         createdBy:Meteor.userId(),
@@ -1866,7 +1867,21 @@ Template.chatBox.events({
   'click #chats':function(event){
     var selectedChat = this._id;
     Session.set('roomID', selectedChat);
+    var senderUN = chatRooms.findOne({"_id": Session.get('roomID')}).sender;
+    var ownerUN = chatRooms.findOne({"_id": Session.get('roomID')}).owner;
 
+    if (senderUN == Meteor.users.findOne({"_id":Meteor.userId()}).username){
+      senderUN = ownerUN;
+      document.getElementById("senderPic").src = "https://www.svgimages.com/svg-image/s5/man-passportsize-silhouette-icon-256x256.png"
+      document.getElementById("senderPic").style.display = "block";
+      document.getElementById("senderName").innerHTML = senderUN;
+
+    }
+    else{
+      document.getElementById("senderPic").src = "https://www.svgimages.com/svg-image/s5/man-passportsize-silhouette-icon-256x256.png"
+      document.getElementById("senderPic").style.display = "block";
+      document.getElementById("senderName").innerHTML = senderUN;
+    }
   }
 });
 
@@ -1880,19 +1895,10 @@ Template.chatBox.helpers({
     //return test;
     return chatRooms.find({usersIDsCRID:currentUserId},{sort: {createdTime:-1}});
 
-
-    //,{sort:{messages.createdAt:-1}}
-    //var findMsg = chatRooms.find({"_id": Session.get('roomID')});
-    //if(findMsg){
-        //return findMsg.messages
-    //}
   },
 
-  'usernameChat':function(){
-    var un = chatRooms.findOne({"_id": Session.get('roomID')});
-    //console.log(un);
-    return un;
-  },
+  
+
 
   'msgs':function(){
         var findChat = chatRooms.findOne({"_id": Session.get('roomID')}).messages;
