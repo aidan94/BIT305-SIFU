@@ -5,6 +5,9 @@ postList=new Mongo.Collection('postList');
 requestList=new Mongo.Collection('requestList');
 Markers = new Mongo.Collection('markers');
 dayTime = new Mongo.Collection('dayTime');
+selectedSes=new Mongo.Collection ('selectedSes');
+appointment=new Mongo.Collection('appointment');
+transaction=new Mongo.Collection('transaction');
 chatRooms = new Mongo.Collection('chatRooms');
 
 
@@ -42,6 +45,8 @@ Meteor.publish('theRequest',function(){
   var currentUserId= this.userId;
   return requestList.find({createdBy:currentUserId})
 });
+
+
 
 Meteor.methods({
   'insertClassData':function(titleVar,imgSource,priceVar,audienceVar,dayTimeVar,skillVar, locationVar, descVar){
@@ -93,6 +98,42 @@ Meteor.methods({
         });
       },
 
+      'insertApp':function(session,classID,skillPvd,totalPrice,status, className,ispaid){
+        var currentUserId=this.userId;
+
+        appointment.insert({
+          session: session,
+          classID: classID,
+          skillPvd:skillPvd,
+          skillSkr:currentUserId,
+          totalPrice:totalPrice,
+          status:status,
+          title:className,
+          ispaid:ispaid
+        });
+      },
+      'insertTrans':function(transID,classID,paymentType,cardBrand,
+    cardType,userID,amount,appointmentID,paymentDate,cardExpMonth,cardExpYear,status){
+        var currentUserId=this.userId;
+          var stripe = StripeAPI("sk_test_BJQdg83NbQFbFaBlcW7dEwX6");
+
+        transaction.insert({
+          transID: transID,
+          classID: classID,
+          paymentType:paymentType,
+          cardBrand:cardBrand,
+          cardType:cardType,
+          userID:userID,
+          amount:amount,
+          appointmentID:appointmentID,
+          paymentDate:paymentDate,
+          cardExpMonth:cardExpMonth,
+          cardExpYear:cardExpYear,
+          status:status,
+
+        });
+
+      },
       'removeClass': function(selectedClass){
         postList.remove(selectedClass);
       },
@@ -129,5 +170,13 @@ Meteor.methods({
           },
           $addToSet:{dayTimeVar:{$each:dayTimeVarREdit}},
         });
+      },
+
+      'updatePayStatus':function(appID){
+        appointment.update(appID,{
+          $set:{
+            ispaid:"true",
+          }
+        })
       }
     });
