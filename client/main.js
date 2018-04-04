@@ -8,11 +8,7 @@ Router.route('/main');
 Router.route('/classpage');
 Router.route('/resultpage');
 Router.route('/messaging');
-/*
-Router.configure({
-    layoutTemplate: 'main'
-});
-*/
+
 Tracker.autorun(function(){
   Meteor.subscribe("chatRooms");
 });
@@ -21,13 +17,16 @@ Meteor.subscribe('thePost');
 Meteor.subscribe('theRequest');
 Meteor.subscribe("users");
 
-
 Resume = new Mongo.Collection('Resume');
 postList = new Mongo.Collection('postList');
 requestList=new Mongo.Collection('requestList');
 Markers = new Mongo.Collection('markers');
 dayTime = new Mongo.Collection('dayTime');
+selectedSes=new Mongo.Collection ('selectedSes');
+appointment = new Mongo.Collection('appointment');
+transaction = new Mongo.Collection('transaction');
 chatRooms = new Mongo.Collection('chatRooms');
+
 
 Accounts.ui.config({
   passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
@@ -38,6 +37,27 @@ Accounts.ui.config({
 Template.newClass.events({
   'submit #addForm':function(event){
   event.preventDefault();
+      $("textarea").keydown(function(e) {
+        if(e.keyCode === 9) { // tab was pressed
+            // get caret position/selection
+            var start = this.selectionStart;
+            var end = this.selectionEnd;
+
+            var $this = $(this);
+            var value = $this.val();
+
+            // set textarea value to: text before caret + tab + text after caret
+            $this.val(value.substring(0, start)
+                        + "\t"
+                        + value.substring(end));
+
+            // put caret at right position again (add one for the tab)
+            this.selectionStart = this.selectionEnd = start + 1;
+
+            // prevent the focus lose
+            e.preventDefault();
+        }
+    });
     var titleVar = event.target.title.value;
     var imgSource = event.target.imageSource.value;
     var priceVar = event.target.price.value;
@@ -150,6 +170,7 @@ Template.post.helpers({
     return "selected"
   }
 },
+
 });
 
 Template.newRequest.onRendered(function() {
@@ -283,12 +304,14 @@ Template.request.helpers({
 
 //Roushan's Part
 /*NEWW 10 March*/
+
+
 Template.post.events({
   'click #moreDetails': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
     delete Session.keys['selectedRequest'];
-    console.log(Session.get('selectedClass'));
+    console.log(Session.get('selectedClass'))
 
   },
 
@@ -316,6 +339,7 @@ Template.post.events({
                       name: element.name,
                       address: element.address});
     })
+
 	},
 
   'click #removeClassBtn': function(){
@@ -331,6 +355,7 @@ Template.post.events({
       console.log("cancel");
     }
   }
+
 
 });
 
@@ -369,7 +394,7 @@ Template.editForm.events({
     var audienceVarEdit = event.target.selectAudience.value;
     var dayTimeVarEdit = dayTime.find().fetch();
     var skillVarEdit = event.target.selectSkill.value;
-    var locationVarEdit = Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
+    var locationVarEdit =Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
     var descVarEdit = event.target.desc.value;
 		var selectedEdClass = Session.get('selectedEdClass');
     console.log(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit);
@@ -377,12 +402,11 @@ Template.editForm.events({
     {
       Meteor.call('editClassData', selectedEdClass,titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit)
     }
-    $('#editClass').modal('hide');
-    var markerAr=Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
+      $('#editClass').modal('hide');
+      var markerAr=Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
       markerAr.forEach(function(element){
       Markers.remove(element._id);
     })
-
   },
 
   'click button#saveDayTimeEdit':function(event){
@@ -539,7 +563,6 @@ Template.setMap.onCreated(function() {
           map.instance.panTo(marker.position);
 
           google.maps.event.addListener(marker,'dblclick', function(event){
-
             Markers.remove(marker.id);
            });
 
@@ -896,13 +919,15 @@ Template.setRMap.helpers({
 
 Template.displayMap.helpers({
   location:function(){
-    if(Session.get('selectedRequest')){
-        return requestList.findOne({"_id": Session.get('selectedRequest')});
-    } else
-    if(Session.get('selectedClass')){
-      return postList.findOne({"_id": Session.get('selectedClass')});
-    }
+      if(Session.get('selectedClass')){
+      var place= postList.findOne({"_id": Session.get('selectedClass')}).location;
+      return place;
+    }else if(Session.get('selectedRequest')){
+    var place= postList.findOne({"_id": Session.get('selectedClass')}).location;
+    return place;
   }
+  },
+
 });
 
 Template.displayMap.onRendered(function() {
@@ -925,47 +950,41 @@ Template.displayMap.onRendered(function() {
 });
 
 Template.displayMap.onCreated(function(){
+
   var self=this;
-  console.log(Session.get('selectedClass'));
+  var labels = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  var labelIndex = 0;
+
     GoogleMaps.ready('dismap', function(map) {
-      function getMarker(places){
-        for (var j in places)
-        {
-          for (var p in places[j]){
-            for (var i=0; i<places[j][p].length; i++){
-              var coords=places[j][p][i];
-               var latlng=new google.maps.LatLng(coords);
-               marker = new google.maps.Marker({
-                  position: latlng,
-                  map: map.instance,
-              });
-              map.instance.panTo(marker.position);
-              map.instance.setZoom(15);
-            }
-          }
-        }
-      }
+        var markers=[];
+        postList.find({'_id':Session.get('selectedClass')}, {fields:{location:1}}).observe({
+        added: function(document) {
+          var marker;
+          var locationAr=postList.findOne({'_id':Session.get('selectedClass')}, {fields:{location:1}}).location// Create a marker for this document
+          locationAr.forEach(function(element){
+            marker = new google.maps.Marker({
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+            position: new google.maps.LatLng(element.lat, element.lng),
+            map:map.instance,
+            id: document._id,
+            label: labels[labelIndex++ % labels.length],
 
-      if(Session.get('selectedRequest')){
-              var places= requestList.find({"_id": Session.get('selectedRequest')},{fields: {"_id":0,"location.lat":1,"location.lng":1}}).fetch();
-              getMarker(places);
-
-            } else if(Session.get('selectedClass')){
-              var places= postList.find({"_id": Session.get('selectedClass')},{fields: {"_id":0,"location.lat":1,"location.lng":1}}).fetch();
-              getMarker(places);
-          }
+            });
+          })
+          map.instance.panTo(marker.position);
+          markers[document._id] = marker;
+        },
+      })
         })
 });
 
+
 Template.editMap.helpers({
-  location:function(){
-    if(Session.get('selectedEdClass')){
-        return requestList.findOne({"_id": Session.get('selectedRequest')});
-    }
-  },
   place: function() {
     return Markers.find({"ownerClassID":Session.get('selectedEdClass')}).fetch();
   },
+
 });
 
 Template.editMap.onRendered(function() {
@@ -1347,8 +1366,357 @@ Template.editREMap.events({
       var placeID=this._id;
       Markers.remove(placeID);
   }
+});
+
+Template.payment.onRendered(function() {
+  Stripe.setPublishableKey('pk_test_y3Qb096sbp39phssCP308roZ');
+  var handler = StripeCheckout.configure({
+		key: 'pk_test_y3Qb096sbp39phssCP308roZ',
+		token: function(token) {
+      console.log(token);
+    }
+	});
 })
 
+Template.payment.events({
+    'click button': function(e) {
+        e.preventDefault();
+        var user_ID=Meteor.userId();
+        var createdTime = new Date();
+        var app=appointment.findOne({classID:Session.get('selectBookClass'),skillSkr:user_ID});
+        var amount=app.totalPrice*100;
+        StripeCheckout.open({
+            key: 'pk_test_y3Qb096sbp39phssCP308roZ',
+            amount: amount,
+            name: 'SIFU',
+            currency:'MYR',
+            description: 'Total amount : RM'+app.totalPrice,
+            panelLabel: 'Pay Now',
+            token: function(res) {
+              var transID=res.id;
+              var classID=app.classID;
+              var paymentType=res.type;
+              var cardBrand=res.card.brand;
+              var cardType=res.card.funding;
+              var userID=user_ID;
+              var amount=app.totalPrice;
+              var appointmentID=app._id;
+              var paymentDate=createdTime;
+              var cardExpMonth=res.card.exp_month;
+              var cardExpYear=res.card.exp_year;
+              var status="incoming"
+              if(res.card.cvc_check=="pass"){
+                Meteor.call('insertTrans',transID,classID,paymentType,cardBrand,
+              cardType,userID,amount,appointmentID,paymentDate,cardExpMonth,cardExpYear,status);
+              Meteor.call('updatePayStatus',app._id);
+              }
+                console.info(res);
+            }
+        });
+        $('#progTab li:eq(4) a').tab('show');
+        document.getElementById("pills-payment-tab").style.backgroundColor="blue";
+        document.getElementById("pills-success-tab").style.backgroundColor="blue";
+        document.getElementById("pills-success-tab").style.color="white";
+        document.getElementById("pills-payment-tab").style.color="white";
+        document.getElementById("pills-payment-tab").style['pointer-events']="none";
+
+    }
+});
+
+Template.bookClass.events({
+  'click #timeSelection':function(){
+    var dateInput = document.getElementById("dateInput").value;
+    var date=new Date(dateInput);
+    var dayNum = date.getDay();
+    var dayName;
+    if(dayNum==1){
+      dayName='Monday';
+    }else if(dayNum==2){
+      dayName='Tuesday';
+    }else if(dayNum==3){
+      dayName='Wednesday';
+    }else if(dayNum==4){
+      dayName='Thursday';
+    }else if(dayNum==5){
+      dayName='Friday';
+    }else if(dayNum==6){
+      dayName='Saturday';
+    }else if(dayNum==0){
+      dayName='Sunday';
+    }
+    Session.set('dayName',dayName);
+  //  var smtg=postList.findOne({ $and: [ { '_id': { $eq: Session.get('selectBookClass') } },
+    //                        { 'dayTimeVar.day': { $eq: dayName }}]}).dayTimeVar;
+    var smtg=postList.findOne({ '_id': { $eq: Session.get('selectBookClass')},'dayTimeVar.day': { $eq: dayName }}).dayTimeVar;
+    Session.set('dateSel',smtg);
+
+  },
+
+  'click #addSes':function(){
+    var userID=Meteor.userId();
+    var dateInput = document.getElementById("dateInput").value;
+    var timeInput = document.getElementById("timeSelection").value;
+
+    if (dateInput != "" && timeInput != "" )
+    {
+      selectedSes.insert({date:dateInput,sestime:timeInput,userID:userID, classID:Session.get('selectBookClass'),status:"pending"});
+    }else{
+      console.log("Empty Values in Input Date & Time")
+    }
+    document.getElementById("dateInput").value = "";
+    document.getElementById("timeSelection").value = "";
+  },
+  'click #deleteSes':function(){
+    event.preventDefault();
+    var sesID=this._id;
+    selectedSes.remove(sesID);
+  },
+  'click #confirmBook':function(){
+    event.preventDefault();
+
+    var userID=Meteor.userId();
+    var session = selectedSes.find( { 'classID':Session.get('selectBookClass') }).fetch();
+    var sessionCount=selectedSes.find( { 'classID':Session.get('selectBookClass') }).count();
+    var classID=Session.get('selectBookClass');
+    var className=postList.findOne( { '_id':Session.get('selectBookClass') }).title;
+    var skillPvd= postList.findOne( { '_id':Session.get('selectBookClass') }).createdBy;
+    var skillSkr=userID;
+    var totalPrice=Session.get('totalPayment');
+    var isPaid="false";
+    var status="processing";
+    if (sessionCount >0 && classID != "" && skillPvd!="" && skillSkr!="" && totalPrice!="")
+    {
+      Meteor.call('insertApp',session,classID,skillPvd,totalPrice, status, className,isPaid);
+
+    }else{
+      console.log("Please fill up all the fields")
+    }
+
+    var sesAr=selectedSes.find({classID:Session.get('selectBookClass')}).fetch();
+    if(sesAr!="" ){
+      sesAr.forEach(function(element){
+        selectedSes.remove(element._id);
+      })
+    }
+    $('#progTab li:eq(1) a').tab('show');
+    document.getElementById("pills-app-tab").style.backgroundColor="blue";
+    document.getElementById("pills-app-tab").style.color="white";
+    document.getElementById("pills-booking-tab").style['pointer-events']="none";
+
+  },
+  'click #checkStatus':function(){
+    event.preventDefault();
+    $('#progTab li:eq(2) a').tab('show');
+    document.getElementById("pills-status-tab").style.backgroundColor="blue";
+    document.getElementById("pills-status-tab").style.color="white";
+  },
+  'click #proceedPay':function(){
+    event.preventDefault();
+    $('#progTab li:eq(3) a').tab('show');
+    document.getElementById("pills-payment-tab").style.backgroundColor="blue";
+    document.getElementById("pills-payment-tab").style.color="white";
+  }
+
+});
+
+Template.bookClass.helpers({
+  class:function(){
+    return postList.findOne({'_id':Session.get('selectedClass')});
+  },
+  location:function(){
+      if(Session.get('selectedClass')){
+      var place= postList.findOne({"_id": Session.get('selectedClass')}).location;
+      Session.set('selectBookClass',Session.get('selectedClass'));
+      return place;
+    }else if(Session.get('selectedRequest')){
+    var place= postList.findOne({"_id": Session.get('selectedRequest')}).location;
+    Session.set('selectBookClass',Session.get('selectedRequest'));
+    return place;
+    }
+  },
+  timeAr:function(){
+    if(Session.get('selectedClass')){
+    var daytime= postList.findOne({"_id": Session.get('selectedClass')}).dayTimeVar;
+    Session.set('selectBookClass',Session.get('selectedClass'));
+    return daytime;
+  }else if(Session.get('selectedRequest')){
+  var daytime= postList.findOne({"_id": Session.get('selectedRequest')}).dayTimeVar;
+  Session.set('selectBookClass',Session.get('selectedRequest'));
+  return daytime;
+    }
+  },
+  time:function(){
+    var class1=Session.get('dateSel');
+    var bTime=Session.get('bookedTime');
+    var result=[];
+    for (var k in class1){
+      var timeObj=class1[k].timeFrom+'-'+class1[k].timeTo;
+      bTime.forEach(function(ele){
+        if(timeObj!=ele){
+          var isInArray =result.includes(class1[k]);
+          if(isInArray==false){
+            result.push(class1[k]);
+          }
+        }
+      })
+    }
+  return result;
+  },
+  selectedSes:function(){
+    return selectedSes.find({classID:Session.get('selectBookClass')}).fetch();
+  },
+  sesCount:function(){
+    return selectedSes.find({classID:Session.get('selectBookClass')}).count();
+  },
+  totalPayment:function(){
+    var price=postList.findOne({_id:Session.get('selectBookClass')}).price;
+    var quantity=selectedSes.find({classID:Session.get('selectBookClass')}).count();
+    Session.set('totalPayment',price*quantity);
+    return price*quantity;
+  },
+  appInfo:function(){
+    return appointment.findOne({classID:Session.get('selectBookClass')});
+  },
+  statusMsg:function(){
+    var status=appointment.findOne({classID:Session.get('selectBookClass')}).status;
+    if(status=="pending"){
+      return "Your booking is under processing. Please wait patiently."
+    }else if(status=="rejected"){
+      return "Sorry, your booking is being rejected."
+    }
+  },
+  sesOfApp:function(){
+    var userID=Meteor.userId();
+    var status="false";
+    var ses1=appointment.find({$and: [{classID:Session.get('selectBookClass')},{skillSkr:userID},{ispaid:"false"}]}).fetch();
+
+    console.log(ses1);
+    return ses1;
+  },
+  isApproved:function(){
+    var userID=Meteor.userId();
+    var ses2=appointment.findOne({classID:Session.get('selectBookClass'),skillSkr:userID,ispaid:"false"}).status;
+    if(ses2=='approved'){
+     return true;
+   }else if(ses2=='processing'){
+      return false;
+    }
+  },
+  transID:function(){
+    var userID=Meteor.userId();
+    var classID=appointment.findOne({classID:Session.get('selectBookClass'),skillSkr:userID}).classID;
+    return transaction.findOne({userID:userID,classID:classID,status:'incoming'});
+  },
+
+
+
+});
+
+Template.bookClass.onRendered(function() {
+  var place;
+  var times=[];
+  var disabledday=[1,2,3,4,5,6,0];
+  var dayNum;
+  if(Session.get('selectedClass')){
+    place= postList.findOne({"_id": Session.get('selectedClass')}).dayTimeVar;
+    Session.set('selBook',Session.get('selectedClass'));
+  }else if(Session.get('selectedRequest')){
+    place= postList.findOne({"_id": Session.get('selectedClass')}).dayTimeVar;
+    Session.set('selBook',Session.get('selectedRequest'));
+  }
+  place.forEach(function(element){
+    if(element.day=='Monday'){
+      dayNum=1;
+    }else if(element.day=='Tuesday'){
+      dayNum=2;
+    }else if(element.day=='Wednesday'){
+      dayNum=3;
+    }else if(element.day=='Thursday'){
+      dayNum=4;
+    }else if(element.day=='Friday'){
+      dayNum=5;
+    }else if(element.day=='Saturday'){
+      dayNum=6;
+    }else if(element.day=='Sunday'){
+      dayNum=0;
+    }
+    var index = disabledday.indexOf(dayNum);
+    times.push(dayNum);
+    disabledday.splice(index, 1);
+  })
+  var matchApp=appointment.find({classID:Session.get('selBook')}).count();
+  var matchDate=[];
+  var matchTime=[];
+
+  if(matchApp>0){
+    var matchAppAr=appointment.find({classID:Session.get('selBook')}).fetch();
+    matchAppAr.forEach(function(element){
+      var session=element.session;
+      for( var j in session){
+        var time=session[j].sestime;
+        var appDate=session[j].date;
+        console.log(appDate);
+        var date=new Date(appDate);
+        var dayNum = date.getDay();
+        var dayName;
+        if(dayNum==1){
+          dayName='Monday';
+        }else if(dayNum==2){
+          dayName='Tuesday';
+        }else if(dayNum==3){
+          dayName='Wednesday';
+        }else if(dayNum==4){
+          dayName='Thursday';
+        }else if(dayNum==5){
+          dayName='Friday';
+        }else if(dayNum==6){
+          dayName='Saturday';
+        }else if(dayNum==0){
+          dayName='Sunday';
+        }
+        console.log(dayName);
+        var postAr=postList.findOne({_id:Session.get('selBook'),"dayTimeVar.day":dayName}).dayTimeVar;
+        for (var k in postAr){
+          function checkDay(x) {
+              return x.day==dayName;
+          }
+          function checkDT(x) {
+              var postTime=x.timeFrom+'-'+x.timeTo;
+              return postTime==time;
+          }
+          if(postAr[k].day==dayName)
+          {
+            var matchDateAr=postAr.filter(checkDay);
+            var matchDTAr=matchDateAr.filter(checkDT);
+            var disDate=[];
+            var disTime=[];
+            if(matchDateAr.length==matchDTAr.length){
+              disDate.push(appDate);
+            //  disTime.push(time);
+            }else if(matchDateAr.length>matchDTAr.length){
+            //  matchDate.push(appDate);
+
+            matchTime.push(time);
+            Session.set('bookedTime',matchTime);
+
+              }
+          }
+        }
+      }
+    })
+  }
+
+  this.$('#datetimepicker').datepicker({
+   daysOfWeekHighlighted: times,
+   daysOfWeekDisabled: disabledday,
+   autoclose: true,
+   format: 'mm-dd-yyyy',
+   datesDisabled:matchDate
+
+
+  });
+
+  });
 
 Template.topnavbar2.events({
   'submit #search':function(event){
@@ -1365,7 +1733,6 @@ Template.resultpage.events({
     var classID = this._id;
     Session.set('selectedClass', classID);
 
-
   },
 });
 
@@ -1375,7 +1742,7 @@ Template.request.events({
     var classID = this._id;
     Session.set('selectedRequest', classID);
     delete Session.keys['selectedClass'];
-    var selectedRequest = Session.get('selectedRequest');
+    var selectedPlayer = Session.get('selectedRequest');
     console.log(selectedPlayer);
   },
 
@@ -1398,6 +1765,7 @@ Template.request.events({
    Session.set('selectedEdRequest', classID);
    var selectedEdRequest = Session.get('selectedEdRequest');
    console.log(selectedEdRequest);
+
    var dayTimeAr=dayTime.find().fetch();
     if(dayTimeAr!=""){
       dayTimeAr.forEach(function(element){
@@ -1439,13 +1807,13 @@ Template.editRequestForm.helpers({
 Template.editRequestForm.events({
   'submit #editRForm':function(){
     event.preventDefault();
-		var titleVarREdit = event.target.title.value;
+  		var titleVarREdit = event.target.title.value;
     var imgSourceREdit = event.target.imageSource.value;
     var priceVarREdit = event.target.price.value;
     var audienceVarREdit = event.target.selectAudience.value;
-    var dayTimeVarREdit = dayTime.find().fetch();
+    var dayTimeVarREdit =dayTime.find().fetch();
     var skillVarREdit = event.target.selectSkill.value;
-    var locationVarREdit = Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
+    var locationVarREdit =Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
     var descVarREdit = event.target.desc.value;
 		var selectedEdRequest = Session.get('selectedEdRequest');
     console.log(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit);
@@ -1453,6 +1821,7 @@ Template.editRequestForm.events({
     {
       Meteor.call('editRequestData', selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit)
     }
+
     var dayTimeAr=dayTime.find().fetch();
     if(dayTimeAr!=""){
 
@@ -1465,6 +1834,8 @@ Template.editRequestForm.events({
     Markers.remove(element._id);
     })
     $('#editRequest').modal('hide');
+
+
 
 
   },
@@ -1512,53 +1883,102 @@ Template.classpage.helpers({
   class: function(){
     if(Session.get('selectedRequest')){
         return requestList.findOne({"_id": Session.get('selectedRequest')});
-    } else
+    }
     if(Session.get('selectedClass')){
       return postList.findOne({"_id": Session.get('selectedClass')});
     }
   }
 });
+Template.classpage.onRendered(function(){
 
+})
 Template.classpage.events({
+  'click #bookBtn':function(){
+    var userID=Meteor.userId();
+
+    var ses1=appointment.find({$and: [{classID:Session.get('selectBookClass')},{skillSkr:userID},{status:'approved'}]}).count();
+    console.log(ses1);
+    if(ses1>0){
+      var isPaid1=appointment.find({$and: [{classID:Session.get('selectBookClass')},{skillSkr:userID},{ispaid:"true"},{status:'approved'}]}).count();
+      console.log(isPaid1);
+      //  var isPaid=transaction.findOne({userID:userID,classID:Session.get('selectBookClass')},status:"incoming").count();
+        if(isPaid1>0){
+          $('#progTab li:eq(4) a').tab('show');
+          document.getElementById("pills-status-tab").style.backgroundColor="blue";
+          document.getElementById("pills-status-tab").style.color="white";
+          document.getElementById("pills-app-tab").style.backgroundColor="blue";
+          document.getElementById("pills-app-tab").style.color="white";
+          document.getElementById("pills-payment-tab").style.backgroundColor="blue";
+          document.getElementById("pills-payment-tab").style.color="white";
+          document.getElementById("pills-success-tab").style.backgroundColor="blue";
+          document.getElementById("pills-success-tab").style.color="white";
+          document.getElementById("pills-app-tab").style['pointer-events']="none";
+          document.getElementById("pills-booking-tab").style['pointer-events']="none";
+        }else{
+        $('#progTab li:eq(2) a').tab('show');
+        document.getElementById("pills-status-tab").style.backgroundColor="blue";
+        document.getElementById("pills-status-tab").style.color="white";
+        document.getElementById("pills-app-tab").style.backgroundColor="blue";
+        document.getElementById("pills-app-tab").style.color="white";
+        document.getElementById("pills-app-tab").style['pointer-events']="none";
+        document.getElementById("pills-booking-tab").style['pointer-events']="none";
+      }
+    }else{
+      $('#progTab li:eq(0) a').tab('show');
+      document.getElementById("pills-status-tab").style.backgroundColor="#ededed";
+      document.getElementById("pills-status-tab").style.color="blue";
+      document.getElementById("pills-app-tab").style.backgroundColor="#ededed";
+      document.getElementById("pills-app-tab").style.color="blue";
+      document.getElementById("pills-booking-tab").style.backgroundColor="#ededed";
+      document.getElementById("pills-booking-tab").style.color="white";
+      document.getElementById("pills-app-tab").style['pointer-events']="none";
+
+    }
+    var selSes=selectedSes.find().fetch();
+    if(selSes!="" ){
+      selSes.forEach(function(element){
+        selectedSes.remove(element._id);
+      })
+    }
+  },
   'click #contactMeBtn': function(){
-    var selectedUserID = this.createdBy;
-    var selectedClassRequestID = this._id;
-    if(this.type == "post")
-    {
-      var fileSource = postList.findOne({"_id":selectedClassRequestID}).fileSource;
-      var title = postList.findOne({"_id":selectedClassRequestID}).title;
-    }
-    else if (this.type == "request"){
-      var fileSource = requestList.findOne({"_id":selectedClassRequestID}).fileSource;
-      var title = requestList.findOne({"_id":selectedClassRequestID}).title;
-    }
-    console.log(Session.get('selectedUserID'))
-    var findChatRoom = chatRooms.findOne({usersIDsCRID:{$all:[selectedUserID,Meteor.userId(),selectedClassRequestID]}});
-    console.log(findChatRoom);
-    if (findChatRoom)
-    {
-      //room already exist and set room
-      Session.set("roomID", findChatRoom._id);
-      console.log(Session.get('roomID'));
-    }
-
-    else{
-      //room does not exist and create new room
-      var newChatID = chatRooms.insert({
-        usersIDsCRID: [selectedUserID, Meteor.userId(),selectedClassRequestID],
-        classRequestID: selectedClassRequestID,
-        owner:Meteor.users.findOne({"_id":selectedUserID}).username,
-        sender:Meteor.users.findOne({"_id":Meteor.userId()}).username,
-        fileSource:fileSource,
-        title:title,
-        createdBy:Meteor.userId(),
-        createdTime: new Date(),
-        messages:[]
-      });
-      Session.set('roomID', newChatID)
-    }
-
+  var selectedUserID = this.createdBy;
+  var selectedClassRequestID = this._id;
+  if(this.type == "post")
+  {
+    var fileSource = postList.findOne({"_id":selectedClassRequestID}).fileSource;
+    var title = postList.findOne({"_id":selectedClassRequestID}).title;
   }
+  else if (this.type == "request"){
+    var fileSource = requestList.findOne({"_id":selectedClassRequestID}).fileSource;
+    var title = requestList.findOne({"_id":selectedClassRequestID}).title;
+  }
+  console.log(Session.get('selectedUserID'))
+  var findChatRoom = chatRooms.findOne({usersIDsCRID:{$all:[selectedUserID,Meteor.userId(),selectedClassRequestID]}});
+  console.log(findChatRoom);
+  if (findChatRoom)
+  {
+    //room already exist and set room
+    Session.set("roomID", findChatRoom._id);
+    console.log(Session.get('roomID'));
+  }
+  else{
+    //room does not exist and create new room
+    var newChatID = chatRooms.insert({
+      usersIDsCRID: [selectedUserID, Meteor.userId(),selectedClassRequestID],
+      classRequestID: selectedClassRequestID,
+      owner:Meteor.users.findOne({"_id":selectedUserID}).username,
+      sender:Meteor.users.findOne({"_id":Meteor.userId()}).username,
+      fileSource:fileSource,
+      title:title,
+      createdBy:Meteor.userId(),
+      createdTime: new Date(),
+      messages:[]
+    });
+    Session.set('roomID', newChatID)
+  }
+
+}
 });
 
 Template.findCourse.events({
@@ -1896,9 +2316,6 @@ Template.chatBox.helpers({
     return chatRooms.find({usersIDsCRID:currentUserId},{sort: {createdTime:-1}});
 
   },
-
-  
-
 
   'msgs':function(){
         var findChat = chatRooms.findOne({"_id": Session.get('roomID')}).messages;
