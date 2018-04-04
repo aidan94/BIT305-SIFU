@@ -513,8 +513,14 @@ ul#classListStyle{
 }
 
 #classPageTabContent{
-  padding-top: 3em;
+  padding-top: 2em;
 }
+
+#timetable{
+    font-size: 1em;
+    padding:0 10px;
+}
+
 
 #classListStyle li{
   margin-top: 5px;
@@ -555,7 +561,6 @@ ul#classListStyle{
 
 #capImg1 {
   margin-top: 10px;
-
 }
 
 #searchheader {
@@ -568,6 +573,13 @@ ul#classListStyle{
 }
 
 /*MAP*/
+#placeTab {
+background-color: transparent;
+box-shadow:none;
+border: 1px solid grey;
+border-radius: 5px;
+}
+
 .map-container {
   width: 800px;
   max-width: 100%;
@@ -621,9 +633,23 @@ ul#classListStyle{
   border-color: #4d90fe;
 }
 
+#map-input {
+  background-color: #fff;
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 300;
+  margin-left: 0 12px;
+  padding: 0 11px 0 13px;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+#map-input:focus {
+  border-color: #4d90fe;
+}
+
 #title {
-  color: #fff;
-  background-color: #4d90fe;
+  color: black;
   font-size: 25px;
   font-weight: 500;
   padding: 6px 12px;
@@ -646,6 +672,21 @@ ul#classListStyle{
        display: inline;
      }
 
+/*location details page tab*/
+#tabsitem{
+  border-radius: 4px;
+  background-color: #ccebff;
+  margin-right: 5px;
+}
+#tabsitem a{
+  color: black;
+}
+
+#pills-Content .tab-pane{
+  background-color: #e6f5ff;
+  padding: 10px;
+  border-radius: 5px;
+}
 /*modal*/
 .modal {
   z-index: 2;
@@ -685,178 +726,219 @@ ul#classListStyle{
   background-color: transparent;
 }
 
-/*Sidebar CSS*/
-.tab {
-    border-top: none;
-    border: 1px solid #ececec;
-    background-color: #f1f1f1;
-    height: 500px;
-    padding: 0;
-    overflow-y: scroll;
-    overflow-x: hidden;
-
-}
-
-/* Style the buttons inside the tab */
-.tab button {
-    border:none;
-
-    display: block;
-    background-color: white;
-    color: black;
-    padding: 10px 16px;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-    transition: 0.3s;
-    font-size: 17px;
-    overflow-x: hidden;
-
-    text-overflow: ellipsis;
-}
-
-/* Change background color of buttons on hover */
-.tab button:hover {
-    background-color: #ddd;
-}
-
-/* Create an active/current "tab button" class */
-.tab button.active {
-    background-color: #ccc;
-}
-
-/* Style the tab content */
-.tabcontent {
-    float: left;
-    padding: 0px 12px;
-    border: 1px solid #ccc;
-    width: 70%;
-    border-left: none;
-    height: 300px;
-}
-
-.tabTitle{
-  border: 1px solid #ececec;
-  display: block;
-  background-color: white;
-  color: black;
-  padding: 18px 16px;
-  width: 100%;
-  text-align: center;
-  transition: 0.3s;
-  font-size: 17px;
-}
-
-.tabUsername{
-  border: 1px solid #ececec;
-  border-bottom: 1px solid #ccc;
-  display: block;
-  background-color: #f9f9f9;
-  color: black;
-  padding: 10px 16px;
-  width: 100%;
-  text-align: left;
-  transition: 0.3s;
-  font-size: 17px;
-}
-
-.vcenter{
-	position: absolute;
-	/*top: 30%;
-	transform: translateY(-50%);*/
-  padding-left: 2%;
-  width:100%;
-  height:70%;
-  max-width: 100%;
-  overflow-y: scroll;
-  word-wrap: break-word;
-
-}
-
-.row.vbottom{
-	position: absolute;
-	top: 100%;
-	transform: translateY(-100%);
-  padding-top: 2%;
-  border-top: 1px solid #ececec;
-  margin: 0;
-  width:100%
-}
-
-.sendMsg.btn.btn-default{
+#deleteSes{
   background-color: transparent;
 }
 
-.table {
-    border-bottom:0px !important;
-}
-.table th, .table td {
-    border: 1px !important;
-}
-.fixed-table-container {
-    border:0px !important;
-}
-
-.chatThumbnail{
-  height:50px;
-  width:60px;
-  margin-left: 4%;
-  margin-top: 2%;
-}
-
-.table.chatDetails{
-  max-width:67%;
-  margin-left:4%;
-}
-
-.table td.chatData{
-  padding: 0;
-}
-
-#chatUsername{
-  color: #474747
-}
-
-#titleChat{
-  font-weight: bold;
-  color: #474747;
-  font-size: 11pt;
-  max-width: 0;
-  white-space: nowrap;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-}
-
-#lastMsg{
-  font-size: 11pt;
-  color: #6e6e6e;
-  max-width: 0;
-  white-space: nowrap;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-}
-
-#messageTab{
-  padding:0;
-  border-right:1px solid #ececec;
-  border-bottom:1px solid #ececec;
-}
-
-#senderPic{
-  width:36px;
-  height:30px;
-  margin-left: 2%;
-  display:none;
-}
-
-#inputMsg{
-  margin-bottom: 2%;
-}
-
-#contactMeBtn{
-  margin-top: 10%;
-  height:55px;
+/*Class Page*/
+#bookBtn{
   width: 100%;
-  font-size: 15pt;
-  border-radius: 10px;
 }
+
+#bookClassLabel{
+  width:100%;
+  text-align: center;
+  font-weight: bold;
+}
+
+#sesBtn{
+  padding-bottom: 1em;
+}
+
+#divider{
+  border-top: .5px solid grey;
+}
+
+#payment {
+  margin-left: 20px;
+}
+
+#submitBtn{
+  margin: 0 10px;
+}
+ #pills-booking-tab{
+   background-color: blue !important;
+   color:white;
+ }
+
+#progTab .nav-item .nav-link{
+   background-color: #ededed;
+   color:blue;
+
+ }
+
+ #progTab .nav-item .nav-link a:active{
+    background-color: blue;
+
+  }
+
+ .nav-item .cntCl{
+   pointer-events: none;
+ }
+
+ /*Sidebar CSS*/
+ .tab {
+     border-top: none;
+     border: 1px solid #ececec;
+     background-color: #f1f1f1;
+     height: 500px;
+     padding: 0;
+     overflow-y: scroll;
+     overflow-x: hidden;
+
+ }
+
+ /* Style the buttons inside the tab */
+ .tab button {
+     border:none;
+
+     display: block;
+     background-color: white;
+     color: black;
+     padding: 10px 16px;
+     width: 100%;
+     text-align: left;
+     cursor: pointer;
+     transition: 0.3s;
+     font-size: 17px;
+     overflow-x: hidden;
+
+     text-overflow: ellipsis;
+ }
+
+ /* Change background color of buttons on hover */
+ .tab button:hover {
+     background-color: #ddd;
+ }
+
+ /* Create an active/current "tab button" class */
+ .tab button.active {
+     background-color: #ccc;
+ }
+
+ /* Style the tab content */
+ .tabcontent {
+     float: left;
+     padding: 0px 12px;
+     border: 1px solid #ccc;
+     width: 70%;
+     border-left: none;
+     height: 300px;
+ }
+
+ .tabTitle{
+   border: 1px solid #ececec;
+   display: block;
+   background-color: white;
+   color: black;
+   padding: 18px 16px;
+   width: 100%;
+   text-align: center;
+   transition: 0.3s;
+   font-size: 17px;
+ }
+
+ .tabUsername{
+   border: 1px solid #ececec;
+   border-bottom: 1px solid #ccc;
+   display: block;
+   background-color: #f9f9f9;
+   color: black;
+   padding: 10px 16px;
+   width: 100%;
+   text-align: left;
+   transition: 0.3s;
+   font-size: 17px;
+ }
+
+ .vcenter{
+ 	position: relative;
+ 	top: 30%;
+ 	transform: translateY(-50%);
+   padding-left: 2%;
+ }
+
+ .row.vbottom{
+ 	position: relative;
+ 	top: 80%;
+ 	transform: translateY(-100%);
+   padding-top: 2%;
+   border-top: 1px solid #ececec;
+   margin: 0;
+ }
+
+ .sendMsg.btn.btn-default{
+   background-color: transparent;
+ }
+
+ .table {
+     border-bottom:0px !important;
+ }
+ .table th, .table td {
+     border: 1px !important;
+ }
+ .fixed-table-container {
+     border:0px !important;
+ }
+
+ .chatThumbnail{
+   height:50px;
+   width:60px;
+   margin-left: 4%;
+   margin-top: 2%;
+ }
+
+ .table.chatDetails{
+   max-width:67%;
+   margin-left:4%;
+ }
+
+ .table td.chatData{
+   padding: 0;
+ }
+
+ #chatUsername{
+   color: #474747
+ }
+
+ #titleChat{
+   font-weight: bold;
+   color: #474747;
+   font-size: 11pt;
+   max-width: 0;
+   white-space: nowrap;
+   overflow-x: hidden;
+   text-overflow: ellipsis;
+ }
+
+ #lastMsg{
+   font-size: 11pt;
+   color: #6e6e6e;
+   max-width: 0;
+   white-space: nowrap;
+   overflow-x: hidden;
+   text-overflow: ellipsis;
+ }
+
+ #messageTab{
+   padding:0;
+   border-right:1px solid #ececec;
+   border-bottom:1px solid #ececec;
+ }
+ #senderPic{
+   width:36px;
+   height:30px;
+   margin-left: 2%;
+   display:none;
+ }
+ #inputMsg{
+   margin-bottom: 2%;
+ }
+
+ #contactMeBtn{
+   margin-top: 10%;
+   height:55px;
+   width: 100%;
+   font-size: 15pt;
+   border-radius: 10px;
+ }
