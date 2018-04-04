@@ -1,6 +1,7 @@
 <head>
   <link href="img/icon.ico" rel="icon">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 
   <!--Bootrap V4.0 and javascript-->
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
@@ -13,8 +14,16 @@
   <script src="dist/js/jquery.bootstrap-responsive-tabs.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <script src="https://checkout.stripe.com/v2/checkout.js"></script>
+
   <!--Google Map API-->
  <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA&libraries=places"></script>
+
+
+
+
+
+
 
 
   <title>Sifu</title>
@@ -93,6 +102,9 @@
             <a class="nav-link js-scroll-trigger" href="#about">About</a>
           </li>
           <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="#team">Team</a>
+          </li>
+          <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="#contact">Contact</a>
           </li>
         </ul>
@@ -108,18 +120,7 @@
           <div class="row">
               <div class="col-lg-12">
                   <p>Copyright &copy; Your Website 2018</p>
-                  <br>
-                  <br>
-                  <br>
-                  <br>
-                  <br>
-                  <br>
-                  <br>
-                  <br>
-                  <br>
-                  <br>
-                  <br>
-                  <br>
+                  <br><br><br><br><br><br><br><br><br><br><br>
               </div>
               <!-- /.col-lg-12 -->
           </div>
@@ -778,13 +779,28 @@
 	    <div class="container" >
 	      {{#with class}}
 	      <div id="containerStyle">
-	        <div class="row" id="title">
-	          {{title}}
-	        </div>
+          <div class="row" id="horizontalLine">
+            <div class="col-lg-10" >
+              <div class="row" id="title">
+    	          {{title}}
+    	        </div>
 
-	        <div class="row" id="horizontalLine">
-	          Category :  <a href="#">{{skill}}</a>
-	        </div>
+    	        <div class="row" >
+    	          Category :  <a href="#">{{skill}}</a>
+    	        </div>
+            </div>
+            <div class="col-lg-2" >
+              <button type="button" id="bookBtn" class="btn btn-primary" data-toggle="modal" data-target="#bookClassModal">
+              Book Now
+              </button>
+              {{> bookClass}}
+
+
+
+            </div>
+          </div>
+
+
 
 	        <div class="row">
 	          <div class="col-lg-6 col-sm-12">
@@ -796,8 +812,6 @@
 	          <div class="col-lg-6 col-sm-12">
 	          <ul id="classListStyle">
 	            <li>Tutor: <a href="#"> {{owner}}</a></li>
-	            <li>Day: {{day}}</li>
-	            <li>Time: {{time}}</li>
 	            <li>Price: RM{{price}}/class</li>
 	          </ul>
 	          </div>
@@ -824,10 +838,34 @@
 	              <!-- Tab panes -->
 	              <div class="tab-content" id="classPageTabContent">
 	                <div class="tab-pane active" id="about" role="tabpanel">
-	                  <h3>About This Class</h3>
-	                  <p>
+	                  <h3>Time Table for this class:</h3>
+                    <div class="row" id="timetable">
+                      <table class="table">
+                        <thead class="thead-light">
+                          <th>Date</th>
+                          <th>Time Start</th>
+                          <th>Time End</th>
+                        </thead>
+                        <tbody>
+                          {{#each dayTimeVar}}
+                          <tr>
+                            <td>{{day}}</td>
+                            <td>{{timeFrom }}</td>
+                            <td>{{timeTo}}</td>
+                          </tr>
+                          {{/each}}
+                        </tbody>
+
+                      </table>
+
+                  </div>
+                  <div class="row">
+                    <p>
 	                    {{description}}
 	                  </p>
+
+                  </div>
+
 	                </div>
 	                <div class="tab-pane" id="photos" role="tabpanel">...</div>
 	                <div class="tab-pane" id="review" role="tabpanel">...</div>
@@ -878,6 +916,7 @@
 
 	    </div>
       {{> footer}}
+
 	  </div>
 
 
@@ -924,8 +963,7 @@
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <div class="modal-body">
                       <!--Content-->
-                      <div class = "container" style = "width: 100%" id="editButton">
-
+                    <div class = "container" style = "width: 100%" id="editButton">
                         {{> editForm}}
                     </div>
                     </div>
@@ -1082,12 +1120,15 @@
             <option value="Business" class="">Business</option>
             <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
         </select>
-        </div>
       </div>
-        <div class = "row form-group">
-           {{> editMap}}
+    </div>
+    <div class = "row form-group">
+            {{> editMap}}
+    </div>
 
-         </div>
+
+
+
   <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
   <!--Description-->
@@ -1107,6 +1148,7 @@
   {{/with}}
   </form>
 </template>
+
 
 <template name="newRequest">
 
@@ -1522,13 +1564,13 @@
             <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
         </select>
         </div>
+    </div>
+    <div class = "row form-group">
+            {{> editREMap}}
+    </div>
 
 
-        </div>
-          <div class = "row form-group">
-          {{> editREMap}}
 
-        </div>
   <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
   <!--Description-->
@@ -1688,6 +1730,11 @@
                 <h5>RM {{price}} / Class</h5>
                 <p>
                   <a href="/classpage" class=" btn btn-primary " role="button" id="moreInfo">More</a>
+
+
+                  <span class="input-group-btn">
+                    <button class="btn btn-primary" id="removeClassBtn" type="button"><span class="glyphicon glyphicon-calendar" aria-hidden="true" id="remove_icon"></span></button>
+                  </span>
                 </p>
 
               </div>
@@ -1756,6 +1803,21 @@
 </template>
 
 <template name='displayMap'>
+  <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+    {{#each location}}
+    <li class="nav-item" id="tabsitem">
+      <a class="nav-link " id="pills-{{placeID}}-tab" data-toggle="pill" href="#pills-{{placeID}}" role="tab" aria-controls="pills-{{placeID}}" >{{name}}</a>
+    </li>
+    {{/each}}
+  </ul>
+
+  <div class="tab-content" id="pills-Content">
+    {{#each location}}
+    <div class="tab-pane " id="pills-{{placeID}}" role="tabpanel" aria-labelledby="pills-{{placeID}}-tab">{{address}}</div>
+    {{/each}}
+
+  </div>
+
   <div class="map-container" id="dismap">
   </div>
 </template>
@@ -1783,6 +1845,7 @@
 
 </template>
 
+
 <template name='editREMap'>
   <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-2 col-md-12">Location:</label>
       <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
@@ -1800,19 +1863,272 @@
         <input id="map-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
 
         <div class="map-container" id="editREmap">
-
-
-
-
-
         </div>
-
-
-
-
       </div>
 
 
+</template>
+
+<template name="bookClass">
+  <div class="modal fade" id="bookClassModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content" id="modalCont">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookClassLabel">
+            <img src="book.png" width="30px"/>Book Class
+          </h5>
+
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <!--FORM -->
+        <div class="modal-body">
+          <form class="custom-form-horizontal" id ="bookClass" data-toggle="validator" role="form">
+            {{#with class}}
+            <ul class="nav nav-fill" id="progTab" >
+              <li class="nav-item">
+                <a class="nav-link active" id="pills-booking-tab" data-toggle="pill" href="#pills-booking" role="tab" aria-controls="pills-booking" aria-selected="true">Booking</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link cntCl" id="pills-app-tab" data-toggle="pill" href="#pills-app" role="tab" aria-controls="pills-app" aria-selected="false" >Appointment Sent</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link cntCl" id="pills-status-tab" data-toggle="pill" href="#pills-status" role="tab" aria-controls="pills-status" aria-selected="false">Status</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link cntCl" id="pills-payment-tab" data-toggle="pill" href="#pills-payment" role="tab" aria-controls="pills-payment" aria-selected="false">Payment</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link cntCl" id="pills-success-tab" data-toggle="pill" href="#pills-success" role="tab" aria-controls="pills-success" aria-selected="false">Success!</a>
+              </li>
+            </ul>
+
+
+            <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-booking" role="tabpanel" aria-labelledby="pills-booking-tab">
+              <div class="form-group">
+                <div class="row">
+                  <label class="control-label col-sm-4 col-4 col-lg-3 col-md-4">Title:</label>
+                  <div class="col-8 col-sm-8 col-lg-9 col-md-8">
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{title}}">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="row">
+                  <label class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4">Skill Provide by:</label>
+                  <div class="col-xs-8 col-sm-8 col-lg-9 col-md-8">
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{owner}}">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="row">
+                  <label class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4">Location:</label>
+                  <div class="col-xs-8 col-sm-8 col-lg-9 col-md-8">
+                    <select id="inputLocation" class="form-control">
+                      <option disabled>Choose one location</option>
+                      {{#each location}}
+                      <option>{{name}}</option>
+                      {{/each}}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="row">
+                  <label class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4 col-xl-3">Session:</label>
+                  <div class="col-xs-3 col-sm-3 col-lg-3 col-xl-3 col-md-3" id="datepicker">
+                    <div class="input-group date" id="datetimepicker" data-provide="datepicker">
+                       <input type='text' class="form-control"  id="dateInput"/>
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                       </div>
+                  </div>
+                  <div class="col-xs-4 col-sm-4 col-lg-3 col-md-4 col-xl-3">
+                    <select id="timeSelection" class="form-control">
+                      <option disabled>Choose one session</option>
+                      {{#each time}}
+                      <option>
+                        {{timeFrom}}-{{timeTo}}
+                      </option>
+                      {{/each}}
+                    </select>
+                  </div>
+
+                </div>
+                <div class="row">
+                  <div class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4 col-xl-3">
+                  </div>
+                  <div class="col-sm-3 col-lg-3 col-xl-3 col-md-3 ">
+                    <button type="button" name="addSes" id= "addSes" class="btn btn-default btn-block" >Add Session</button>
+                  </div>
+                </div>
+              </div>
+
+                <div class="form-group" id="horizontalLine">
+                  <div class="row">
+                    <label class="control-label col-sm-0 col-xs-0 col-lg-3 col-md-0 "></label>
+                    <div class="col-xs-12 col-sm-12 col-lg-9 col-md-12" id="sesBtn" >
+
+                      {{#each selectedSes}}
+                        <button class="btn btn-primary " id=smallPlaceTab>
+                        {{date}}  ({{sestime}})
+                        <button id="deleteSes" class="btn btn-group"><span class="glyphicon glyphicon-remove"></span></button>
+                        </button>
+                      {{/each}}
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group" id="payment">
+                  <div class="row">
+                    <p>
+                      <h2><b>Payment Details</b></h2>
+                    </p>
+                  </div>
+                  <div class="row">
+                    <label class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4">Total sessions: </label>
+                    <div class="col-xs-8 col-sm-8 col-lg-8 col-md-8">
+                        {{sesCount}}
+                    </div>
+                  </div>
+                  <div class="row" >
+                    <label class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4">Price per class: </label>
+                    <div class="col-xs-3 col-sm-3 col-lg-3 col-md-3" >
+                       RM {{price}}
+                     </div>
+                  </div>
+                  <div class="row" >
+                    <label class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4" id="divider">Total payment: </label>
+                    <div class="col-xs-3 col-sm-3 col-lg-3 col-md-3" id="divider" >
+                       RM {{totalPayment}}
+                     </div>
+                  </div>
+                </div>
+                <div class="row" id="submitBtn">
+                  <a  id="confirmBook" href="#" aria-selected="false" >Confirm booking</a>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="pills-app" role="tabpanel" aria-labelledby="pills-app-tab">
+              <div class="row justify-content-md-center">
+                <img src="mailsent.png" />
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="row ">
+                  {{#with appInfo}}
+                  <h4>Booking Confirmed. Your appointment (AppointmentID:{{_id}}) is under processing.</h4>
+                  {{/with}}
+                </div>
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="row">
+                  <h5>Please only make payment after skill provider ({{owner}}) approved your appointment.</h5>
+                </div>
+              </div>
+              <div class="row justify-content-md-center">
+                  <div class="row" id="submitBtn">
+                    <a  id="checkStatus" href="#" aria-selected="false" >Check Status</a>
+                  </div>
+              </div>
+
+            </div>
+            <div class="tab-pane fade" id="pills-status" role="tabpanel" aria-labelledby="pills-status-tab">
+              {{#with appInfo}}
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Appointment ID</th>
+                    <th>Class Name</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {{#each sesOfApp}}
+                  <tr>
+                    <td><h4>{{_id}}</h4></td>
+                    <td>{{title}}</td>
+                    <td>{{status}}</td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+
+              </table>
+
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {{#each sesOfApp}}
+                  {{#each session}}
+                  <tr>
+                    <td>{{date}}</td>
+                    <td>{{sestime}}</td>
+                    <td>{{status}}</td>
+
+                  </tr>
+                  {{/each}}
+                  {{/each}}
+                </tbody>
+
+              </table>
+
+              <div class="row justify-content-md-center">
+                  <div class="row" id="payBtn">
+                    {{#if isApproved}}
+                    <a  id="proceedPay" href="#" aria-selected="false" >Proceed to Payment</a>
+                    {{else}}
+
+                    {{/if}}
+
+                  </div>
+              </div>
+              {{/with}}
+            </div>
+            <div class="tab-pane fade" id="pills-payment" role="tabpanel" aria-labelledby="pills-payment-tab">
+            {{> payment}}</div>
+            <div class="tab-pane fade" id="pills-success" role="tabpanel" aria-labelledby="pills-success-tab">
+              <div class="row justify-content-md-center">
+                <img src="mailsent.png" />
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="row ">
+                  <h4>Your transaction had been made successfully.</h4>
+                </div>
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="row ">
+                  {{#with transID}}
+                  <h4>Your transactionId for this payment is: {{_id}}</h4>
+                  {{/with}}
+                </div>
+              </div>
+
+            </div>
+
+
+            </div>
+            {{/with}}
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name='payment'>
+  <button class="btn btn-primary btn-block">Pay</button>
 </template>
 
 <template name = "messaging">
@@ -1864,10 +2180,8 @@
     <div class = "col-xs-12 col-sm-12 col-lg-8 col-md-7" id= "messageTab">
       <div class = "tabUsername">
         <div class = "row">
-
-            <img src="" id="senderPic" alt="senderPic">
-            <h2 id= "senderName" style = "margin-left:2%; margin-top:1%"></h2>
-
+          <img src="" id="senderPic" alt="senderPic">
+           <h2 id= "senderName" style = "margin-left:2%; margin-top:1%"></h2>
         </div>
       </div>
       <div class ="tab-content vcenter">
