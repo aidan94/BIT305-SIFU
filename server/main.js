@@ -98,18 +98,19 @@ Meteor.methods({
         });
       },
 
-      'insertApp':function(session,classID,skillPvd,totalPrice,status, className,ispaid){
+      'insertApp':function(session,classID,skillPvd,totalPrice,status, className,ispaid,currentDate){
         var currentUserId=this.userId;
-
         appointment.insert({
           session: session,
           classID: classID,
           skillPvd:skillPvd,
           skillSkr:currentUserId,
+          skillSkrName:Meteor.user().username,
           totalPrice:totalPrice,
           status:status,
           title:className,
-          ispaid:ispaid
+          ispaid:ispaid,
+          createdDate:new Date()
         });
       },
       'insertTrans':function(transID,classID,paymentType,cardBrand,
@@ -176,6 +177,22 @@ Meteor.methods({
         appointment.update(appID,{
           $set:{
             ispaid:"true",
+          }
+        })
+      },
+
+      'approvedAppStatus':function(appID){
+        appointment.update(appID,{
+          $set:{
+            status:"approved",
+          }
+        })
+      },
+
+      'rejectAppStatus':function(appID){
+        appointment.update(appID,{
+          $set:{
+            status:"reject",
           }
         })
       }
