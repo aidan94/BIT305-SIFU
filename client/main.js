@@ -923,7 +923,7 @@ Template.displayMap.helpers({
       var place= postList.findOne({"_id": Session.get('selectedClass')}).location;
       return place;
     }else if(Session.get('selectedRequest')){
-    var place= postList.findOne({"_id": Session.get('selectedClass')}).location;
+    var place= requestList.findOne({"_id": Session.get('selectedRequest')}).location;
     return place;
   }
   },
@@ -1414,8 +1414,8 @@ Template.payment.events({
             }
         });
         $('#progTab li:eq(4) a').tab('show');
-        document.getElementById("pills-payment-tab").style.backgroundColor="blue";
-        document.getElementById("pills-success-tab").style.backgroundColor="blue";
+        document.getElementById("pills-payment-tab").style.backgroundColor="#5bc0de";
+        document.getElementById("pills-success-tab").style.backgroundColor="#5bc0de";
         document.getElementById("pills-success-tab").style.color="white";
         document.getElementById("pills-payment-tab").style.color="white";
         document.getElementById("pills-payment-tab").style['pointer-events']="none";
@@ -1445,9 +1445,13 @@ Template.bookClass.events({
       dayName='Sunday';
     }
     Session.set('dayName',dayName);
-  //  var smtg=postList.findOne({ $and: [ { '_id': { $eq: Session.get('selectBookClass') } },
-    //                        { 'dayTimeVar.day': { $eq: dayName }}]}).dayTimeVar;
-    var smtg=postList.findOne({ '_id': { $eq: Session.get('selectBookClass')},'dayTimeVar.day': { $eq: dayName }}).dayTimeVar;
+    if(Session.get('selectedClass')){
+      var smtg=postList.findOne({ '_id': { $eq: Session.get('selectBookClass')},'dayTimeVar.day': { $eq: dayName }}).dayTimeVar;
+    }
+    else if(Session.get('selectedRequest')){
+      var smtg=requestList.findOne({ '_id': { $eq: Session.get('selectBookClass')},'dayTimeVar.day': { $eq: dayName }}).dayTimeVar;
+    }
+
     Session.set('dateSel',smtg);
 
   },
@@ -1473,7 +1477,7 @@ Template.bookClass.events({
   },
   'click #confirmBook':function(){
     event.preventDefault();
-
+    var currentDate=new Date();
     var userID=Meteor.userId();
     var session = selectedSes.find( { 'classID':Session.get('selectBookClass') }).fetch();
     var sessionCount=selectedSes.find( { 'classID':Session.get('selectBookClass') }).count();
@@ -1486,7 +1490,7 @@ Template.bookClass.events({
     var status="processing";
     if (sessionCount >0 && classID != "" && skillPvd!="" && skillSkr!="" && totalPrice!="")
     {
-      Meteor.call('insertApp',session,classID,skillPvd,totalPrice, status, className,isPaid);
+      Meteor.call('insertApp',session,classID,skillPvd,totalPrice, status, className,isPaid,currentDate);
 
     }else{
       console.log("Please fill up all the fields")
@@ -1499,7 +1503,7 @@ Template.bookClass.events({
       })
     }
     $('#progTab li:eq(1) a').tab('show');
-    document.getElementById("pills-app-tab").style.backgroundColor="blue";
+    document.getElementById("pills-app-tab").style.backgroundColor="#5bc0de";
     document.getElementById("pills-app-tab").style.color="white";
     document.getElementById("pills-booking-tab").style['pointer-events']="none";
 
@@ -1507,13 +1511,13 @@ Template.bookClass.events({
   'click #checkStatus':function(){
     event.preventDefault();
     $('#progTab li:eq(2) a').tab('show');
-    document.getElementById("pills-status-tab").style.backgroundColor="blue";
+    document.getElementById("pills-status-tab").style.backgroundColor="#5bc0de";
     document.getElementById("pills-status-tab").style.color="white";
   },
   'click #proceedPay':function(){
     event.preventDefault();
     $('#progTab li:eq(3) a').tab('show');
-    document.getElementById("pills-payment-tab").style.backgroundColor="blue";
+    document.getElementById("pills-payment-tab").style.backgroundColor="#5bc0de";
     document.getElementById("pills-payment-tab").style.color="white";
   }
 
@@ -1521,7 +1525,14 @@ Template.bookClass.events({
 
 Template.bookClass.helpers({
   class:function(){
-    return postList.findOne({'_id':Session.get('selectedClass')});
+    if(Session.get('selectedClass')){
+      return postList.findOne({'_id':Session.get('selectedClass')});
+    }
+    else if(Session.get('selectedRequest')){
+
+      return requestList.findOne({'_id':Session.get('selectedRequest')});
+
+    }
   },
   location:function(){
       if(Session.get('selectedClass')){
@@ -1529,7 +1540,7 @@ Template.bookClass.helpers({
       Session.set('selectBookClass',Session.get('selectedClass'));
       return place;
     }else if(Session.get('selectedRequest')){
-    var place= postList.findOne({"_id": Session.get('selectedRequest')}).location;
+    var place= requestList.findOne({"_id": Session.get('selectedRequest')}).location;
     Session.set('selectBookClass',Session.get('selectedRequest'));
     return place;
     }
@@ -1549,18 +1560,31 @@ Template.bookClass.helpers({
     var class1=Session.get('dateSel');
     var bTime=Session.get('bookedTime');
     var result=[];
-    for (var k in class1){
-      var timeObj=class1[k].timeFrom+'-'+class1[k].timeTo;
-      bTime.forEach(function(ele){
-        if(timeObj!=ele){
-          var isInArray =result.includes(class1[k]);
-          if(isInArray==false){
-            result.push(class1[k]);
+    if(Session.get('bookedTime')){
+      for (var k in class1){
+        var timeObj=class1[k].timeFrom+'-'+class1[k].timeTo;
+        bTime.forEach(function(ele){
+          if(timeObj!=ele){
+            var isInArray =result.includes(class1[k]);
+            if(isInArray==false){
+              result.push(class1[k]);
+            }
           }
-        }
-      })
+        })
+      }
+      return result;
+
+    }else{
+      if(Session.get('selectedClass')){
+        return postList.findOne({'_id':Session.get('selectedClass')}).dayTimeVar;
+      }
+      else if(Session.get('selectedRequest')){
+
+        return requestList.findOne({'_id':Session.get('selectedRequest')}).dayTimeVar;
+
+      }
     }
-  return result;
+
   },
   selectedSes:function(){
     return selectedSes.find({classID:Session.get('selectBookClass')}).fetch();
@@ -1621,7 +1645,7 @@ Template.bookClass.onRendered(function() {
     place= postList.findOne({"_id": Session.get('selectedClass')}).dayTimeVar;
     Session.set('selBook',Session.get('selectedClass'));
   }else if(Session.get('selectedRequest')){
-    place= postList.findOne({"_id": Session.get('selectedClass')}).dayTimeVar;
+    place= requestList.findOne({"_id": Session.get('selectedRequest')}).dayTimeVar;
     Session.set('selBook',Session.get('selectedRequest'));
   }
   place.forEach(function(element){
@@ -1674,8 +1698,13 @@ Template.bookClass.onRendered(function() {
         }else if(dayNum==0){
           dayName='Sunday';
         }
-        console.log(dayName);
-        var postAr=postList.findOne({_id:Session.get('selBook'),"dayTimeVar.day":dayName}).dayTimeVar;
+        if(Session.get('selectedClass')){
+          var postAr=postList.findOne({_id:Session.get('selBook'),"dayTimeVar.day":dayName}).dayTimeVar;
+        }
+        else if(Session.get('selectedRequest')){
+        var postAr=requestList.findOne({_id:Session.get('selectedRequest'),"dayTimeVar.day":dayName}).dayTimeVar;
+        }
+
         for (var k in postAr){
           function checkDay(x) {
               return x.day==dayName;
@@ -1692,13 +1721,9 @@ Template.bookClass.onRendered(function() {
             var disTime=[];
             if(matchDateAr.length==matchDTAr.length){
               disDate.push(appDate);
-            //  disTime.push(time);
             }else if(matchDateAr.length>matchDTAr.length){
-            //  matchDate.push(appDate);
-
             matchTime.push(time);
             Session.set('bookedTime',matchTime);
-
               }
           }
         }
@@ -1895,30 +1920,27 @@ Template.classpage.onRendered(function(){
 Template.classpage.events({
   'click #bookBtn':function(){
     var userID=Meteor.userId();
-
     var ses1=appointment.find({$and: [{classID:Session.get('selectBookClass')},{skillSkr:userID},{status:'approved'}]}).count();
-    console.log(ses1);
     if(ses1>0){
       var isPaid1=appointment.find({$and: [{classID:Session.get('selectBookClass')},{skillSkr:userID},{ispaid:"true"},{status:'approved'}]}).count();
       console.log(isPaid1);
-      //  var isPaid=transaction.findOne({userID:userID,classID:Session.get('selectBookClass')},status:"incoming").count();
         if(isPaid1>0){
           $('#progTab li:eq(4) a').tab('show');
-          document.getElementById("pills-status-tab").style.backgroundColor="blue";
+          document.getElementById("pills-status-tab").style.backgroundColor="#5bc0de";
           document.getElementById("pills-status-tab").style.color="white";
-          document.getElementById("pills-app-tab").style.backgroundColor="blue";
+          document.getElementById("pills-app-tab").style.backgroundColor="#5bc0de";
           document.getElementById("pills-app-tab").style.color="white";
-          document.getElementById("pills-payment-tab").style.backgroundColor="blue";
+          document.getElementById("pills-payment-tab").style.backgroundColor="#5bc0de";
           document.getElementById("pills-payment-tab").style.color="white";
-          document.getElementById("pills-success-tab").style.backgroundColor="blue";
+          document.getElementById("pills-success-tab").style.backgroundColor="#5bc0de";
           document.getElementById("pills-success-tab").style.color="white";
           document.getElementById("pills-app-tab").style['pointer-events']="none";
           document.getElementById("pills-booking-tab").style['pointer-events']="none";
         }else{
         $('#progTab li:eq(2) a').tab('show');
-        document.getElementById("pills-status-tab").style.backgroundColor="blue";
+        document.getElementById("pills-status-tab").style.backgroundColor="#5bc0de";
         document.getElementById("pills-status-tab").style.color="white";
-        document.getElementById("pills-app-tab").style.backgroundColor="blue";
+        document.getElementById("pills-app-tab").style.backgroundColor="#5bc0de";
         document.getElementById("pills-app-tab").style.color="white";
         document.getElementById("pills-app-tab").style['pointer-events']="none";
         document.getElementById("pills-booking-tab").style['pointer-events']="none";
@@ -1926,9 +1948,9 @@ Template.classpage.events({
     }else{
       $('#progTab li:eq(0) a').tab('show');
       document.getElementById("pills-status-tab").style.backgroundColor="#ededed";
-      document.getElementById("pills-status-tab").style.color="blue";
+      document.getElementById("pills-status-tab").style.color="#5bc0de";
       document.getElementById("pills-app-tab").style.backgroundColor="#ededed";
-      document.getElementById("pills-app-tab").style.color="blue";
+      document.getElementById("pills-app-tab").style.color="#5bc0de";
       document.getElementById("pills-booking-tab").style.backgroundColor="#ededed";
       document.getElementById("pills-booking-tab").style.color="white";
       document.getElementById("pills-app-tab").style['pointer-events']="none";
@@ -2310,9 +2332,6 @@ Template.chatBox.helpers({
     var currentUserId = Meteor.userId();
     Session.set('selectedUserId',currentUserId);
     var selectedUserId = Session.get('selectedUserId');
-    //var test = chatRooms.find({createdBy:Session.get('selectedUserId')},{sort: {createdAt:-1}});
-    //console.log(test);
-    //return test;
     return chatRooms.find({usersIDsCRID:currentUserId},{sort: {createdTime:-1}});
 
   },
@@ -2325,7 +2344,81 @@ Template.chatBox.helpers({
         else{
           console.log("No chats to be found");
         }
-    }
-
+    },
 
 });
+
+Template.enrolledClass.helpers({
+  'enrolled': function () {
+    var currentUserId = Meteor.userId();
+    var enrolled=appointment.find({$and:[{skillSkr:currentUserId},{status:"attended"},{ispaid:"true"}]},{sort: {createdTime:-1}}).fetch();
+    var allEnroll=[];
+    if(enrolled!=""){
+      for (var j in enrolled){
+        if(allEnroll.length<=0){
+          allEnroll.push(postList.findOne({_id:enrolled[j].classID}));
+        }else{
+          for(var i in allEnroll){
+            var a = allEnroll[i]._id;
+            if(a==postList.findOne({_id:enrolled[j].classID})._id){
+              console.log('Exist')
+            }else{
+                allEnroll.push(postList.findOne({_id:enrolled[j].classID}));
+            }
+          }
+        }
+      }
+    }
+    return allEnroll;
+  }
+
+});
+
+ Template.enrolledClass.events({
+   'click #moreDetails':function(){
+     var classID = this._id;
+     Session.set('selectedClass', classID);
+     delete Session.keys['selectedRequest'];
+   }
+ })
+
+ Template.newNotif.helpers({
+   'postClassReq':function(){
+     var currentUser= Meteor.userId();
+     return appointment.find({$and:[{skillPvd:currentUser},{status:"processing"}]}).fetch();
+
+   },
+   'ispostCount':function(){
+     if(appointment.find({$and:[{skillPvd:currentUser},{status:"processing"}]})>0){
+       return true;
+     }else{
+       return false;
+     }
+   },
+   'reqClassReq':function(){
+     var currentUser= Meteor.userId();
+     return appointment.find({$and:[{skillSkr:currentUser},{status:"processing"}]}).fetch();
+   },
+   'isreqCount':function(){
+     if(appointment.find({$and:[{skillSkr:currentUser},{status:"processing"}]})>0){
+       return true;
+     }else{
+       return false;
+     }
+   },
+
+ })
+
+ Template.newNotif.events({
+   'click #acceptBtn':function(){
+     event.preventDefault();
+     var appID=this._id;
+     Meteor.call('approvedAppStatus',appID);
+
+   },
+   'click #rejectBtn':function(){
+     event.preventDefault();
+     var appID=this._id;
+     Meteor.call('rejectAppStatus',appID);
+   }
+ })
