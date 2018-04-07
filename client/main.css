@@ -158,9 +158,15 @@ font-size: .8em;
   background: linear-gradient(rgba(255,255,255,.9), rgba(204, 204, 204 ,0));
 }
 
+#mainNav.scrolled {
+  background-color: rgba(255,255,255,.9) !important;
+  transition: background-color 200ms ease-out;
+}
+
 #navbarResponsive{
   background-color: transparent;
 }
+
 
 .img-fluid{
   width: 20%;
@@ -521,6 +527,7 @@ ul#classListStyle{
     padding:0 10px;
 }
 
+
 #classListStyle li{
   margin-top: 5px;
 }
@@ -557,7 +564,6 @@ ul#classListStyle{
   padding: 5px 0;
 
 }
-
 /***search page***/
 #image1 {
   padding:10px;
@@ -571,7 +577,6 @@ ul#classListStyle{
 
 #capImg1 {
   margin-top: 10px;
-
 }
 
 #searchheader {
@@ -698,7 +703,6 @@ border-radius: 5px;
   padding: 10px;
   border-radius: 5px;
 }
-
 /*modal*/
 .modal {
   z-index: 2;
@@ -788,159 +792,160 @@ border-radius: 5px;
    pointer-events: none;
  }
 
-/*Message Page CSS*/
-.tab {
-    border-top: none;
-    border: 1px solid #ececec;
-    background-color: #f1f1f1;
-    height: 500px;
-    padding: 0;
-    overflow-y: scroll;
-    overflow-x: hidden;
+ /*Message Page CSS*/
+ .tab {
+     border-top: none;
+     border: 1px solid #ececec;
+     background-color: #f1f1f1;
+     height: 500px;
+     padding: 0;
+     overflow-y: scroll;
+     overflow-x: hidden;
 
-}
+ }
 
-/* Style the buttons inside the tab */
-.tab button {
-    border:none;
+ /* Style the buttons inside the tab */
+ .tab button {
+     border:none;
 
-    display: block;
-    background-color: white;
-    color: black;
-    padding: 10px 16px;
-    width: 100%;
-    text-align: left;
-    cursor: pointer;
-    transition: 0.3s;
-    font-size: 17px;
-    overflow-x: hidden;
+     display: block;
+     background-color: white;
+     color: black;
+     padding: 10px 16px;
+     width: 100%;
+     text-align: left;
+     cursor: pointer;
+     transition: 0.3s;
+     font-size: 17px;
+     overflow-x: hidden;
 
-    text-overflow: ellipsis;
-}
+     text-overflow: ellipsis;
+ }
 
-/* Change background color of buttons on hover */
-.tab button:hover {
-    background-color: #ddd;
-}
+ /* Change background color of buttons on hover */
+ .tab button:hover {
+     background-color: #ddd;
+ }
 
-/* Create an active/current "tab button" class */
-.tab button.active {
-    background-color: #ddd;
-}
+ /* Create an active/current "tab button" class */
+ .tab button.active {
+     background-color: #ddd;
+ }
 
-/* Style the tab content */
-.tabcontent {
-    float: left;
-    padding: 0px 12px;
-    border: 1px solid #ccc;
-    width: 70%;
-    border-left: none;
-    height: 300px;
-}
+ /* Style the tab content */
+ .tabcontent {
+     float: left;
+     padding: 0px 12px;
+     border: 1px solid #ccc;
+     width: 70%;
+     border-left: none;
+     height: 300px;
+ }
 
-.tabTitle{
-  border: 1px solid #ececec;
-  display: block;
-  background-color: white;
-  color: black;
-  padding: 18px 16px;
-  width: 100%;
-  text-align: center;
-  transition: 0.3s;
-  font-size: 17px;
-}
-
-.tabUsername{
-  border: 1px solid #ececec;
-  border-bottom: 1px solid #ccc;
-  display: block;
-  background-color: #f9f9f9;
-  color: black;
-  padding: 10px 16px;
-  width: 100%;
-  text-align: left;
-  transition: 0.3s;
-  font-size: 17px;
-}
-
-.vcenter{
-	position: absolute;
-	/*top: 30%;
-	transform: translateY(-50%);*/
-  padding-left: 2%;
-  width:100%;
-  height:82%;
-  max-width: 100%;
-  overflow-y: scroll;
+ .tabTitle{
+   border: 1px solid #ececec;
+   display: block;
+   background-color: white;
+   color: black;
+   padding: 18px 16px;
+   width: 100%;
+   text-align: center;
+   transition: 0.3s;
+   font-size: 17px;
+ }
 
 
-}
+ .tabUsername{
+   border: 1px solid #ececec;
+   border-bottom: 1px solid #ccc;
+   display: block;
+   background-color: #f9f9f9;
+   color: black;
+   padding: 10px 16px;
+   width: 100%;
+   text-align: left;
+   transition: 0.3s;
+   font-size: 17px;
+ }
 
-.row.vbottom{
-	position: absolute;
-	top: 100%;
-	transform: translateY(-100%);
-  padding-top: 2%;
-  border-top: 1px solid #ececec;
-  margin: 0;
-  width:100%
-}
+ .vcenter{
+ 	position: absolute;
+ 	/*top: 30%;
+ 	transform: translateY(-50%);*/
+   padding-left: 2%;
+   width:100%;
+   height:82%;
+   max-width: 100%;
+   overflow-y: scroll;
 
-.sendMsg.btn.btn-default{
-  background-color: transparent;
-  cursor:pointer;
-}
 
-.table {
-    border-bottom:0px !important;
-}
-.table th, .table td {
-    border: 1px !important;
-}
-.fixed-table-container {
-    border:0px !important;
-}
+ }
 
-.chatThumbnail{
-  height:50px;
-  width:60px;
-  margin-left: 4%;
-  margin-top: 2%;
-}
+ .row.vbottom{
+ 	position: absolute;
+ 	top: 100%;
+ 	transform: translateY(-100%);
+   padding-top: 2%;
+   border-top: 1px solid #ececec;
+   margin: 0;
+   width:100%
+ }
 
-.table.chatDetails{
-  max-width:67%;
-  margin-left:4%;
-}
+ .sendMsg.btn.btn-default{
+   background-color: transparent;
+   cursor:pointer;
+ }
 
-.table td.chatData{
-  padding: 0;
-}
+ .table {
+     border-bottom:0px !important;
+ }
+ .table th, .table td {
+     border: 1px !important;
+ }
+ .fixed-table-container {
+     border:0px !important;
+ }
 
-#chatUsername{
-  color: #474747
-}
+ .chatThumbnail{
+   height:50px;
+   width:60px;
+   margin-left: 4%;
+   margin-top: 2%;
+ }
 
-#titleChat{
-  font-weight: bold;
-  color: #474747;
-  font-size: 11pt;
-  max-width: 0;
-  white-space: nowrap;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-}
+ .table.chatDetails{
+   max-width:67%;
+   margin-left:4%;
+ }
 
-#lastMsg{
-  font-size: 11pt;
-  color: #6e6e6e;
-  max-width: 0;
-  white-space: nowrap;
-  overflow-x: hidden;
-  text-overflow: ellipsis;
-}
+ .table td.chatData{
+   padding: 0;
+ }
 
-#messageTab{
+ #chatUsername{
+   color: #474747
+ }
+
+ #titleChat{
+   font-weight: bold;
+   color: #474747;
+   font-size: 11pt;
+   max-width: 0;
+   white-space: nowrap;
+   overflow-x: hidden;
+   text-overflow: ellipsis;
+ }
+
+ #lastMsg{
+   font-size: 11pt;
+   color: #6e6e6e;
+   max-width: 0;
+   white-space: nowrap;
+   overflow-x: hidden;
+   text-overflow: ellipsis;
+ }
+
+ #messageTab{
   padding:0;
   border-right:1px solid #ececec;
   border-bottom:1px solid #ececec;
@@ -1020,12 +1025,10 @@ border-radius: 5px;
 /*Notif*/
 #newNotiModalBody {
   padding: 10px 10px;
-
 }
 
 #nnTitle{
   text-align: center;
-
 }
 
 #reqclasstab{
@@ -1036,10 +1039,7 @@ border-radius: 5px;
 #acceptBtn{
   width: 100%;
   margin-bottom: 5px;
-
 }
-
 #rejectBtn{
   width: 100%;
-
 }
