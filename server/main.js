@@ -110,6 +110,7 @@ Meteor.methods({
           status:status,
           title:className,
           ispaid:ispaid,
+          isread:"false",
           createdDate:new Date()
         });
       },
@@ -177,6 +178,14 @@ Meteor.methods({
         appointment.update(appID,{
           $set:{
             ispaid:"true",
+          }
+        })
+      },
+
+      'updateread':function(appID){
+        appointment.update(appID,{
+          $set:{
+            isread:"true",
           }
         })
       },
