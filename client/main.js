@@ -9,7 +9,6 @@ Router.route('/classpage');
 Router.route('/resultpage');
 Router.route('/messaging');
 
-
 Meteor.subscribe("chatRooms", {
   onReady: function () {
     scrollToBottom();
@@ -21,8 +20,6 @@ Meteor.subscribe('thePost');
 Meteor.subscribe('theRequest');
 Meteor.subscribe("users");
 
-
-
 Resume = new Mongo.Collection('Resume');
 postList = new Mongo.Collection('postList');
 requestList=new Mongo.Collection('requestList');
@@ -32,6 +29,7 @@ selectedSes=new Mongo.Collection ('selectedSes');
 appointment = new Mongo.Collection('appointment');
 transaction = new Mongo.Collection('transaction');
 chatRooms = new Mongo.Collection('chatRooms');
+
 
 Accounts.ui.config({
   passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
@@ -46,11 +44,17 @@ scrollToBottom = function scrollToBottom (duration) {
   messageWindow.stop().animate({scrollTop: scrollHeight}, duration || 0);
 };
 
+Template.carousel_bg.onRendered(function(){
+  $('.carousel').carousel({
+    interval:3000
+    })
+})
+
 //Aidan's Part
 Template.newClass.events({
   'submit #addForm':function(event){
   event.preventDefault();
-  $("textarea").keydown(function(e) {
+      $("textarea").keydown(function(e) {
         if(e.keyCode === 9) { // tab was pressed
             // get caret position/selection
             var start = this.selectionStart;
@@ -183,6 +187,7 @@ Template.post.helpers({
     return "selected"
   }
 },
+
 });
 
 Template.newRequest.onRendered(function() {
@@ -316,12 +321,14 @@ Template.request.helpers({
 
 //Roushan's Part
 /*NEWW 10 March*/
+
+
 Template.post.events({
   'click #moreDetails': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
     delete Session.keys['selectedRequest'];
-    console.log(Session.get('selectedClass'));
+    console.log(Session.get('selectedClass'))
 
   },
 
@@ -349,6 +356,7 @@ Template.post.events({
                       name: element.name,
                       address: element.address});
     })
+
 	},
 
   'click #removeClassBtn': function(){
@@ -364,6 +372,7 @@ Template.post.events({
       console.log("cancel");
     }
   }
+
 
 });
 
@@ -402,7 +411,7 @@ Template.editForm.events({
     var audienceVarEdit = event.target.selectAudience.value;
     var dayTimeVarEdit = dayTime.find().fetch();
     var skillVarEdit = event.target.selectSkill.value;
-    var locationVarEdit = Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
+    var locationVarEdit =Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
     var descVarEdit = event.target.desc.value;
 		var selectedEdClass = Session.get('selectedEdClass');
     console.log(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit);
@@ -410,12 +419,11 @@ Template.editForm.events({
     {
       Meteor.call('editClassData', selectedEdClass,titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit)
     }
-    $('#editClass').modal('hide');
-    var markerAr=Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
+      $('#editClass').modal('hide');
+      var markerAr=Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
       markerAr.forEach(function(element){
       Markers.remove(element._id);
     })
-
   },
 
   'click button#saveDayTimeEdit':function(event){
@@ -556,14 +564,10 @@ Template.setMap.onCreated(function() {
 
       Markers.find({type:{$eq:"post"}}).observe({
       added: function(document) {
-        // Create a marker for this document
           var marker = new google.maps.Marker({
           draggable: true,
           animation: google.maps.Animation.DROP,
           position: new google.maps.LatLng(document.lat, document.lng),
-
-          // We store the document _id on the marker in order
-          // to update the document within the 'dragend' event below.
           map:map.instance,
           id: document._id,
           classtype:"post"
@@ -572,7 +576,6 @@ Template.setMap.onCreated(function() {
           map.instance.panTo(marker.position);
 
           google.maps.event.addListener(marker,'dblclick', function(event){
-
             Markers.remove(marker.id);
            });
 
@@ -922,22 +925,20 @@ Template.setRMap.helpers({
    places: function() {
      var placeName=Markers.find({type:{$eq:Session.get("setClassType")}}).fetch();
      return placeName;
-     //console.log( Session.get('location'));
-     //return Session.get('location');
    },
 });
 
 Template.displayMap.helpers({
   location:function(){
-    if(Session.get('selectedClass')){
+      if(Session.get('selectedClass')){
       var place= postList.findOne({"_id": Session.get('selectedClass')}).location;
       return place;
-    }
-    else if(Session.get('selectedRequest')){
-      var place= requestList.findOne({"_id": Session.get('selectedRequest')}).location;
-      return place;
-    }
+    }else if(Session.get('selectedRequest')){
+    var place= requestList.findOne({"_id": Session.get('selectedRequest')}).location;
+    return place;
   }
+  },
+
 });
 
 Template.displayMap.onRendered(function() {
@@ -972,7 +973,6 @@ Template.displayMap.onCreated(function(){
           var marker;
           var locationAr=postList.findOne({'_id':Session.get('selectedClass')}, {fields:{location:1}}).location// Create a marker for this document
           locationAr.forEach(function(element){
-
             marker = new google.maps.Marker({
             draggable: true,
             animation: google.maps.Animation.DROP,
@@ -987,13 +987,15 @@ Template.displayMap.onCreated(function(){
           markers[document._id] = marker;
         },
       })
-    })
+        })
 });
+
 
 Template.editMap.helpers({
   place: function() {
     return Markers.find({"ownerClassID":Session.get('selectedEdClass')}).fetch();
   },
+
 });
 
 Template.editMap.onRendered(function() {
@@ -1380,11 +1382,11 @@ Template.editREMap.events({
 Template.payment.onRendered(function() {
   Stripe.setPublishableKey('pk_test_y3Qb096sbp39phssCP308roZ');
   var handler = StripeCheckout.configure({
-        key: 'pk_test_y3Qb096sbp39phssCP308roZ',
-        token: function(token) {
+		key: 'pk_test_y3Qb096sbp39phssCP308roZ',
+		token: function(token) {
       console.log(token);
     }
-    });
+	});
 })
 
 Template.payment.events({
@@ -1749,7 +1751,8 @@ Template.bookClass.onRendered(function() {
 
 
   });
-});
+
+  });
 
 Template.topnavbar2.events({
   'submit #search':function(event){
@@ -1757,15 +1760,63 @@ Template.topnavbar2.events({
     var talentTitle = $('[name="searchCourse"]').val();
     Session.set('query',talentTitle)
     Router.go('/resultpage');
+  },
+  'mouseup #reqTab':function(){
+    event.preventDefault();
+    var currentUser=Meteor.userId();
+    var classid;
+    var newpostcount=appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).fetch();
+    var newreqcount=appointment.find({$and:[{skillSkr:currentUser},{status:"processing"},{isread:"false"}]}).fetch();
+    if(appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count()>0){
+      for(var j in newpostcount){
 
+        appID=newpostcount[j]._id;
+          Meteor.call('updateread',appID)
+      }
+    }
+    if(appointment.find({$and:[{skillSkr: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count()>0){
+      for(var j in newreqcount){
+        appID=newreqcount[j]._id
+          Meteor.call('updateread',appID)
+      }
+    }
   }
 });
+
+Template.main.onRendered(function(){
+  $(document).scroll(function () {
+   var $nav = $("#mainNav");
+   $nav.toggleClass('scrolled', $(this).scrollTop() > 300);
+ });
+});
+
+Template.topnavbar2.helpers({
+  'reqCount':function(){
+    var currentUser= Meteor.userId();
+    var newpostcount=appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count();
+    var newreqcount=appointment.find({$and:[{skillSkr:currentUser},{status:"processing"},{isread:"false"}]}).count();
+    return newpostcount+newreqcount;
+
+  },
+  'isReqCount':function(){
+    var currentUser= Meteor.userId();
+    var newpostcount=appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count();
+    var newreqcount=appointment.find({$and:[{skillSkr:currentUser},{status:"processing"},{isread:"false"}]}).count();
+    var count=newpostcount+newreqcount;
+    if( count>0)
+    {
+      return true;
+    }else{
+      return false;
+    }
+  },
+
+  })
 
 Template.resultpage.events({
   'click #moreInfo': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
-
 
   },
 });
@@ -1777,7 +1828,6 @@ Template.request.events({
     Session.set('selectedRequest', classID);
     delete Session.keys['selectedClass'];
     var selectedRequest = Session.get('selectedRequest');
-    console.log(selectedRequest);
   },
 
 	'click #removeRequestBtn': function(){
@@ -1799,6 +1849,7 @@ Template.request.events({
    Session.set('selectedEdRequest', classID);
    var selectedEdRequest = Session.get('selectedEdRequest');
    console.log(selectedEdRequest);
+
    var dayTimeAr=dayTime.find().fetch();
     if(dayTimeAr!=""){
       dayTimeAr.forEach(function(element){
@@ -1840,13 +1891,13 @@ Template.editRequestForm.helpers({
 Template.editRequestForm.events({
   'submit #editRForm':function(){
     event.preventDefault();
-		var titleVarREdit = event.target.title.value;
+  		var titleVarREdit = event.target.title.value;
     var imgSourceREdit = event.target.imageSource.value;
     var priceVarREdit = event.target.price.value;
     var audienceVarREdit = event.target.selectAudience.value;
-    var dayTimeVarREdit = dayTime.find().fetch();
+    var dayTimeVarREdit =dayTime.find().fetch();
     var skillVarREdit = event.target.selectSkill.value;
-    var locationVarREdit = Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
+    var locationVarREdit =Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
     var descVarREdit = event.target.desc.value;
 		var selectedEdRequest = Session.get('selectedEdRequest');
     console.log(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit);
@@ -1854,6 +1905,7 @@ Template.editRequestForm.events({
     {
       Meteor.call('editRequestData', selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit)
     }
+
     var dayTimeAr=dayTime.find().fetch();
     if(dayTimeAr!=""){
 
@@ -1866,6 +1918,8 @@ Template.editRequestForm.events({
     Markers.remove(element._id);
     })
     $('#editRequest').modal('hide');
+
+
 
 
   },
@@ -1917,13 +1971,26 @@ Template.classpage.helpers({
     if(Session.get('selectedClass')){
       return postList.findOne({"_id": Session.get('selectedClass')});
     }
+  },
+  isThisUser:function(){
+    var currentUser=Meteor.userId();
+    if(Session.get('selectedRequest')){
+        var user1=requestList.findOne({"_id": Session.get('selectedRequest')}).createdBy;
+    }
+    if(Session.get('selectedClass')){
+      var user1=postList.findOne({"_id": Session.get('selectedClass')}).createdBy;
+    }
+    if(currentUser==user1){
+      return true;
+    }else{
+      return false;
+    }
+
   }
 });
-
 Template.classpage.onRendered(function(){
 
-});
-
+})
 Template.classpage.events({
   'click #bookBtn':function(){
     var userID=Meteor.userId();
@@ -1970,49 +2037,47 @@ Template.classpage.events({
       })
     }
   },
-
   'click #contactMeBtn': function(){
     var selectedUserID = this.createdBy;
-    var selectedClassRequestID = this._id;
-    if(this.type == "post")
-    {
-      var fileSource = postList.findOne({"_id":selectedClassRequestID}).fileSource;
-      var title = postList.findOne({"_id":selectedClassRequestID}).title;
-    }
-    else if (this.type == "request"){
-      var fileSource = requestList.findOne({"_id":selectedClassRequestID}).fileSource;
-      var title = requestList.findOne({"_id":selectedClassRequestID}).title;
-    }
-    console.log(Session.get('selectedUserID'))
-    var findChatRoom = chatRooms.findOne({usersIDsCRID:{$all:[selectedUserID,Meteor.userId(),selectedClassRequestID]}});
-    console.log(findChatRoom);
-    if (findChatRoom)
-    {
-      //room already exist and set room
-      Session.set("roomID", findChatRoom._id);
-      console.log(Session.get('roomID'));
-    }
+     var selectedClassRequestID = this._id;
+     if(this.type == "post")
+     {
+       var fileSource = postList.findOne({"_id":selectedClassRequestID}).fileSource;
+       var title = postList.findOne({"_id":selectedClassRequestID}).title;
+     }
+     else if (this.type == "request"){
+       var fileSource = requestList.findOne({"_id":selectedClassRequestID}).fileSource;
+       var title = requestList.findOne({"_id":selectedClassRequestID}).title;
+     }
+     console.log(Session.get('selectedUserID'))
+     var findChatRoom = chatRooms.findOne({usersIDsCRID:{$all:[selectedUserID,Meteor.userId(),selectedClassRequestID]}});
+     console.log(findChatRoom);
+     if (findChatRoom)
+     {
+       //room already exist and set room
+       Session.set("roomID", findChatRoom._id);
+       console.log(Session.get('roomID'));
+     }
 
-    else{
-      //room does not exist and create new room
-      var newChatID = chatRooms.insert({
-        usersIDsCRID: [selectedUserID, Meteor.userId(),selectedClassRequestID],
-        classRequestID: selectedClassRequestID,
-        owner:Meteor.users.findOne({"_id":selectedUserID}).username,
-        sender:Meteor.users.findOne({"_id":Meteor.userId()}).username,
-        fileSource:fileSource,
-        title:title,
-        createdBy:Meteor.userId(),
-        createdTime: new Date(),
-        lastUser: "",
-        lastText: "No Message Found",
-        newMsg: " ",
-        messages:[]
-      });
-      Session.set('roomID', newChatID)
-    }
-
-  }
+     else{
+       //room does not exist and create new room
+       var newChatID = chatRooms.insert({
+         usersIDsCRID: [selectedUserID, Meteor.userId(),selectedClassRequestID],
+         classRequestID: selectedClassRequestID,
+         owner:Meteor.users.findOne({"_id":selectedUserID}).username,
+         sender:Meteor.users.findOne({"_id":Meteor.userId()}).username,
+         fileSource:fileSource,
+         title:title,
+         createdBy:Meteor.userId(),
+         createdTime: new Date(),
+         lastUser: "",
+         lastText: "No Message Found",
+         newMsg: " ",
+         messages:[]
+       });
+       Session.set('roomID', newChatID)
+     }
+}
 });
 
 Template.findCourse.events({
@@ -2331,13 +2396,10 @@ Template.chatWindow.helpers({
       if(testArray[i].username == Meteor.user().username){
         console.log(testArray[i]);
         console.log("true");
-
-
       }
       else{
         console.log(testArray[i]);
         console.log("false");
-
         }
       }
     })
@@ -2412,7 +2474,6 @@ Template.chatBox.helpers({
       return false;
     }
   },
-
   'senderName':function(){
     return senderUN = chatRooms.findOne({"_id": Session.get('roomID')});
   },*/
@@ -2515,6 +2576,7 @@ Template.inputMessage.events({
   }
 });
 
+
 Template.enrolledClass.helpers({
   'enrolled': function () {
     var currentUserId = Meteor.userId();
@@ -2547,7 +2609,7 @@ Template.enrolledClass.helpers({
      Session.set('selectedClass', classID);
      delete Session.keys['selectedRequest'];
    }
- });
+ })
 
  Template.newNotif.helpers({
    'postClassReq':function(){
@@ -2556,7 +2618,7 @@ Template.enrolledClass.helpers({
 
    },
    'ispostCount':function(){
-     if(appointment.find({$and:[{skillPvd:currentUser},{status:"processing"}]})>0){
+     if(appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"}]}).count()>0){
        return true;
      }else{
        return false;
@@ -2567,14 +2629,16 @@ Template.enrolledClass.helpers({
      return appointment.find({$and:[{skillSkr:currentUser},{status:"processing"}]}).fetch();
    },
    'isreqCount':function(){
-     if(appointment.find({$and:[{skillSkr:currentUser},{status:"processing"}]})>0){
+     var currentUser= Meteor.userId();
+     if(appointment.find({$and:[{skillSkr:currentUser},{status:"processing"}]}).count()>0){
        return true;
      }else{
        return false;
      }
    },
 
- });
+
+ })
 
  Template.newNotif.events({
    'click #acceptBtn':function(){
@@ -2588,4 +2652,141 @@ Template.enrolledClass.helpers({
      var appID=this._id;
      Meteor.call('rejectAppStatus',appID);
    }
+ })
+
+
+ Template.findNearby.helpers({
+   location:function(){
+       if(Session.get('selectedClass')){
+       var place= postList.findOne({"_id": Session.get('selectedClass')}).location;
+       return place;
+     }else if(Session.get('selectedRequest')){
+     var place= requestList.findOne({"_id": Session.get('selectedRequest')}).location;
+     return place;
+   }
+   },
+
  });
+
+ Template.findNearby.onRendered(function() {
+   GoogleMaps.load( {  key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
+     libraries: 'geometry,places'});
+
+   this.autorun(function(c) {
+     if (GoogleMaps.loaded()) {
+       GoogleMaps.create({
+         name: 'nearbymap',
+         element: document.getElementById('nearbymap'),
+         options: {
+           center: new google.maps.LatLng(3.1390, 101.6869),
+           zoom: 15
+         }
+       });
+       c.stop();
+     }
+   });
+ });
+
+ Template.findNearby.onCreated(function(){
+
+   var self=this;
+       GoogleMaps.ready('nearbymap', function(map) {
+      var markers=[];
+      var input = document.getElementById('pac-input');
+      var searchBox = new google.maps.places.SearchBox(input);
+      map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
+      var service = new google.maps.places.PlacesService(map.instance);
+      var marker;
+      google.maps.event.addListener(map.instance,'bounds_change', function() {
+          searchBox.setBounds(map.getBounds());
+        });
+
+
+      searchBox.addListener('places_changed', function() {
+        var places = searchBox.getPlaces();
+        if (places.length == 0) {
+          return ;
+        }
+        var bounds = new google.maps.LatLngBounds();
+        places.forEach(function(place) {
+          if (!place.geometry) {
+            console.log("Returned place contains no geometry");
+            return;
+          }
+          marker=new google.maps.Marker({
+            map: map.instance,
+            icon: {
+              url:"you-are-here-icon.png",
+              scaledSize: new google.maps.Size(50, 50), // scaled size
+              origin: new google.maps.Point(0,0), // origin
+              anchor: new google.maps.Point(0, 0) // anchor
+            },
+            title: place.name,
+            position: place.geometry.location
+          })
+          map.instance.setZoom(16);
+          map.instance.panTo(marker.position);
+
+          var lat=place.geometry.location.lat();
+          var lng=place.geometry.location.lng();
+          var inputlocation=new google.maps.LatLng(lat, lng);
+          var locationAr=postList.find().fetch();
+          var nearByclass=[];
+
+          for(var j in locationAr){
+            var i=0;
+            var locationAtt=locationAr[j].location;
+            for(var k in locationAtt){
+              var thislat=locationAtt[k].lat;
+              var thislng=locationAtt[k].lng;
+              var thislocation=new google.maps.LatLng(thislat, thislng)
+              var distance=google.maps.geometry.spherical.computeDistanceBetween (inputlocation, thislocation);
+              if (distance<2000){
+                nearByclass.push(locationAr[j]);
+                marker=new google.maps.Marker({
+                  map: map.instance,
+                  title: place.name,
+                  icon:{
+                    url:"icon.png",
+                    scaledSize: new google.maps.Size(50, 50), // scaled size
+                    origin: new google.maps.Point(0,0), // origin
+                    anchor: new google.maps.Point(0, 0) // anchor
+                  },
+                  position: thislocation,
+                  id:i++,
+                  type:"nearby"
+                })
+                console.log(marker.id)
+                Markers.insert({markerID:marker.id,class:locationAr[j]})
+                google.maps.event.addListener(marker, 'click', function(event){
+                  var markerID=this.id;
+                  console.log(markerID);
+                  var markerInfo=Markers.findOne({'markerID':{$eq:markerID}}).class;
+                  console.log(markerInfo);
+
+                    var contentString='<div id="content" >'+
+                            '<h2>'+markerInfo.title+'</h2>'+
+                            '<div id="bodyContent" >'+
+                            '<p>'+markerInfo.skill+'</p>'+
+                            '</div>'+
+                            '</div>';
+
+                  var infowindow = new google.maps.InfoWindow({
+                    content:contentString,
+                    maxWidth: 250,
+                  });
+
+                    infowindow.open(map.instance, marker);
+                });
+
+              }
+            }
+          }
+        });
+
+      });
+
+
+
+ })
+});
