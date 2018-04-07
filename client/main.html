@@ -31,7 +31,56 @@
   {{> topnavbar}}
   {{> findCourse}}
   {{> carousel_bg}}
+  {{> recommendBar}}
 
+</template>
+
+<template name="findNearby">
+  <div class="container">
+    <input id="pac-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
+
+    <div class="map-container" id="nearbymap">
+    </div>
+  </div>
+
+</template>
+
+<template name="recommendBar">
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+{{> findNearby}}
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+{{> footer}}
 </template>
 
 <template name="carousel_bg">
@@ -91,9 +140,8 @@
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="/messaging">Message</a>
           </li>
-
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#">Notification</a>
+            <a class="nav-link js-scroll-trigger" href="#request">Request</a>
           </li>
           {{/if}}
           <li class="nav-item">
@@ -101,6 +149,7 @@
           </li>
 
         </ul>
+        {{> newNotif}}
       </div>
     </div>
   </nav>
@@ -175,7 +224,7 @@
         <i class="fa fa-bars" aria-hidden="true"></i>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav text-uppercase ml-auto">
+        <ul class="navbar-nav text-uppercase ml-auto" >
           <li class="nav-item">
             <div class="row">
               <div class="col-lg-10">
@@ -201,7 +250,12 @@
             <a class="nav-link js-scroll-trigger" href="/messaging">Messages</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" data-toggle="modal" href="#request">Request</a>
+            <a class="nav-link js-scroll-trigger" id="reqTab" data-toggle="modal" href="#request">Request
+            {{#if isReqCount}}<span class="badge badge-light">{{reqCount}}</span>
+            {{else}}
+            {{/if}}
+            </a>
+
           </li>
           {{/if}}
           <li class="nav-item">
@@ -897,17 +951,17 @@
 	      {{#with class}}
 	      <div id="containerStyle">
           <div class="row" id="horizontalLine">
-            <div class="col-lg-10 col-sm-10" >
-    	        <div class="row" id="title">
-    	          {{title}}
-    	        </div>
+              <div class="col-lg-10 col-sm-10" >
+                <div class="row" id="title">
+                  {{title}}
+                </div>
 
-    	        <div class="row" >
-    	          Category :  <a href="#">{{skill}}</a>
-    	        </div>
-            </div>
+                <div class="row" >
+                  Category :  <a href="#">{{skill}}</a>
+                </div>
+              </div>
+
           </div>
-
 	        <div class="row">
 	          <div class="col-lg-6 col-sm-12">
 	            <div class="img">
@@ -918,7 +972,6 @@
 	          <div class="col-lg-6 col-sm-12">
 	          <ul id="classListStyle">
 	            <li>Tutor: <a href="#"> {{owner}}</a></li>
-
 	            <li>Price: RM{{price}}/class</li>
 	          </ul>
 	          </div>
@@ -945,7 +998,7 @@
 	              <!-- Tab panes -->
 	              <div class="tab-content" id="classPageTabContent">
 	                <div class="tab-pane active" id="about" role="tabpanel">
-                    <h3>Time Table for this class:</h3>
+	                  <h3>Time Table for this class:</h3>
                     <div class="row" id="timetable">
                       <table class="table">
                         <thead class="thead-light">
@@ -967,11 +1020,13 @@
 
                   </div>
                   <div class="row">
-	                  <p>
+                    <p>
 	                    {{description}}
 	                  </p>
-	                </div>
+
                   </div>
+
+	                </div>
 	                <div class="tab-pane" id="photos" role="tabpanel">...</div>
 	                <div class="tab-pane" id="review" role="tabpanel">...</div>
 
@@ -981,9 +1036,9 @@
 	              </div>
 
 	          </div>
-            <div class="col-lg-4 col-sm-12">
-              <div class="row" id="rating">
-                <table class="table">
+	          <div class="col-lg-4 col-sm-12">
+	            <div class="row" id="rating">
+	              <table class="table">
 	                <tr>
 	                  <th>
 	                    <span class="glyphicon glyphicon-user"></span> 100
@@ -1006,12 +1061,14 @@
 	                </tr>
                   <tr>
 	                  <td id="tableFont" colspan="2">
-
 	                  </td>
 	                </tr>
 	              </table>
-
 	            </div>
+
+              {{#if isThisUser}}
+
+              {{else}}
               <div class="row">
                 <a class ="btn btn-info btn-lg" id="contactMeBtn" href="/messaging">Contact Me</a>
 
@@ -1022,6 +1079,7 @@
                   </button>
                   {{> bookClass}}
               </div>
+              {{/if}}
 	          </div>
 	        </div>
 
@@ -1031,6 +1089,7 @@
 
 	    </div>
       {{> footer}}
+
 	  </div>
 
 
@@ -1077,8 +1136,7 @@
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <div class="modal-body">
                       <!--Content-->
-                      <div class = "container" style = "width: 100%" id="editButton">
-
+                    <div class = "container" style = "width: 100%" id="editButton">
                         {{> editForm}}
                     </div>
                     </div>
@@ -1235,12 +1293,15 @@
             <option value="Business" class="">Business</option>
             <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
         </select>
-        </div>
       </div>
-        <div class = "row form-group">
-           {{> editMap}}
+    </div>
+    <div class = "row form-group">
+            {{> editMap}}
+    </div>
 
-         </div>
+
+
+
   <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
   <!--Description-->
@@ -1260,6 +1321,7 @@
   {{/with}}
   </form>
 </template>
+
 
 <template name="newRequest">
 
@@ -1675,13 +1737,13 @@
             <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
         </select>
         </div>
+    </div>
+    <div class = "row form-group">
+            {{> editREMap}}
+    </div>
 
 
-        </div>
-          <div class = "row form-group">
-          {{> editREMap}}
 
-        </div>
   <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
   <!--Description-->
@@ -1842,6 +1904,7 @@
                 <p>
                   <a href="/classpage" class=" btn btn-primary " role="button" id="moreInfo">More</a>
 
+
                   <span class="input-group-btn">
                     <button class="btn btn-primary" id="removeClassBtn" type="button"><span class="glyphicon glyphicon-calendar" aria-hidden="true" id="remove_icon"></span></button>
                   </span>
@@ -1874,14 +1937,6 @@
           {{/each}}
         </p>
 
-
-
-        <!--  {{#unless geolocationError}}
-            {{> googleMap name="exampleMap" options=exampleMapOptions}}
-          {{else}}
-            Geolocation failed: {{geolocationError}}
-          {{/unless}}
-        -->
         <input id="pac-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
 
         <div class="map-container" id="{{classType}}">
@@ -1927,6 +1982,7 @@
     {{/each}}
 
   </div>
+
   <div class="map-container" id="dismap">
   </div>
 </template>
@@ -1954,6 +2010,7 @@
 
 </template>
 
+
 <template name='editREMap'>
   <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-2 col-md-12">Location:</label>
       <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
@@ -1971,16 +2028,7 @@
         <input id="map-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
 
         <div class="map-container" id="editREmap">
-
-
-
-
-
         </div>
-
-
-
-
       </div>
 
 
@@ -2248,7 +2296,6 @@
   <button class="btn btn-primary btn-block">Pay</button>
 </template>
 
-
 <template name = "messaging">
   <div class="bgcolor">
     {{> header}}
@@ -2265,7 +2312,7 @@
 </template>
 
 <template name="chatBox">
-  <div class = "row" id= "chatBox">
+  <div class = "row" id="chatbox">
 
     <div class="col-xs-12 col-sm-12 col-lg-4 col-md-5" style = "padding:0">
       <div class = "tabTitle">
@@ -2281,17 +2328,16 @@
     <div class = "col-xs-12 col-sm-12 col-lg-8 col-md-7" id= "messageTab">
       <div class = "tabUsername">
         <div class = "row">
-
-            <img src="" id="senderPic" alt="senderPic">
-            <h2 id= "senderName" style = "margin-left:2%; margin-top:1%"></h2>
-
+          <img src="" id="senderPic" alt="senderPic">
+           <h2 id= "senderName" style = "margin-left:2%; margin-top:1%"></h2>
         </div>
       </div>
+
       {{> chatWindow}}
       {{> inputMessage}}
-    </div>
 
-  </div>
+      </div>
+    </div>
 </template>
 
 <template name = "sideChatButtons">
@@ -2366,6 +2412,7 @@
     <span><strong>{{username}}:</strong>{{text}}</span>
   </div>
 </template>
+
 
 <template name="enrolledClass">
   {{#if currentUser}}
