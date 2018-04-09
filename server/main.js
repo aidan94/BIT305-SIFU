@@ -13,6 +13,11 @@ Comments = new Mongo.Collection("comments");
 admin=new Mongo.Collection('admin');
 report=new Mongo.Collection('report');
 
+
+Meteor.publish("users", function() {
+    return Meteor.users.find({}, {fields:{createdAt: true, profile:true, emails: true, username: true}});
+});
+
 Accounts.validateNewUser(function (user) {
   var loggedInUser = Meteor.user();
   if (Roles.userIsInRole(loggedInUser, 'admin')) {
@@ -20,10 +25,6 @@ Accounts.validateNewUser(function (user) {
   }
 
   throw new Meteor.Error(403, "Not authorized to create new users");
-});
-
-Meteor.publish("users", function() {
-    return Meteor.users.find({}, {fields:{createdAt: true, profile:true, emails: true, username: true}});
 });
 
 Meteor.publish('comments', function() {
