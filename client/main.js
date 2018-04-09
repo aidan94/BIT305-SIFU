@@ -20,6 +20,7 @@ Meteor.subscribe("chatRooms", {
 Meteor.subscribe('thePost');
 Meteor.subscribe('theRequest');
 Meteor.subscribe("users");
+Meteor.subscribe("comments");
 
 Resume = new Mongo.Collection('Resume');
 postList = new Mongo.Collection('postList');
@@ -30,15 +31,15 @@ selectedSes=new Mongo.Collection ('selectedSes');
 appointment = new Mongo.Collection('appointment');
 transaction = new Mongo.Collection('transaction');
 chatRooms = new Mongo.Collection('chatRooms');
+Comments = new Mongo.Collection("comments");
 admin=new Mongo.Collection('admin');
 report=new Mongo.Collection('report');
-
 
 Accounts.ui.config({
   passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
 });
 
-
+removedDayTimeEdit = [];
 isUser = new ReactiveVar(true);
 autoScrollingIsActive = false;
 thereAreUnreadMessages = new ReactiveVar(false);
@@ -53,7 +54,7 @@ Template.carousel_bg.onRendered(function(){
     interval:3000
     })
 })
-
+ 
 Template.recommendBar.events({
   'click input':function(){
     var rate;
@@ -79,20 +80,20 @@ Template.recommendBar.events({
       Session.set('rateValue',rate);
   },
 })
-
+ 
 Template.recommendBar.onRendered(function(){
-
+ 
   var value="star"+4;//get the value 4 from Comments.findOne().rating
 document.getElementById(value).checked = true;
-
-
+ 
+ 
 })
 
 //Aidan's Part
 Template.newClass.events({
   'submit #addForm':function(event){
   event.preventDefault();
-      $("textarea").keydown(function(e) {
+  $("textarea").keydown(function(e) {
         if(e.keyCode === 9) { // tab was pressed
             // get caret position/selection
             var start = this.selectionStart;
@@ -225,7 +226,6 @@ Template.post.helpers({
     return "selected"
   }
 },
-
 });
 
 Template.newRequest.onRendered(function() {
@@ -359,14 +359,12 @@ Template.request.helpers({
 
 //Roushan's Part
 /*NEWW 10 March*/
-
-
 Template.post.events({
   'click #moreDetails': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
     delete Session.keys['selectedRequest'];
-    console.log(Session.get('selectedClass'))
+    console.log(Session.get('selectedClass'));
 
   },
 
@@ -376,6 +374,12 @@ Template.post.events({
 		Session.set('selectedEdClass', classID);
 		var selectedEdClass = Session.get('selectedEdClass');
 		console.log(selectedEdClass);
+    if(removedDayTimeEdit != ""){
+      postList.update({"_id": Session.get('selectedEdClass')},{
+        $addToSet:{dayTimeVar:{$each:removedDayTimeEdit}}
+      });
+      removedDayTimeEdit= [];
+    }
     var dayTimeAr=dayTime.find().fetch();
     if(dayTimeAr!=""){
       dayTimeAr.forEach(function(element){
@@ -394,7 +398,6 @@ Template.post.events({
                       name: element.name,
                       address: element.address});
     })
-
 	},
 
   'click #removeClassBtn': function(){
@@ -410,7 +413,6 @@ Template.post.events({
       console.log("cancel");
     }
   }
-
 
 });
 
@@ -449,7 +451,7 @@ Template.editForm.events({
     var audienceVarEdit = event.target.selectAudience.value;
     var dayTimeVarEdit = dayTime.find().fetch();
     var skillVarEdit = event.target.selectSkill.value;
-    var locationVarEdit =Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
+    var locationVarEdit = Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
     var descVarEdit = event.target.desc.value;
 		var selectedEdClass = Session.get('selectedEdClass');
     console.log(selectedEdClass, titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit);
@@ -457,11 +459,12 @@ Template.editForm.events({
     {
       Meteor.call('editClassData', selectedEdClass,titleVarEdit,imgSourceEdit,priceVarEdit,audienceVarEdit,dayTimeVarEdit,skillVarEdit,locationVarEdit, descVarEdit)
     }
-      $('#editClass').modal('hide');
-      var markerAr=Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
+    $('#editClass').modal('hide');
+    var markerAr=Markers.find({ownerClassID:Session.get('selectedEdClass')}).fetch();
       markerAr.forEach(function(element){
       Markers.remove(element._id);
     })
+
   },
 
   'click button#saveDayTimeEdit':function(event){
@@ -486,7 +489,8 @@ Template.editForm.events({
   'click button#deleteDayTimeEdit':function(event){
     event.preventDefault();
     var dayTimeId=this._id;
-    console.log(dayTimeId);
+    Session.set('selectedDayTime', dayTimeId);
+    removedDayTimeEdit.push(this);
     postList.update(Session.get('selectedEdClass'),{
       $pull:
       {
@@ -602,10 +606,12 @@ Template.setMap.onCreated(function() {
 
       Markers.find({type:{$eq:"post"}}).observe({
       added: function(document) {
+
           var marker = new google.maps.Marker({
           draggable: true,
           animation: google.maps.Animation.DROP,
           position: new google.maps.LatLng(document.lat, document.lng),
+
           map:map.instance,
           id: document._id,
           classtype:"post"
@@ -614,6 +620,7 @@ Template.setMap.onCreated(function() {
           map.instance.panTo(marker.position);
 
           google.maps.event.addListener(marker,'dblclick', function(event){
+
             Markers.remove(marker.id);
            });
 
@@ -655,6 +662,7 @@ Template.setMap.onCreated(function() {
            marker.addListener('click', function() {
              var markerID=this.id;
              var thisMarker=Markers.findOne({'_id':{$eq:markerID}});
+             console.log(thisMarker.address);
              var contentString='<div id="content" >'+
                      '<h2>'+thisMarker.name+'</h2>'+
                      '<div id="bodyContent" >'+
@@ -666,6 +674,7 @@ Template.setMap.onCreated(function() {
                content:contentString,
                maxWidth: 250,
              });
+             console.log(markerID);
                infowindow.open(map.instance, marker);
            });
       },
@@ -891,7 +900,7 @@ Template.setRMap.onCreated(function() {
            marker.addListener('click', function() {
              var markerID=this.id;
              var thisMarker=Markers.findOne({'_id':{$eq:markerID}});
-             console.log(thisMarker.address);
+
              var contentString='<div id="content" >'+
                      '<h2>'+thisMarker.name+'</h2>'+
                      '<div id="bodyContent" >'+
@@ -903,7 +912,7 @@ Template.setRMap.onCreated(function() {
                content:contentString,
                maxWidth: 250,
              });
-             console.log(markerID);
+
                infowindow.open(map.instance, marker);
            });
       },
@@ -961,20 +970,21 @@ Template.setRMap.helpers({
    places: function() {
      var placeName=Markers.find({type:{$eq:Session.get("setClassType")}}).fetch();
      return placeName;
+
    },
 });
 
 Template.displayMap.helpers({
   location:function(){
-      if(Session.get('selectedClass')){
+    if(Session.get('selectedClass')){
       var place= postList.findOne({"_id": Session.get('selectedClass')}).location;
       return place;
-    }else if(Session.get('selectedRequest')){
-    var place= requestList.findOne({"_id": Session.get('selectedRequest')}).location;
-    return place;
+    }
+    else if(Session.get('selectedRequest')){
+      var place= requestList.findOne({"_id": Session.get('selectedRequest')}).location;
+      return place;
+    }
   }
-  },
-
 });
 
 Template.displayMap.onRendered(function() {
@@ -1009,6 +1019,7 @@ Template.displayMap.onCreated(function(){
           var marker;
           var locationAr=postList.findOne({'_id':Session.get('selectedClass')}, {fields:{location:1}}).location// Create a marker for this document
           locationAr.forEach(function(element){
+
             marker = new google.maps.Marker({
             draggable: true,
             animation: google.maps.Animation.DROP,
@@ -1023,15 +1034,13 @@ Template.displayMap.onCreated(function(){
           markers[document._id] = marker;
         },
       })
-        })
+    })
 });
-
 
 Template.editMap.helpers({
   place: function() {
     return Markers.find({"ownerClassID":Session.get('selectedEdClass')}).fetch();
   },
-
 });
 
 Template.editMap.onRendered(function() {
@@ -1418,11 +1427,11 @@ Template.editREMap.events({
 Template.payment.onRendered(function() {
   Stripe.setPublishableKey('pk_test_y3Qb096sbp39phssCP308roZ');
   var handler = StripeCheckout.configure({
-		key: 'pk_test_y3Qb096sbp39phssCP308roZ',
-		token: function(token) {
+        key: 'pk_test_y3Qb096sbp39phssCP308roZ',
+        token: function(token) {
       console.log(token);
     }
-	});
+    });
 })
 
 Template.payment.events({
@@ -1787,8 +1796,7 @@ Template.bookClass.onRendered(function() {
 
 
   });
-
-  });
+});
 
 Template.topnavbar2.events({
   'submit #search':function(event){
@@ -1797,6 +1805,7 @@ Template.topnavbar2.events({
     Session.set('query',talentTitle)
     Router.go('/resultpage');
   },
+  
   'mouseup #reqTab':function(){
     event.preventDefault();
     var currentUser=Meteor.userId();
@@ -1805,7 +1814,7 @@ Template.topnavbar2.events({
     var newreqcount=appointment.find({$and:[{skillSkr:currentUser},{status:"processing"},{isread:"false"}]}).fetch();
     if(appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count()>0){
       for(var j in newpostcount){
-
+ 
         appID=newpostcount[j]._id;
           Meteor.call('updateread',appID)
       }
@@ -1814,18 +1823,19 @@ Template.topnavbar2.events({
       for(var j in newreqcount){
         appID=newreqcount[j]._id
           Meteor.call('updateread',appID)
+ 
       }
     }
   }
 });
-
+ 
 Template.main.onRendered(function(){
   $(document).scroll(function () {
    var $nav = $("#mainNav");
    $nav.toggleClass('scrolled', $(this).scrollTop() > 300);
  });
 });
-
+ 
 Template.topnavbar.helpers({
   'isAdmin':function(){
     if(Roles.userIsInRole( Meteor.userId(), 'admin' )==true){
@@ -1834,16 +1844,16 @@ Template.topnavbar.helpers({
       return false;
     }
   }
-
+ 
   })
-
+ 
 Template.topnavbar2.helpers({
   'reqCount':function(){
     var currentUser= Meteor.userId();
     var newpostcount=appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count();
     var newreqcount=appointment.find({$and:[{skillSkr:currentUser},{status:"processing"},{isread:"false"}]}).count();
     return newpostcount+newreqcount;
-
+ 
   },
   'isReqCount':function(){
     var currentUser= Meteor.userId();
@@ -1864,13 +1874,15 @@ Template.topnavbar2.helpers({
       return false;
     }
   }
-
+ 
   })
+});
 
 Template.resultpage.events({
   'click #moreInfo': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
+
 
   },
 });
@@ -1882,6 +1894,7 @@ Template.request.events({
     Session.set('selectedRequest', classID);
     delete Session.keys['selectedClass'];
     var selectedRequest = Session.get('selectedRequest');
+
   },
 
 	'click #removeRequestBtn': function(){
@@ -1903,7 +1916,12 @@ Template.request.events({
    Session.set('selectedEdRequest', classID);
    var selectedEdRequest = Session.get('selectedEdRequest');
    console.log(selectedEdRequest);
-
+   if(removedDayTimeEdit != ""){
+     requestList.update({"_id": Session.get('selectedEdRequest')},{
+       $addToSet:{dayTimeVar:{$each:removedDayTimeEdit}}
+     });
+     removedDayTimeEdit= [];
+   }
    var dayTimeAr=dayTime.find().fetch();
     if(dayTimeAr!=""){
       dayTimeAr.forEach(function(element){
@@ -1945,13 +1963,13 @@ Template.editRequestForm.helpers({
 Template.editRequestForm.events({
   'submit #editRForm':function(){
     event.preventDefault();
-  		var titleVarREdit = event.target.title.value;
+		var titleVarREdit = event.target.title.value;
     var imgSourceREdit = event.target.imageSource.value;
     var priceVarREdit = event.target.price.value;
     var audienceVarREdit = event.target.selectAudience.value;
-    var dayTimeVarREdit =dayTime.find().fetch();
+    var dayTimeVarREdit = dayTime.find().fetch();
     var skillVarREdit = event.target.selectSkill.value;
-    var locationVarREdit =Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
+    var locationVarREdit = Markers.find({ownerClassID:Session.get('selectedEdRequest')}).fetch();
     var descVarREdit = event.target.desc.value;
 		var selectedEdRequest = Session.get('selectedEdRequest');
     console.log(selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit);
@@ -1959,7 +1977,6 @@ Template.editRequestForm.events({
     {
       Meteor.call('editRequestData', selectedEdRequest, titleVarREdit,imgSourceREdit,priceVarREdit,audienceVarREdit,dayTimeVarREdit,skillVarREdit,locationVarREdit, descVarREdit)
     }
-
     var dayTimeAr=dayTime.find().fetch();
     if(dayTimeAr!=""){
 
@@ -1972,8 +1989,6 @@ Template.editRequestForm.events({
     Markers.remove(element._id);
     })
     $('#editRequest').modal('hide');
-
-
 
 
   },
@@ -1999,6 +2014,7 @@ Template.editRequestForm.events({
     event.preventDefault();
     var dayTimeId=this._id;
     console.log(dayTimeId);
+    removedDayTimeEdit.push(this);
     requestList.update(Session.get('selectedEdRequest'),{
       $pull:
       {
@@ -2026,6 +2042,7 @@ Template.classpage.helpers({
       return postList.findOne({"_id": Session.get('selectedClass')});
     }
   },
+
   isThisUser:function(){
     var currentUser=Meteor.userId();
     if(Session.get('selectedRequest')){
@@ -2039,12 +2056,12 @@ Template.classpage.helpers({
     }else{
       return false;
     }
-
-  }
 });
+
 Template.classpage.onRendered(function(){
 
-})
+});
+
 Template.classpage.events({
   'click #bookBtn':function(){
     var userID=Meteor.userId();
@@ -2091,47 +2108,49 @@ Template.classpage.events({
       })
     }
   },
+
   'click #contactMeBtn': function(){
     var selectedUserID = this.createdBy;
-     var selectedClassRequestID = this._id;
-     if(this.type == "post")
-     {
-       var fileSource = postList.findOne({"_id":selectedClassRequestID}).fileSource;
-       var title = postList.findOne({"_id":selectedClassRequestID}).title;
-     }
-     else if (this.type == "request"){
-       var fileSource = requestList.findOne({"_id":selectedClassRequestID}).fileSource;
-       var title = requestList.findOne({"_id":selectedClassRequestID}).title;
-     }
-     console.log(Session.get('selectedUserID'))
-     var findChatRoom = chatRooms.findOne({usersIDsCRID:{$all:[selectedUserID,Meteor.userId(),selectedClassRequestID]}});
-     console.log(findChatRoom);
-     if (findChatRoom)
-     {
-       //room already exist and set room
-       Session.set("roomID", findChatRoom._id);
-       console.log(Session.get('roomID'));
-     }
+    var selectedClassRequestID = this._id;
+    if(this.type == "post")
+    {
+      var fileSource = postList.findOne({"_id":selectedClassRequestID}).fileSource;
+      var title = postList.findOne({"_id":selectedClassRequestID}).title;
+    }
+    else if (this.type == "request"){
+      var fileSource = requestList.findOne({"_id":selectedClassRequestID}).fileSource;
+      var title = requestList.findOne({"_id":selectedClassRequestID}).title;
+    }
+    console.log(Session.get('selectedUserID'))
+    var findChatRoom = chatRooms.findOne({usersIDsCRID:{$all:[selectedUserID,Meteor.userId(),selectedClassRequestID]}});
+    console.log(findChatRoom);
+    if (findChatRoom)
+    {
+      //room already exist and set room
+      Session.set("roomID", findChatRoom._id);
+      console.log(Session.get('roomID'));
+    }
 
-     else{
-       //room does not exist and create new room
-       var newChatID = chatRooms.insert({
-         usersIDsCRID: [selectedUserID, Meteor.userId(),selectedClassRequestID],
-         classRequestID: selectedClassRequestID,
-         owner:Meteor.users.findOne({"_id":selectedUserID}).username,
-         sender:Meteor.users.findOne({"_id":Meteor.userId()}).username,
-         fileSource:fileSource,
-         title:title,
-         createdBy:Meteor.userId(),
-         createdTime: new Date(),
-         lastUser: "",
-         lastText: "No Message Found",
-         newMsg: " ",
-         messages:[]
-       });
-       Session.set('roomID', newChatID)
-     }
-}
+    else{
+      //room does not exist and create new room
+      var newChatID = chatRooms.insert({
+        usersIDsCRID: [selectedUserID, Meteor.userId(),selectedClassRequestID],
+        classRequestID: selectedClassRequestID,
+        owner:Meteor.users.findOne({"_id":selectedUserID}).username,
+        sender:Meteor.users.findOne({"_id":Meteor.userId()}).username,
+        fileSource:fileSource,
+        title:title,
+        createdBy:Meteor.userId(),
+        createdTime: new Date(),
+        lastUser: "",
+        lastText: "No Message Found",
+        newMsg: " ",
+        messages:[]
+      });
+      Session.set('roomID', newChatID)
+    }
+
+  }
 });
 
 Template.findCourse.events({
@@ -2430,6 +2449,16 @@ Template.message.onRendered(function(){
       isUser.set(false);
       //console.log('false');
     }
+    if (Meteor.user())
+    {
+      var test = Meteor.user().username;
+      $('.'+Meteor.user().username).css('text-align','right');
+      $('.'+Meteor.userId()).css('background-color', 'rgb(191, 234, 255)');
+
+    }
+    else{
+      console.log('No new Msg');
+    }
 });
 
 
@@ -2450,10 +2479,13 @@ Template.chatWindow.helpers({
       if(testArray[i].username == Meteor.user().username){
         console.log(testArray[i]);
         console.log("true");
+
+
       }
       else{
         console.log(testArray[i]);
         console.log("false");
+
         }
       }
     })
@@ -2462,14 +2494,8 @@ Template.chatWindow.helpers({
 
 
 
-Template.sideChatButtons.onRendered(function() {
-  if (this.data.username != Meteor.user().username)
-  {
-    console.log('New Msg');
-  }
-  else{
-    console.log('No new Msg');
-  }
+Template.message.onRendered(function() {
+
 });
 
 Template.chatBox.events({
@@ -2488,6 +2514,7 @@ Template.chatBox.events({
       $(this).addClass("active");
     });*/
 
+
     var senderUN = chatRooms.findOne({"_id": Session.get('roomID')}).sender;
     var ownerUN = chatRooms.findOne({"_id": Session.get('roomID')}).owner;
     if (senderUN == Meteor.users.findOne({"_id":Meteor.userId()}).username){
@@ -2503,7 +2530,6 @@ Template.chatBox.events({
       document.getElementById("senderName").innerHTML = senderUN;
       document.getElementById("chatUsername").innerHTML = senderUN;
     }
-
   }
 });
 
@@ -2512,27 +2538,9 @@ Template.chatBox.helpers({
     var currentUserId = Meteor.userId();
     Session.set('selectedUserId',currentUserId);
     var selectedUserId = Session.get('selectedUserId');
-    //var test = chatRooms.find({createdBy:Session.get('selectedUserId')},{sort: {createdAt:-1}});
-    //console.log(test);
-    //return test;
     return chatRooms.find({usersIDsCRID:currentUserId},{sort: {createdTime:-1}});
 
   }
-  /*
-  'isUser':function(){
-    var currentUser = Meteor.users.findOne({"_id":Meteor.userId()}).username;
-    console.log(currentUser);
-    if (currentUser ==  chatRooms.findOne({"_id": Session.get('roomID')}).owner){
-      return true;
-    }else if (currentUser != chatRooms.findOne({"_id": Session.get('roomID')}).owner){
-      return false;
-    }
-  },
-  'senderName':function(){
-    return senderUN = chatRooms.findOne({"_id": Session.get('roomID')});
-  },*/
-
-
 
 });
 
@@ -2573,7 +2581,6 @@ Template.chatWindow.helpers({
 
 });
 
-
 Template.inputMessage.events({
 'keydown textarea#inputMsg': function(event){
   if(event.which==13){
@@ -2595,6 +2602,7 @@ Template.inputMessage.events({
         $push:{
           messages:
           {
+            userID:Meteor.userId(),
             username:username,
             text:message,
             createdAt: new Date(),
@@ -2631,7 +2639,6 @@ Template.inputMessage.events({
   }
 });
 
-
 Template.enrolledClass.helpers({
   'enrolled': function () {
     var currentUserId = Meteor.userId();
@@ -2645,6 +2652,7 @@ Template.enrolledClass.helpers({
           for(var i in allEnroll){
             var a = allEnroll[i]._id;
             if(a==postList.findOne({_id:enrolled[j].classID})._id){
+
             }else{
                 allEnroll.push(postList.findOne({_id:enrolled[j].classID}));
             }
@@ -2663,7 +2671,7 @@ Template.enrolledClass.helpers({
      Session.set('selectedClass', classID);
      delete Session.keys['selectedRequest'];
    }
- })
+ });
 
  Template.newNotif.helpers({
    'postClassReq':function(){
@@ -2691,8 +2699,7 @@ Template.enrolledClass.helpers({
      }
    },
 
-
- })
+ });
 
  Template.newNotif.events({
    'click #acceptBtn':function(){
@@ -2706,51 +2713,47 @@ Template.enrolledClass.helpers({
      var appID=this._id;
      Meteor.call('rejectAppStatus',appID);
    }
- })
-
-
- Template.findNearby.helpers({
-   location:function(){
-       if(Session.get('selectedClass')){
-       var place= postList.findOne({"_id": Session.get('selectedClass')}).location;
-       return place;
-     }else if(Session.get('selectedRequest')){
-     var place= requestList.findOne({"_id": Session.get('selectedRequest')}).location;
-     return place;
-   }
-   },
-   nearByclass:function(){
-     var markerID=Session.get('selectMarker');
-     //Markers.find({$and:[{markerid:markerID},{type:"nearby"}]})
-     return Markers.find({type:"nearby"}).fetch();
-   },
-   nearByReqclass:function(){
-     var markerID=Session.get('selectMarker');
-     //Markers.find({$and:[{markerid:markerID},{type:"nearby"}]})
-     return Markers.find({type:"nearbyReq"}).fetch();
-   },
-   isnearByclass:function(){
-     var markerID=Session.get('selectMarker');
-     if(Markers.find({type:"nearby"}).count()>0){
-       return true;
-     }else{
-       return false;
-     }
-   },
-   isnearByReqclass:function(){
-     var markerID=Session.get('selectMarker');
-     if(Markers.find({type:"nearbyReq"}).count()>0){
-       return true;
-     }else{
-       return false;
-     }
-   },
-
-
-
  });
 
- Template.findNearby.onRendered(function() {
+ Template.findNearby.helpers({
+    location:function(){
+        if(Session.get('selectedClass')){
+        var place= postList.findOne({"_id": Session.get('selectedClass')}).location;
+        return place;
+      }else if(Session.get('selectedRequest')){
+      var place= requestList.findOne({"_id": Session.get('selectedRequest')}).location;
+      return place;
+    }
+    },
+    nearByclass:function(){
+      var markerID=Session.get('selectMarker');
+      //Markers.find({$and:[{markerid:markerID},{type:"nearby"}]})
+      return Markers.find({type:"nearby"}).fetch();
+    },
+    nearByReqclass:function(){
+      var markerID=Session.get('selectMarker');
+      //Markers.find({$and:[{markerid:markerID},{type:"nearby"}]})
+      return Markers.find({type:"nearbyReq"}).fetch();
+    },
+    isnearByclass:function(){
+      var markerID=Session.get('selectMarker');
+      if(Markers.find({type:"nearby"}).count()>0){
+        return true;
+      }else{
+        return false;
+      }
+    },
+    isnearByReqclass:function(){
+      var markerID=Session.get('selectMarker');
+      if(Markers.find({type:"nearbyReq"}).count()>0){
+        return true;
+      }else{
+        return false;
+      }
+    },
+  });
+
+  Template.findNearby.onRendered(function() {
    var markerAr=Markers.find({type:"nearby"}).fetch();
    if(markerAr!=""){
      markerAr.forEach(function(element){
@@ -2758,10 +2761,10 @@ Template.enrolledClass.helpers({
      })
    }
    Session.set('filterNearby', "post");
-
+ 
    GoogleMaps.load( {  key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
      libraries: 'geometry,places'});
-
+ 
    this.autorun(function(c) {
      if (GoogleMaps.loaded()) {
        GoogleMaps.create({
@@ -2780,15 +2783,15 @@ Template.enrolledClass.helpers({
    array.forEach(function(ele){
      if(Session.get('selectMarker')==ele.markerid){
         document.getElementById('nearbytab').style.backgroundColor="#d8e7ff";
-
+ 
      }else {
         document.getElementById('nearbytab').style.backgroundColor="white";
-
+ 
      }
    })
 */
  });
-
+ 
 Template.findNearby.events({
   'click #nearbyMorebtn':function(){
     var classID = this.class._id;
@@ -2810,19 +2813,19 @@ Template.findNearby.events({
     var class2=this.class.location;
       GoogleMaps.maps.nearbymap.instance.panTo(new google.maps.LatLng(this.latlng.lat, this.latlng.lng))
       GoogleMaps.maps.nearbymap.instance.setZoom(18);
-
+ 
   }
 })
-
+ 
  Template.findNearby.onCreated(function(){
-
-
+ 
+ 
    var usermarker=[];
    var markers=[];
     var markers2=[];
-
+ 
     GoogleMaps.ready('nearbymap', function(map) {
-
+ 
       var input = document.getElementById('pac-input');
       var searchBox = new google.maps.places.SearchBox(input);
       map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -2833,7 +2836,7 @@ Template.findNearby.events({
       input.onkeypress=function(){
         var markerAr=Markers.find({type:{$eq:"nearby"}}).fetch();
         var markerAr2=Markers.find({type:{$eq:"nearbyReq"}}).fetch();
-
+ 
         if(markerAr!="" ||markerAr!=""){
           markerAr.forEach(function(element){
             Markers.remove(element._id);
@@ -2842,7 +2845,7 @@ Template.findNearby.events({
             Markers.remove(element._id);
           })
         }
-
+ 
         if(markers.length>0||markers2.length>0){
           for (var i = 0; i < markers.length; i++ ) {
               markers[i].setMap(null);
@@ -2855,18 +2858,18 @@ Template.findNearby.events({
               markers2.length = 0;
               delete markers2[i]
         }
-
+ 
         for (var i = 0; i < usermarker.length; i++ ) {s
             usermarker[i].setMap(null);
           }
           usermarker.length = 0;
           delete usermarker[i]
       }
-
+ 
       google.maps.event.addListener(map.instance,'bounds_change', function() {
           searchBox.setBounds(map.getBounds());
         });
-
+ 
       searchBox.addListener('places_changed', function() {
         var places = searchBox.getPlaces();
         if (places.length == 0) {
@@ -2893,19 +2896,19 @@ Template.findNearby.events({
           usermarker.push(marker);
           map.instance.setZoom(16);
           map.instance.panTo(marker.position);
-
+ 
           var lat=place.geometry.location.lat();
           var lng=place.geometry.location.lng();
           var inputlocation=new google.maps.LatLng(lat, lng);
-
+ 
             var locationAr2=requestList.find().fetch();
-
+ 
             var locationAr=postList.find().fetch();
-
+ 
           var i=0;
           var prevMarker='';
           for(var j in locationAr){
-
+ 
             var locationAtt=locationAr[j].location;
             for(var k in locationAtt){
               var thislat=locationAtt[k].lat;
@@ -2914,7 +2917,7 @@ Template.findNearby.events({
               var coord={lat:thislat, lng:thislng};
               var distance=google.maps.geometry.spherical.computeDistanceBetween (inputlocation, thislocation);
               if (distance<2000){
-
+ 
                 nearByclass.push(locationAr[j]);
                 marker=new google.maps.Marker({
                   map: map.instance,
@@ -2948,17 +2951,17 @@ Template.findNearby.events({
                     $('#'+this.id).css('transition'," background-color 1s ease-in .2s");
                     prevMarker=this.id;
                   }
-
-
-
+ 
+ 
+ 
                   });
                 }
             }
           }
-
-
+ 
+ 
           for(var j in locationAr2){
-
+ 
             var locationAtt=locationAr2[j].location;
             for(var k in locationAtt){
               var thislat=locationAtt[k].lat;
@@ -2967,7 +2970,7 @@ Template.findNearby.events({
               var coord={lat:thislat, lng:thislng};
               var distance=google.maps.geometry.spherical.computeDistanceBetween (inputlocation, thislocation);
               if (distance<2000){
-
+ 
                 nearByReqclass.push(locationAr2[j]);
                 marker=new google.maps.Marker({
                   map: map.instance,
@@ -2985,7 +2988,7 @@ Template.findNearby.events({
                 markers2.push(marker)
                 var distInKm=Number(distance/1000).toFixed(2);
                 Markers.insert({markerid:marker.id,currentUser:Meteor.userId(),class:locationAr2[j],type:"nearbyReq",distance:distInKm,latlng:coord})
-
+ 
                 }
                 google.maps.event.addListener(marker,'click', function() {
                   console.log(this.id);
@@ -3005,75 +3008,146 @@ Template.findNearby.events({
             }
           }
         });
-
+ 
       });//end of searchbox
-
+ 
  })
 });
 
-Template.rating.events({
-  'click input':function(){
-    var rate;
-    if (document.getElementById('starhalf').checked) {
-        rate = document.getElementById('starhalf').value;
-      }else if (document.getElementById('star1').checked) {
-        rate = document.getElementById('star1').value;
-      }else if (document.getElementById('star1half').checked) {
-        rate = document.getElementById('star1half').value;
-      }else if (document.getElementById('star2').checked) {
-        rate = document.getElementById('star2').value;
-      }else if (document.getElementById('star2half').checked) {
-        rate = document.getElementById('star2half').value;
-      }else if (document.getElementById('star3').checked) {
-        rate = document.getElementById('star3').value;
-      }else if (document.getElementById('star3half').checked) {
-        rate = document.getElementById('star3half').value;
-      }else if (document.getElementById('star4').checked) {
-        rate = document.getElementById('star4').value;
-      }else if (document.getElementById('star4half').checked) {
-        rate = document.getElementById('star4half').value;
-      }
-      Session.set('rateValue',rate);
-},
-  'click #saverate':function(){
-    var rateVal=Session.get('rateValue');
-    var currentUser=Meteor.userId();
-    Meteor.call('insertRate',currentUser, )
-  }
+//Comment Functions
+ Template.comment.events({
+     "click #saveReview": function(event, template){
+       var rate = "";
+       if (document.getElementById('star1').checked) {
+         rate = document.getElementById('star1').value;
+         document.getElementById('star1').checked = false;
+       }else if (document.getElementById('star2').checked) {
+         rate = document.getElementById('star2').value;
+         document.getElementById('star2').checked = false;
+       }else if (document.getElementById('star3').checked) {
+         rate = document.getElementById('star3').value;
+         document.getElementById('star3').checked = false;
+       }else if (document.getElementById('star4').checked) {
+         rate = document.getElementById('star4').value;
+         document.getElementById('star4').checked = false;
+       }else if (document.getElementById('star5').checked) {
+         rate = document.getElementById('star5').value;
+         document.getElementById('star5').checked = false;
+       }
+       console.log(rate);
+        //Session.set('rateValue',rate);
+
+       //Check if the input is not blanck or there's only a space
+       var content = $.trim($('.add_comment').val());
+
+       //Some UX
+       if(content.length <= 0 && rate != ""){
+         $('.add_comment').css('border', '1px solid red');
+         $('#insertRating').css('border', 'none');
+         console.log(rate)
+         console.log("comment no value");
+         document.getElementById("inputComment").value = "";
+         return false;
+       }
+       else if(content.length > 0 && rate == ""){
+         $('#insertRating').css('border', '1px solid red');
+         $('.add_comment').css('border', 'none');
+         console.log(rate)
+         console.log("rate no value");
+         document.getElementById("inputComment").value = "";
+         return false;
+       }
+       else if(content.length <= 0 && rate == ""){
+         $('.add_comment').css('border', '1px solid red');
+         $('#insertRating').css('border', '1px solid red');
+         console.log(rate)
+         console.log("both no value");
+         document.getElementById("inputComment").value = "";
+         return false;
+       }
+       $('.add_comment').css('border', '0px').val('').focus();
+       var selectedClassRequestID = "";
+       if (Session.get("selectedClass") != ""){
+         var selectedClassRequestID = Session.get("selectedClass");
+       }
+       else{
+         var selectedClassRequestID = Session.get("selectedRequest");
+       }
+       //Let's build our comment object
+       comment = {
+           'classRequestID': selectedClassRequestID,
+           'comment'    : content,
+           'user'       : Meteor.user().username,
+           'created_at' : new Date(),
+           'rating':rate
+       };
+
+       //Call insert comment method
+       Meteor.call("insertComment", comment);
+
+   }
+ });
+
+ Template.reportClass.helpers({
+   class:function(){
+  
+  
+  
+  
+   }
+ })
+  
+ Template.reportClass.events({
+   'click #options':function(){
+     document.getElementById('optionbox').style.display="block"
+   },
+   'click #submitReport':function(){
+     var radios = document.getElementsByName('reportClass');
+     var currentUser=Meteor.userId();
+     var classType;
+     var classID;
+     if(Session.get('selectedClass')){
+       classType="post";
+       classID=Session.get('selectedClass');
+     }
+     else if(Session.get('selectedRequest')){
+       classType="request";
+       classID=Session.get('selectedRequest');
+  
+     }
+     for (var i = 0, length = radios.length; i < length; i++)
+     {
+      if (radios[i].checked)
+      {
+        var reportVal=radios[i].value;
+  
+       Meteor.call('submitReport',currentUser,classType, classID,reportVal)
+      }  
+     }    
+   }
+ });
+ 
+ Template.commentList.helpers({
+     comments: function(){
+       if (Session.get("selectedClass") != ""){
+         var selectedClassRequestID = Session.get("selectedClass");
+       }
+       else{
+         var selectedClassRequestID = Session.get("selectedRequest");
+       }
+       var comments = Comments.find({classRequestID: selectedClassRequestID}).fetch();
+
+
+       //$( "[name=r]" ).val( ["10"]);
+       return comments;
+     }
+   });
+
+Template.listofcomments.onRendered(function(){
+  var selectedComment = this.data._id;
+  console.log(selectedComment);
+  var rating = Comments.findOne({'_id': selectedComment}).rating;
+  var value="star"+rating;
+  console.log(rating);
 
 });
-
-Template.reportClass.helpers({
-  class:function(){
-
-  }
-})
-
-Template.reportClass.events({
-  'click #options':function(){
-    document.getElementById('optionbox').style.display="block"
-  },
-  'click #submitReport':function(){
-    var radios = document.getElementsByName('reportClass');
-    var currentUser=Meteor.userId();
-    var classType;
-    var classID;
-    if(Session.get('selectedClass')){
-      classType="post";
-      classID=Session.get('selectedClass');
-    }
-    else if(Session.get('selectedRequest')){
-      classType="request";
-      classID=Session.get('selectedRequest');
-    }
-    for (var i = 0, length = radios.length; i < length; i++)
-    {
-     if (radios[i].checked)
-     {
-       var reportVal=radios[i].value;
-
-      Meteor.call('submitReport',currentUser,classType, classID,reportVal)
-     }
-    }
-  }
-})
