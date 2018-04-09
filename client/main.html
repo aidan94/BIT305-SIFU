@@ -1,17 +1,17 @@
 <head>
   <link href="img/icon.ico" rel="icon">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <!--
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
-  <!--Bootrap V4.0 and javascript-->
   <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+-->
+  <!--Bootrap V4.0 and javascript-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
-  <link rel="stylesheet" href="dist/css/bootstrap-responsive-tabs.css">
-  <script src="dist/js/jquery.bootstrap-responsive-tabs.min.js"></script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="https://checkout.stripe.com/v2/checkout.js"></script>
@@ -37,28 +37,113 @@
 
 <template name="findNearby">
   <div class="container">
-    <input id="pac-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
 
-    <div class="map-container" id="nearbymap">
-    </div>
-  </div>
+      <input id="pac-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="map-container" id="nearbymap">
+          </div>
+        </div>
+        <div class="col-lg-4" id="scrollNearBy">
+          <h1>Find classes nearby now</h1>
+          <ul class="nav nav-tabs" id="nearbyTab" role="tablist">
+            <li class="nav-item">
+              <a class="nav-link active" id="post-tab" data-toggle="tab" href="#post" role="tab" aria-controls="post" aria-selected="true">Skill Providers</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" id="requestnb-tab" data-toggle="tab" href="#requestnb" role="tab" aria-controls="requestnb" aria-selected="false">Skill Seekers</a>
+            </li>
+          </ul>
+          <div class="tab-content" id="nearbtTabCont">
+            <div class="tab-pane fade active show" id="post" role="tabpanel" aria-labelledby="post-tab">
+              {{#if isnearByclass}}
+              {{#each nearByclass}}
+              <div class="nearbytab marker-select row" id="{{markerid}}">
+                <div class="col-11" style="padding:0">
+                  <div class="row">
+                    <div class="col-4" style="padding:0 " >
+                      <img width="100%" id="nearbyimg" src="{{class.fileSource}}" />
+                    </div>
+                    <div class="col-8">
+                      <h3>{{class.title}}</h3>
+                      <h4>{{class.owner}}</h4>
+                      <h5>{{class.skill}}</h5>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    Around {{distance}}km away
+                  </div>
+                </div>
+                <div class="col-1" id="nearbyMore">
+                  <a href="/classpage" class="btn" id="nearbyMorebtn"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                </div>
+
+              </div>
+
+              {{/each}}
+              {{else}}
+                <div class="col-12">
+                  Sorry, there is no classes nearby.
+
+                </div>
+              {{/if}}
+            </div>
+            <div class="tab-pane fade" id="requestnb" role="tabpanel" aria-labelledby="requestnb-tab">
+              {{#if isnearByReqclass}}
+              {{#each nearByReqclass}}
+              <div class="nearbytab row" id="{{markerid}}">
+                <div class="col-11" style="padding:0">
+                  <div class="row">
+                    <div class="col-4" style="padding:0 " >
+                      <img width="100%" id="nearbyimg" src="{{class.fileSource}}" />
+                    </div>
+                    <div class="col-8">
+                      <h3>{{class.title}}</h3>
+                      <h4>{{class.owner}}</h4>
+                      <h5>{{class.skill}}</h5>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    Around {{distance}}km away
+                  </div>
+                </div>
+                <div class="col-1" id="nearbyMore">
+                  <a href="/classpage" class="btn" id="nearbyReqMorebtn"><span class="glyphicon glyphicon-chevron-right"></span></a>
+                </div>
+
+
+              </div>
+              {{/each}}
+              {{else}}
+              <div class="col-12">
+                Sorry, there is no classes nearby.
+
+              </div>
+              {{/if}}
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+        </div>
 
 </template>
 
 <template name="recommendBar">
   <br/>
   <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
+
 {{> findNearby}}
   <br/>
   <br/>
   <br/>
   <br/>
   <br/>
+{{> rating}}
   <br/>
   <br/>
   <br/>
@@ -67,22 +152,74 @@
   <br/>
   <br/>
   <br/>
+  {{#if isInRole 'admin'}}
+    <h1>HELLO</h1>hi
+    {{> admin}}
+  {{/if}}
+  <br/>
+{{> admin}}
   <br/>
   <br/>
   <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
+  <fieldset class="rating">
+      <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="Awesome ! (5 stars)"></label>
+      <input type="radio" id="star4half" name="rating" value="4.5" /><label class="half" for="star4half" title="Pretty good. (4.5 stars)"></label>
+      <input type="radio" id="star4" name="rating" value="4" /><label class = "full " for="star4" title="Pretty good. (4 stars)"></label>
+      <input type="radio" id="star3half" name="rating" value="3.5" /><label class="half" for="star3half" title="Can be improve. (3.5 stars)"></label>
+      <input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="Can be improve. (3 stars)"></label>
+      <input type="radio" id="star2half" name="rating" value="2.5" /><label class="half" for="star2half" title="Kinda bad. (2.5 stars)"></label>
+      <input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="Kinda bad. (2 stars)"></label>
+      <input type="radio" id="star1half" name="rating" value="1.5" /><label class="half" for="star1half" title="Bad. (1.5 stars)"></label>
+      <input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="Very bad. (1 star)"></label>
+      <input type="radio" id="starhalf" name="rating" value=".5" /><label class="half" for="starhalf" title="Very bad. (0.5 stars)"></label>
+  </fieldset>
   <br/>
   <br/>
   <br/>
 {{> footer}}
 </template>
 
+<template name="adminpage">
+  <div class="bgcolor">
+    {{> header}}
+    <br />
+    <div class="container" id="containerBg">
+      <div class="row">
+
+        <div class="col-lg-3" >
+          <div class="nav flex-column nav-pills" id="admin-manage-tab" role="tablist" aria-orientation="vertical">
+            <a class="nav-link active" id="v-pills-review-tab" data-toggle="pill" href="#v-pills-review" role="tab" aria-controls="v-pills-review" aria-selected="true">Review Report</a>
+            <a class="nav-link" id="v-pills-manage-tab" data-toggle="pill" href="#v-pills-manage" role="tab" aria-controls="v-pills-manage" aria-selected="false">Manage Class</a>
+            <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">Analysis</a>
+            <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Settings</a>
+          </div>
+        </div>
+        <div class="col-lg-9">
+          <div class="tab-content" id="admin-manage-tabContent">
+            <div class="tab-pane fade show active" id="v-pills-review" role="tabpanel" aria-labelledby="v-pills-review-tab">.A.</div>
+            <div class="tab-pane fade" id="v-pills-manage" role="tabpanel" aria-labelledby="v-pills-manage-tab">.B.</div>
+            <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">.C</div>
+            <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+
+</div>
+</template>
+<template name="admin">
+  <div class="bgcolor">
+
+</div>
+
+
+</template>
+
+<template name="rating">
+
+</template>
 <template name="carousel_bg">
   <div id="myCarousel" class="carousel slide " data-ride="carousel">
         <ol class="carousel-indicators">
@@ -137,12 +274,19 @@
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="/profile">Profile</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="/messaging">Message</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="#request">Request</a>
-          </li>
+            {{#if isAdmin}}
+              <li class="nav-item">
+                <a class="nav-link js-scroll-trigger" href="/adminpage">Manage</a>
+              </li>
+            {{else}}
+              <li class="nav-item">
+                <a class="nav-link js-scroll-trigger" href="/messaging">Message</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link js-scroll-trigger" href="#request">Request</a>
+              </li>
+            {{/if}}
+
           {{/if}}
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="#about">About Us</a>
@@ -154,6 +298,7 @@
     </div>
   </nav>
 </template>
+
 
 <template name = "footer">
   <hr>
@@ -246,17 +391,23 @@
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="/profile">Profile</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="/messaging">Messages</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" id="reqTab" data-toggle="modal" href="#request">Request
-            {{#if isReqCount}}<span class="badge badge-light">{{reqCount}}</span>
+            {{#if isAdmin}}
+              <li class="nav-item">
+                <a class="nav-link js-scroll-trigger" href="/adminpage">Manage</a>
+              </li>
             {{else}}
+              <li class="nav-item">
+                <a class="nav-link js-scroll-trigger" href="/messaging">Messages</a>
+              </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" id="reqTab" data-toggle="modal" href="#request">Request
+              {{#if isReqCount}}<span class="badge badge-light">{{reqCount}}</span>
+              {{else}}
+              {{/if}}
+              </a>
+            </li>
             {{/if}}
-            </a>
 
-          </li>
           {{/if}}
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="#about">About</a>
@@ -1079,13 +1230,20 @@
                   </button>
                   {{> bookClass}}
               </div>
+
+              <div class="row">
+                  <button type="button" id="reportBtn" class="btn btn-info" data-toggle="modal" data-target="#reportClassModal">
+                  Report
+                  </button>
+                  {{> reportClass}}
+              </div>
               {{/if}}
 	          </div>
 	        </div>
 
 	        </div>
 
-	            {{/with}}
+	          {{/with}}
 
 	    </div>
       {{> footer}}
@@ -1094,6 +1252,80 @@
 
 
 	</template>
+
+<template name="reportClass">
+  <div class="modal fade" id="reportClassModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+      <div class="modal-content" id="modalCont">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookClassLabel">
+            <img src="report.png" width="30px"/>Report Class
+          </h5>
+
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <!--FORM -->
+        <div class="modal-body">
+          <form class="custom-form-horizontal" id ="reportClass" data-toggle="validator" role="form">
+              <h2>Help us understand what's happening</h2>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="reportClass" id="inappropriateCont" value="Inappropriate content" >
+                <label class="form-check-label" for="exampleRadios1">
+                  Inappropriate content
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="reportClass" id="spam" value="Spam or scam">
+                <label class="form-check-label" for="exampleRadios2">
+                  Spam or scam
+                </label>
+              </div>
+              <div class="form-check ">
+                <input class="form-check-input" type="radio" name="reportClass" id="inappropriatephoto" value="Inappropriate photo" >
+                <label class="form-check-label" for="exampleRadios3">
+                  Inappropriate photo
+                </label>
+              </div>
+              <div class="form-check ">
+                <input class="form-check-input" type="radio" name="reportClass" id="skillPvddoesntshowup" value="Skill provider doesn't show up" >
+                <label class="form-check-label" for="exampleRadios3">
+                  Skill provider doesn't show up
+                </label>
+              </div>
+              <div class="form-check ">
+                <input class="form-check-input" type="radio" name="reportClass" id="involveDanger" value="  Class involve danger and unreasonable risk" >
+                <label class="form-check-label" for="exampleRadios4">
+                  Class involve danger and unreasonable risk
+                </label>
+              </div>
+              <div class="form-check ">
+                <input class="form-check-input" type="radio" name="reportClass" id="options"  >
+                  <label class="form-check-label" for="exampleRadios4">
+                      Other reason:
+                  </label>
+                <div class="col-9">
+                <div class="row" id="optionbox" style="display: none">
+                    <input type="text" class="form-control" id="optionForReport">
+                  </div>
+                </div>
+              </div>
+              <div class="row justify-content-md-center">
+
+              <button type="button" id="submitReport" class="btn btn-info" data-dismiss="modal">Submit</button>
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer">
+
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 <!--Posts from User-->
 <template name='post'>
 <div class = "row">
@@ -2368,7 +2600,7 @@
 </template>
 
 <template name ="chatWindow">
-  <div class ="tab-content vcenter">
+  <div class ="tab-content vcenter" id="vcen">
     {{#each msgs}}
 
         {{> message}}
