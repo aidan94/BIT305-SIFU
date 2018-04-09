@@ -9,10 +9,21 @@ selectedSes=new Mongo.Collection ('selectedSes');
 appointment=new Mongo.Collection('appointment');
 transaction=new Mongo.Collection('transaction');
 chatRooms = new Mongo.Collection('chatRooms');
-
+admin=new Mongo.Collection('admin');
+report=new Mongo.Collection('report');
 
 Meteor.publish("users", function() {
     return Meteor.users.find({}, {fields:{createdAt: true, profile:true, emails: true, username: true}});
+});
+
+
+Accounts.validateNewUser(function (user) {
+  var loggedInUser = Meteor.user();
+  if (Roles.userIsInRole(loggedInUser, 'admin')) {
+    return true;
+  }
+
+  throw new Meteor.Error(403, "Not authorized to create new users");
 });
 
 Accounts.onCreateUser(function(options, user) {
@@ -49,6 +60,31 @@ Meteor.publish('theRequest',function(){
 
 
 Meteor.methods({
+  deleteUser: function (targetUserId, group) {
+    var loggedInUser = Meteor.user()
+
+    if (!loggedInUser ||
+        !Roles.userIsInRole(loggedInUser,
+                            ['admin'], group)) {
+      throw new Meteor.Error(403, "Access denied")
+    }
+
+    // remove permissions for target group
+    Roles.setUserRoles(targetUserId, [], group)
+
+    // do other actions required when a user is removed...
+  },
+  updateRoles: function (targetUserId, roles, group) {
+    var loggedInUser = Meteor.user()
+
+    if (!loggedInUser ||
+        !Roles.userIsInRole(loggedInUser,
+                            ['manage-users'], group)) {
+      throw new Meteor.Error(403, "Access denied")
+    }
+
+    Roles.setUserRoles(targetUserId, roles, group)
+  },
   'insertClassData':function(titleVar,imgSource,priceVar,audienceVar,dayTimeVar,skillVar, locationVar, descVar){
     var currentUserId=this.userId;
     var user = Meteor.user().username;
@@ -136,6 +172,33 @@ Meteor.methods({
         });
 
       },
+      'insertRate': function(currentUser,classID,){
+        var currentUserId=this.userId;
+        rating.insert({
+          session: session,
+          classID: classID,
+          skillPvd:skillPvd,
+          skillSkr:currentUserId,
+          skillSkrName:Meteor.user().username,
+          totalPrice:totalPrice,
+          status:status,
+          title:className,
+          ispaid:ispaid,
+          isread:"false",
+          createdDate:new Date()
+        });
+      },
+
+      'submitReport':function(currentUser,classType, classID,reportVal){
+        report.insert({
+          reportBy:currentUser,
+          classType:classType,
+          classID:classID,
+          reason:reportVal,
+          createdDate: new Date()
+        })
+      },
+
       'removeClass': function(selectedClass){
         postList.remove(selectedClass);
       },
