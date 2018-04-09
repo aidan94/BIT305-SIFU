@@ -9,13 +9,9 @@ selectedSes=new Mongo.Collection ('selectedSes');
 appointment=new Mongo.Collection('appointment');
 transaction=new Mongo.Collection('transaction');
 chatRooms = new Mongo.Collection('chatRooms');
+Comments = new Mongo.Collection("comments");
 admin=new Mongo.Collection('admin');
 report=new Mongo.Collection('report');
-
-Meteor.publish("users", function() {
-    return Meteor.users.find({}, {fields:{createdAt: true, profile:true, emails: true, username: true}});
-});
-
 
 Accounts.validateNewUser(function (user) {
   var loggedInUser = Meteor.user();
@@ -24,6 +20,14 @@ Accounts.validateNewUser(function (user) {
   }
 
   throw new Meteor.Error(403, "Not authorized to create new users");
+});
+
+Meteor.publish("users", function() {
+    return Meteor.users.find({}, {fields:{createdAt: true, profile:true, emails: true, username: true}});
+});
+
+Meteor.publish('comments', function() {
+  return Comments.find();
 });
 
 Accounts.onCreateUser(function(options, user) {
@@ -85,6 +89,7 @@ Meteor.methods({
 
     Roles.setUserRoles(targetUserId, roles, group)
   },
+
   'insertClassData':function(titleVar,imgSource,priceVar,audienceVar,dayTimeVar,skillVar, locationVar, descVar){
     var currentUserId=this.userId;
     var user = Meteor.user().username;
@@ -172,6 +177,7 @@ Meteor.methods({
         });
 
       },
+
       'insertRate': function(currentUser,classID,){
         var currentUserId=this.userId;
         rating.insert({
@@ -267,5 +273,10 @@ Meteor.methods({
             status:"reject",
           }
         })
-      }
+      },
+
+      'insertComment': function(comment){
+        if(!_.isEmpty(comment))
+           Comments.insert(comment);
+         }
     });
