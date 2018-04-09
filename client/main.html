@@ -367,7 +367,7 @@
         <i class="fa fa-bars" aria-hidden="true"></i>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav text-uppercase ml-auto">
+        <ul class="navbar-nav text-uppercase ml-auto" >
           <li class="nav-item">
             <div class="row">
               <div class="col-lg-10">
@@ -389,22 +389,23 @@
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="/profile">Profile</a>
           </li>
-          {{#if isAdmin}}
+            {{#if isAdmin}}
               <li class="nav-item">
                 <a class="nav-link js-scroll-trigger" href="/adminpage">Manage</a>
               </li>
             {{else}}
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" href="/messaging">Messages</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link js-scroll-trigger" id="reqTab" data-toggle="modal" href="#request">Request
+              <li class="nav-item">
+                <a class="nav-link js-scroll-trigger" href="/messaging">Messages</a>
+              </li>
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" id="reqTab" data-toggle="modal" href="#request">Request
               {{#if isReqCount}}<span class="badge badge-light">{{reqCount}}</span>
               {{else}}
               {{/if}}
-          {{/if}}
               </a>
-          </li>
+            </li>
+            {{/if}}
+
           {{/if}}
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="#about">About</a>
