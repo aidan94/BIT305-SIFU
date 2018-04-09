@@ -8,6 +8,7 @@ Router.route('/main');
 Router.route('/classpage');
 Router.route('/resultpage');
 Router.route('/messaging');
+Router.route('/adminpage');
 
 Meteor.subscribe("chatRooms", {
   onReady: function () {
@@ -29,11 +30,14 @@ selectedSes=new Mongo.Collection ('selectedSes');
 appointment = new Mongo.Collection('appointment');
 transaction = new Mongo.Collection('transaction');
 chatRooms = new Mongo.Collection('chatRooms');
+admin=new Mongo.Collection('admin');
+report=new Mongo.Collection('report');
 
 
 Accounts.ui.config({
   passwordSignupFields: 'USERNAME_AND_OPTIONAL_EMAIL'
 });
+
 
 isUser = new ReactiveVar(true);
 autoScrollingIsActive = false;
@@ -48,6 +52,40 @@ Template.carousel_bg.onRendered(function(){
   $('.carousel').carousel({
     interval:3000
     })
+})
+
+Template.recommendBar.events({
+  'click input':function(){
+    var rate;
+    if (document.getElementById('starhalf').checked) {
+        rate = document.getElementById('starhalf').value;
+      }else if (document.getElementById('star1').checked) {
+        rate = document.getElementById('star1').value;
+      }else if (document.getElementById('star1half').checked) {
+        rate = document.getElementById('star1half').value;
+      }else if (document.getElementById('star2').checked) {
+        rate = document.getElementById('star2').value;
+      }else if (document.getElementById('star2half').checked) {
+        rate = document.getElementById('star2half').value;
+      }else if (document.getElementById('star3').checked) {
+        rate = document.getElementById('star3').value;
+      }else if (document.getElementById('star3half').checked) {
+        rate = document.getElementById('star3half').value;
+      }else if (document.getElementById('star4').checked) {
+        rate = document.getElementById('star4').value;
+      }else if (document.getElementById('star4half').checked) {
+        rate = document.getElementById('star4half').value;
+      }
+      Session.set('rateValue',rate);
+  },
+})
+
+Template.recommendBar.onRendered(function(){
+
+  var value="star"+4;//get the value 4 from Comments.findOne().rating
+document.getElementById(value).checked = true;
+
+
 })
 
 //Aidan's Part
@@ -617,7 +655,6 @@ Template.setMap.onCreated(function() {
            marker.addListener('click', function() {
              var markerID=this.id;
              var thisMarker=Markers.findOne({'_id':{$eq:markerID}});
-             console.log(thisMarker.address);
              var contentString='<div id="content" >'+
                      '<h2>'+thisMarker.name+'</h2>'+
                      '<div id="bodyContent" >'+
@@ -629,7 +666,6 @@ Template.setMap.onCreated(function() {
                content:contentString,
                maxWidth: 250,
              });
-             console.log(markerID);
                infowindow.open(map.instance, marker);
            });
       },
@@ -1790,6 +1826,17 @@ Template.main.onRendered(function(){
  });
 });
 
+Template.topnavbar.helpers({
+  'isAdmin':function(){
+    if(Roles.userIsInRole( Meteor.userId(), 'admin' )==true){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  })
+
 Template.topnavbar2.helpers({
   'reqCount':function(){
     var currentUser= Meteor.userId();
@@ -1810,6 +1857,13 @@ Template.topnavbar2.helpers({
       return false;
     }
   },
+  'isAdmin':function(){
+    if(Roles.userIsInRole( Meteor.userId(), 'admin' )==true){
+      return true;
+    }else{
+      return false;
+    }
+  }
 
   })
 
@@ -2434,7 +2488,6 @@ Template.chatBox.events({
       $(this).addClass("active");
     });*/
 
-
     var senderUN = chatRooms.findOne({"_id": Session.get('roomID')}).sender;
     var ownerUN = chatRooms.findOne({"_id": Session.get('roomID')}).owner;
     if (senderUN == Meteor.users.findOne({"_id":Meteor.userId()}).username){
@@ -2450,6 +2503,7 @@ Template.chatBox.events({
       document.getElementById("senderName").innerHTML = senderUN;
       document.getElementById("chatUsername").innerHTML = senderUN;
     }
+
   }
 });
 
@@ -2518,6 +2572,7 @@ Template.chatWindow.helpers({
     }
 
 });
+
 
 Template.inputMessage.events({
 'keydown textarea#inputMsg': function(event){
@@ -2590,7 +2645,6 @@ Template.enrolledClass.helpers({
           for(var i in allEnroll){
             var a = allEnroll[i]._id;
             if(a==postList.findOne({_id:enrolled[j].classID})._id){
-              console.log('Exist')
             }else{
                 allEnroll.push(postList.findOne({_id:enrolled[j].classID}));
             }
@@ -2665,10 +2719,46 @@ Template.enrolledClass.helpers({
      return place;
    }
    },
+   nearByclass:function(){
+     var markerID=Session.get('selectMarker');
+     //Markers.find({$and:[{markerid:markerID},{type:"nearby"}]})
+     return Markers.find({type:"nearby"}).fetch();
+   },
+   nearByReqclass:function(){
+     var markerID=Session.get('selectMarker');
+     //Markers.find({$and:[{markerid:markerID},{type:"nearby"}]})
+     return Markers.find({type:"nearbyReq"}).fetch();
+   },
+   isnearByclass:function(){
+     var markerID=Session.get('selectMarker');
+     if(Markers.find({type:"nearby"}).count()>0){
+       return true;
+     }else{
+       return false;
+     }
+   },
+   isnearByReqclass:function(){
+     var markerID=Session.get('selectMarker');
+     if(Markers.find({type:"nearbyReq"}).count()>0){
+       return true;
+     }else{
+       return false;
+     }
+   },
+
+
 
  });
 
  Template.findNearby.onRendered(function() {
+   var markerAr=Markers.find({type:"nearby"}).fetch();
+   if(markerAr!=""){
+     markerAr.forEach(function(element){
+       Markers.remove(element._id);
+     })
+   }
+   Session.set('filterNearby', "post");
+
    GoogleMaps.load( {  key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
      libraries: 'geometry,places'});
 
@@ -2685,22 +2775,97 @@ Template.enrolledClass.helpers({
        c.stop();
      }
    });
+   /*
+   var array=Markers.find({type:'nearby'}).fetch();
+   array.forEach(function(ele){
+     if(Session.get('selectMarker')==ele.markerid){
+        document.getElementById('nearbytab').style.backgroundColor="#d8e7ff";
+
+     }else {
+        document.getElementById('nearbytab').style.backgroundColor="white";
+
+     }
+   })
+*/
  });
+
+Template.findNearby.events({
+  'click #nearbyMorebtn':function(){
+    var classID = this.class._id;
+    Session.set('selectedClass', classID);
+    delete Session.keys['selectedRequest'];
+  },
+  'click #nearbyReqMorebtn':function(){
+    var classID = this.class._id;
+    Session.set('selectedRequest', classID);
+    delete Session.keys['selectedClass'];
+  },
+  'click #request-tab':function(){
+    Session.set('filterNearby', "request");
+  },
+  'click #post-tab':function(){
+    Session.set('filterNearby', "post");
+  },
+  'click .nearbytab':function(){
+    var class2=this.class.location;
+      GoogleMaps.maps.nearbymap.instance.panTo(new google.maps.LatLng(this.latlng.lat, this.latlng.lng))
+      GoogleMaps.maps.nearbymap.instance.setZoom(18);
+
+  }
+})
 
  Template.findNearby.onCreated(function(){
 
-   var self=this;
-       GoogleMaps.ready('nearbymap', function(map) {
-      var markers=[];
+
+   var usermarker=[];
+   var markers=[];
+    var markers2=[];
+
+    GoogleMaps.ready('nearbymap', function(map) {
+
       var input = document.getElementById('pac-input');
       var searchBox = new google.maps.places.SearchBox(input);
       map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
       var service = new google.maps.places.PlacesService(map.instance);
       var marker;
+      var nearByclass=[];
+      var nearByReqclass=[];
+      input.onkeypress=function(){
+        var markerAr=Markers.find({type:{$eq:"nearby"}}).fetch();
+        var markerAr2=Markers.find({type:{$eq:"nearbyReq"}}).fetch();
+
+        if(markerAr!="" ||markerAr!=""){
+          markerAr.forEach(function(element){
+            Markers.remove(element._id);
+          })
+          markerAr2.forEach(function(element){
+            Markers.remove(element._id);
+          })
+        }
+
+        if(markers.length>0||markers2.length>0){
+          for (var i = 0; i < markers.length; i++ ) {
+              markers[i].setMap(null);
+            }
+            markers.length = 0;
+            delete markers[i]
+            for (var i = 0; i < markers2.length; i++ ) {
+                markers2[i].setMap(null);
+              }
+              markers2.length = 0;
+              delete markers2[i]
+        }
+
+        for (var i = 0; i < usermarker.length; i++ ) {s
+            usermarker[i].setMap(null);
+          }
+          usermarker.length = 0;
+          delete usermarker[i]
+      }
+
       google.maps.event.addListener(map.instance,'bounds_change', function() {
           searchBox.setBounds(map.getBounds());
         });
-
 
       searchBox.addListener('places_changed', function() {
         var places = searchBox.getPlaces();
@@ -2722,26 +2887,34 @@ Template.enrolledClass.helpers({
               anchor: new google.maps.Point(0, 0) // anchor
             },
             title: place.name,
+            id:i++,
             position: place.geometry.location
           })
+          usermarker.push(marker);
           map.instance.setZoom(16);
           map.instance.panTo(marker.position);
 
           var lat=place.geometry.location.lat();
           var lng=place.geometry.location.lng();
           var inputlocation=new google.maps.LatLng(lat, lng);
-          var locationAr=postList.find().fetch();
-          var nearByclass=[];
 
+            var locationAr2=requestList.find().fetch();
+
+            var locationAr=postList.find().fetch();
+
+          var i=0;
+          var prevMarker='';
           for(var j in locationAr){
-            var i=0;
+
             var locationAtt=locationAr[j].location;
             for(var k in locationAtt){
               var thislat=locationAtt[k].lat;
               var thislng=locationAtt[k].lng;
-              var thislocation=new google.maps.LatLng(thislat, thislng)
+              var thislocation=new google.maps.LatLng(thislat, thislng);
+              var coord={lat:thislat, lng:thislng};
               var distance=google.maps.geometry.spherical.computeDistanceBetween (inputlocation, thislocation);
               if (distance<2000){
+
                 nearByclass.push(locationAr[j]);
                 marker=new google.maps.Marker({
                   map: map.instance,
@@ -2756,37 +2929,151 @@ Template.enrolledClass.helpers({
                   id:i++,
                   type:"nearby"
                 })
-                console.log(marker.id)
-                Markers.insert({markerID:marker.id,class:locationAr[j]})
-                google.maps.event.addListener(marker, 'click', function(event){
-                  var markerID=this.id;
-                  console.log(markerID);
-                  var markerInfo=Markers.findOne({'markerID':{$eq:markerID}}).class;
-                  console.log(markerInfo);
+                markers.push(marker)
+                var distInKm=Number(distance/1000).toFixed(2);
+                console.log(thislocation)
+                Markers.insert({markerid:marker.id,currentUser:Meteor.userId(),class:locationAr[j],type:"nearby",distance:distInKm,latlng:coord})
+                google.maps.event.addListener(marker,'click', function() {
+                  console.log(this.id);
+                  console.log(prevMarker)
+                  Session.set('selectMarker',this.id);
+                  if(prevMarker!=''){
+                    $('#'+prevMarker).css('background-color',"white");
+                    $('#'+this.id).css('background-color',"#d8e7ff");
+                    $('#'+this.id).css('transition'," background-color 1s ease-in .2s");
+                    prevMarker=this.id;
+                  }
+                  if(prevMarker==''){
+                    $('#'+this.id).css('background-color',"#d8e7ff");
+                    $('#'+this.id).css('transition'," background-color 1s ease-in .2s");
+                    prevMarker=this.id;
+                  }
 
-                    var contentString='<div id="content" >'+
-                            '<h2>'+markerInfo.title+'</h2>'+
-                            '<div id="bodyContent" >'+
-                            '<p>'+markerInfo.skill+'</p>'+
-                            '</div>'+
-                            '</div>';
 
-                  var infowindow = new google.maps.InfoWindow({
-                    content:contentString,
-                    maxWidth: 250,
+
                   });
+                }
+            }
+          }
 
-                    infowindow.open(map.instance, marker);
-                });
 
-              }
+          for(var j in locationAr2){
+
+            var locationAtt=locationAr2[j].location;
+            for(var k in locationAtt){
+              var thislat=locationAtt[k].lat;
+              var thislng=locationAtt[k].lng;
+              var thislocation=new google.maps.LatLng(thislat, thislng);
+              var coord={lat:thislat, lng:thislng};
+              var distance=google.maps.geometry.spherical.computeDistanceBetween (inputlocation, thislocation);
+              if (distance<2000){
+
+                nearByReqclass.push(locationAr2[j]);
+                marker=new google.maps.Marker({
+                  map: map.instance,
+                  title: place.name,
+                  icon:{
+                    url:"iconb.png",
+                    scaledSize: new google.maps.Size(50, 50), // scaled size
+                    origin: new google.maps.Point(0,0), // origin
+                    anchor: new google.maps.Point(0, 0) // anchor
+                  },
+                  position: thislocation,
+                  id:i++,
+                  type:"nearbyReq"
+                })
+                markers2.push(marker)
+                var distInKm=Number(distance/1000).toFixed(2);
+                Markers.insert({markerid:marker.id,currentUser:Meteor.userId(),class:locationAr2[j],type:"nearbyReq",distance:distInKm,latlng:coord})
+
+                }
+                google.maps.event.addListener(marker,'click', function() {
+                  console.log(this.id);
+                  Session.set('selectMarker',this.id)
+                  if(prevMarker!=''){
+                    $('#'+prevMarker).css('background-color',"white");
+                    $('#'+this.id).css('background-color',"#d8e7ff");
+                    $('#'+this.id).css('transition'," background-color 1s ease-in .2s");
+                    prevMarker=this.id;
+                  }
+                  if(prevMarker==''){
+                    $('#'+this.id).css('background-color',"#d8e7ff");
+                    $('#'+this.id).css('transition'," background-color 1s ease-in .2s");
+                    prevMarker=this.id;
+                  }
+                  });
             }
           }
         });
 
-      });
-
-
+      });//end of searchbox
 
  })
 });
+
+Template.rating.events({
+  'click input':function(){
+    var rate;
+    if (document.getElementById('starhalf').checked) {
+        rate = document.getElementById('starhalf').value;
+      }else if (document.getElementById('star1').checked) {
+        rate = document.getElementById('star1').value;
+      }else if (document.getElementById('star1half').checked) {
+        rate = document.getElementById('star1half').value;
+      }else if (document.getElementById('star2').checked) {
+        rate = document.getElementById('star2').value;
+      }else if (document.getElementById('star2half').checked) {
+        rate = document.getElementById('star2half').value;
+      }else if (document.getElementById('star3').checked) {
+        rate = document.getElementById('star3').value;
+      }else if (document.getElementById('star3half').checked) {
+        rate = document.getElementById('star3half').value;
+      }else if (document.getElementById('star4').checked) {
+        rate = document.getElementById('star4').value;
+      }else if (document.getElementById('star4half').checked) {
+        rate = document.getElementById('star4half').value;
+      }
+      Session.set('rateValue',rate);
+},
+  'click #saverate':function(){
+    var rateVal=Session.get('rateValue');
+    var currentUser=Meteor.userId();
+    Meteor.call('insertRate',currentUser, )
+  }
+
+});
+
+Template.reportClass.helpers({
+  class:function(){
+
+  }
+})
+
+Template.reportClass.events({
+  'click #options':function(){
+    document.getElementById('optionbox').style.display="block"
+  },
+  'click #submitReport':function(){
+    var radios = document.getElementsByName('reportClass');
+    var currentUser=Meteor.userId();
+    var classType;
+    var classID;
+    if(Session.get('selectedClass')){
+      classType="post";
+      classID=Session.get('selectedClass');
+    }
+    else if(Session.get('selectedRequest')){
+      classType="request";
+      classID=Session.get('selectedRequest');
+    }
+    for (var i = 0, length = radios.length; i < length; i++)
+    {
+     if (radios[i].checked)
+     {
+       var reportVal=radios[i].value;
+
+      Meteor.call('submitReport',currentUser,classType, classID,reportVal)
+     }
+    }
+  }
+})
