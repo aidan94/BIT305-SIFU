@@ -54,7 +54,7 @@ Template.carousel_bg.onRendered(function(){
     interval:3000
     })
 })
- 
+
 Template.recommendBar.events({
   'click input':function(){
     var rate;
@@ -80,13 +80,13 @@ Template.recommendBar.events({
       Session.set('rateValue',rate);
   },
 })
- 
+
 Template.recommendBar.onRendered(function(){
- 
+
   var value="star"+4;//get the value 4 from Comments.findOne().rating
 document.getElementById(value).checked = true;
- 
- 
+
+
 })
 
 //Aidan's Part
@@ -662,7 +662,7 @@ Template.setMap.onCreated(function() {
            marker.addListener('click', function() {
              var markerID=this.id;
              var thisMarker=Markers.findOne({'_id':{$eq:markerID}});
-             console.log(thisMarker.address);
+
              var contentString='<div id="content" >'+
                      '<h2>'+thisMarker.name+'</h2>'+
                      '<div id="bodyContent" >'+
@@ -674,7 +674,7 @@ Template.setMap.onCreated(function() {
                content:contentString,
                maxWidth: 250,
              });
-             console.log(markerID);
+
                infowindow.open(map.instance, marker);
            });
       },
@@ -900,7 +900,7 @@ Template.setRMap.onCreated(function() {
            marker.addListener('click', function() {
              var markerID=this.id;
              var thisMarker=Markers.findOne({'_id':{$eq:markerID}});
-
+             console.log(thisMarker.address);
              var contentString='<div id="content" >'+
                      '<h2>'+thisMarker.name+'</h2>'+
                      '<div id="bodyContent" >'+
@@ -912,7 +912,7 @@ Template.setRMap.onCreated(function() {
                content:contentString,
                maxWidth: 250,
              });
-
+             console.log(markerID);
                infowindow.open(map.instance, marker);
            });
       },
@@ -1805,7 +1805,7 @@ Template.topnavbar2.events({
     Session.set('query',talentTitle)
     Router.go('/resultpage');
   },
-  
+
   'mouseup #reqTab':function(){
     event.preventDefault();
     var currentUser=Meteor.userId();
@@ -1814,7 +1814,7 @@ Template.topnavbar2.events({
     var newreqcount=appointment.find({$and:[{skillSkr:currentUser},{status:"processing"},{isread:"false"}]}).fetch();
     if(appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count()>0){
       for(var j in newpostcount){
- 
+
         appID=newpostcount[j]._id;
           Meteor.call('updateread',appID)
       }
@@ -1823,19 +1823,19 @@ Template.topnavbar2.events({
       for(var j in newreqcount){
         appID=newreqcount[j]._id
           Meteor.call('updateread',appID)
- 
+
       }
     }
   }
 });
- 
+
 Template.main.onRendered(function(){
   $(document).scroll(function () {
    var $nav = $("#mainNav");
    $nav.toggleClass('scrolled', $(this).scrollTop() > 300);
  });
 });
- 
+
 Template.topnavbar.helpers({
   'isAdmin':function(){
     if(Roles.userIsInRole( Meteor.userId(), 'admin' )==true){
@@ -1844,16 +1844,16 @@ Template.topnavbar.helpers({
       return false;
     }
   }
- 
+
   })
- 
+
 Template.topnavbar2.helpers({
   'reqCount':function(){
     var currentUser= Meteor.userId();
     var newpostcount=appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count();
     var newreqcount=appointment.find({$and:[{skillSkr:currentUser},{status:"processing"},{isread:"false"}]}).count();
     return newpostcount+newreqcount;
- 
+
   },
   'isReqCount':function(){
     var currentUser= Meteor.userId();
@@ -1874,17 +1874,13 @@ Template.topnavbar2.helpers({
       return false;
     }
   }
- 
-  })
 });
 
 Template.resultpage.events({
   'click #moreInfo': function(){
     var classID = this._id;
     Session.set('selectedClass', classID);
-
-
-  },
+  }
 });
 
 /*END OF NEW*/
@@ -2056,6 +2052,7 @@ Template.classpage.helpers({
     }else{
       return false;
     }
+  }
 });
 
 Template.classpage.onRendered(function(){
@@ -2761,10 +2758,10 @@ Template.enrolledClass.helpers({
      })
    }
    Session.set('filterNearby', "post");
- 
+
    GoogleMaps.load( {  key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
      libraries: 'geometry,places'});
- 
+
    this.autorun(function(c) {
      if (GoogleMaps.loaded()) {
        GoogleMaps.create({
@@ -2783,15 +2780,15 @@ Template.enrolledClass.helpers({
    array.forEach(function(ele){
      if(Session.get('selectMarker')==ele.markerid){
         document.getElementById('nearbytab').style.backgroundColor="#d8e7ff";
- 
+
      }else {
         document.getElementById('nearbytab').style.backgroundColor="white";
- 
+
      }
    })
 */
  });
- 
+
 Template.findNearby.events({
   'click #nearbyMorebtn':function(){
     var classID = this.class._id;
@@ -2813,19 +2810,19 @@ Template.findNearby.events({
     var class2=this.class.location;
       GoogleMaps.maps.nearbymap.instance.panTo(new google.maps.LatLng(this.latlng.lat, this.latlng.lng))
       GoogleMaps.maps.nearbymap.instance.setZoom(18);
- 
+
   }
 })
- 
+
  Template.findNearby.onCreated(function(){
- 
- 
+
+
    var usermarker=[];
    var markers=[];
     var markers2=[];
- 
+
     GoogleMaps.ready('nearbymap', function(map) {
- 
+
       var input = document.getElementById('pac-input');
       var searchBox = new google.maps.places.SearchBox(input);
       map.instance.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -2836,7 +2833,7 @@ Template.findNearby.events({
       input.onkeypress=function(){
         var markerAr=Markers.find({type:{$eq:"nearby"}}).fetch();
         var markerAr2=Markers.find({type:{$eq:"nearbyReq"}}).fetch();
- 
+
         if(markerAr!="" ||markerAr!=""){
           markerAr.forEach(function(element){
             Markers.remove(element._id);
@@ -2845,7 +2842,7 @@ Template.findNearby.events({
             Markers.remove(element._id);
           })
         }
- 
+
         if(markers.length>0||markers2.length>0){
           for (var i = 0; i < markers.length; i++ ) {
               markers[i].setMap(null);
@@ -2858,18 +2855,18 @@ Template.findNearby.events({
               markers2.length = 0;
               delete markers2[i]
         }
- 
+
         for (var i = 0; i < usermarker.length; i++ ) {s
             usermarker[i].setMap(null);
           }
           usermarker.length = 0;
           delete usermarker[i]
       }
- 
+
       google.maps.event.addListener(map.instance,'bounds_change', function() {
           searchBox.setBounds(map.getBounds());
         });
- 
+
       searchBox.addListener('places_changed', function() {
         var places = searchBox.getPlaces();
         if (places.length == 0) {
@@ -2896,19 +2893,19 @@ Template.findNearby.events({
           usermarker.push(marker);
           map.instance.setZoom(16);
           map.instance.panTo(marker.position);
- 
+
           var lat=place.geometry.location.lat();
           var lng=place.geometry.location.lng();
           var inputlocation=new google.maps.LatLng(lat, lng);
- 
+
             var locationAr2=requestList.find().fetch();
- 
+
             var locationAr=postList.find().fetch();
- 
+
           var i=0;
           var prevMarker='';
           for(var j in locationAr){
- 
+
             var locationAtt=locationAr[j].location;
             for(var k in locationAtt){
               var thislat=locationAtt[k].lat;
@@ -2917,7 +2914,7 @@ Template.findNearby.events({
               var coord={lat:thislat, lng:thislng};
               var distance=google.maps.geometry.spherical.computeDistanceBetween (inputlocation, thislocation);
               if (distance<2000){
- 
+
                 nearByclass.push(locationAr[j]);
                 marker=new google.maps.Marker({
                   map: map.instance,
@@ -2951,17 +2948,17 @@ Template.findNearby.events({
                     $('#'+this.id).css('transition'," background-color 1s ease-in .2s");
                     prevMarker=this.id;
                   }
- 
- 
- 
+
+
+
                   });
                 }
             }
           }
- 
- 
+
+
           for(var j in locationAr2){
- 
+
             var locationAtt=locationAr2[j].location;
             for(var k in locationAtt){
               var thislat=locationAtt[k].lat;
@@ -2970,7 +2967,7 @@ Template.findNearby.events({
               var coord={lat:thislat, lng:thislng};
               var distance=google.maps.geometry.spherical.computeDistanceBetween (inputlocation, thislocation);
               if (distance<2000){
- 
+
                 nearByReqclass.push(locationAr2[j]);
                 marker=new google.maps.Marker({
                   map: map.instance,
@@ -2988,7 +2985,7 @@ Template.findNearby.events({
                 markers2.push(marker)
                 var distInKm=Number(distance/1000).toFixed(2);
                 Markers.insert({markerid:marker.id,currentUser:Meteor.userId(),class:locationAr2[j],type:"nearbyReq",distance:distInKm,latlng:coord})
- 
+
                 }
                 google.maps.event.addListener(marker,'click', function() {
                   console.log(this.id);
@@ -3008,9 +3005,9 @@ Template.findNearby.events({
             }
           }
         });
- 
+
       });//end of searchbox
- 
+
  })
 });
 
@@ -3090,13 +3087,13 @@ Template.findNearby.events({
 
  Template.reportClass.helpers({
    class:function(){
-  
-  
-  
-  
+
+
+
+
    }
  })
-  
+
  Template.reportClass.events({
    'click #options':function(){
      document.getElementById('optionbox').style.display="block"
@@ -3113,20 +3110,20 @@ Template.findNearby.events({
      else if(Session.get('selectedRequest')){
        classType="request";
        classID=Session.get('selectedRequest');
-  
+
      }
      for (var i = 0, length = radios.length; i < length; i++)
      {
       if (radios[i].checked)
       {
         var reportVal=radios[i].value;
-  
+
        Meteor.call('submitReport',currentUser,classType, classID,reportVal)
-      }  
-     }    
+      }
+     }
    }
  });
- 
+
  Template.commentList.helpers({
      comments: function(){
        if (Session.get("selectedClass") != ""){
