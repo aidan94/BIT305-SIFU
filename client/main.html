@@ -1,12 +1,10 @@
 <head>
   <link href="img/icon.ico" rel="icon">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-  <!--
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
--->
-  <!--Bootrap V4.0 and javascript-->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+  <!--Bootrap V4.0 and javascript-->
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
@@ -220,6 +218,7 @@
 <template name="rating">
 
 </template>
+
 <template name="carousel_bg">
   <div id="myCarousel" class="carousel slide " data-ride="carousel">
         <ol class="carousel-indicators">
@@ -275,18 +274,18 @@
             <a class="nav-link js-scroll-trigger" href="/profile">Profile</a>
           </li>
             {{#if isAdmin}}
-              <li class="nav-item">
-                <a class="nav-link js-scroll-trigger" href="/adminpage">Manage</a>
-              </li>
-            {{else}}
-              <li class="nav-item">
-                <a class="nav-link js-scroll-trigger" href="/messaging">Message</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link js-scroll-trigger" href="#request">Request</a>
-              </li>
-            {{/if}}
+                <li class="nav-item">
+                  <a class="nav-link js-scroll-trigger" href="/adminpage">Manage</a>
+                </li>
+              {{else}}
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="/messaging">Message</a>
+            </li>
 
+            <li class="nav-item">
+              <a class="nav-link js-scroll-trigger" href="#request">Request</a>
+            </li>
+            {{/if}}
           {{/if}}
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="#about">About Us</a>
@@ -298,7 +297,6 @@
     </div>
   </nav>
 </template>
-
 
 <template name = "footer">
   <hr>
@@ -369,7 +367,7 @@
         <i class="fa fa-bars" aria-hidden="true"></i>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav text-uppercase ml-auto" >
+        <ul class="navbar-nav text-uppercase ml-auto">
           <li class="nav-item">
             <div class="row">
               <div class="col-lg-10">
@@ -391,23 +389,22 @@
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="/profile">Profile</a>
           </li>
-            {{#if isAdmin}}
+          {{#if isAdmin}}
               <li class="nav-item">
                 <a class="nav-link js-scroll-trigger" href="/adminpage">Manage</a>
               </li>
             {{else}}
-              <li class="nav-item">
-                <a class="nav-link js-scroll-trigger" href="/messaging">Messages</a>
-              </li>
-            <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" id="reqTab" data-toggle="modal" href="#request">Request
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" href="/messaging">Messages</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link js-scroll-trigger" id="reqTab" data-toggle="modal" href="#request">Request
               {{#if isReqCount}}<span class="badge badge-light">{{reqCount}}</span>
               {{else}}
               {{/if}}
+          {{/if}}
               </a>
-            </li>
-            {{/if}}
-
+          </li>
           {{/if}}
           <li class="nav-item">
             <a class="nav-link js-scroll-trigger" href="#about">About</a>
@@ -1102,17 +1099,17 @@
 	      {{#with class}}
 	      <div id="containerStyle">
           <div class="row" id="horizontalLine">
-              <div class="col-lg-10 col-sm-10" >
-                <div class="row" id="title">
-                  {{title}}
-                </div>
+            <div class="col-lg-10 col-sm-10" >
+    	        <div class="row" id="title">
+    	          {{title}}
+    	        </div>
 
-                <div class="row" >
-                  Category :  <a href="#">{{skill}}</a>
-                </div>
-              </div>
-
+    	        <div class="row" >
+    	          Category :  <a href="#">{{skill}}</a>
+    	        </div>
+            </div>
           </div>
+
 	        <div class="row">
 	          <div class="col-lg-6 col-sm-12">
 	            <div class="img">
@@ -1123,6 +1120,7 @@
 	          <div class="col-lg-6 col-sm-12">
 	          <ul id="classListStyle">
 	            <li>Tutor: <a href="#"> {{owner}}</a></li>
+
 	            <li>Price: RM{{price}}/class</li>
 	          </ul>
 	          </div>
@@ -1149,7 +1147,7 @@
 	              <!-- Tab panes -->
 	              <div class="tab-content" id="classPageTabContent">
 	                <div class="tab-pane active" id="about" role="tabpanel">
-	                  <h3>Time Table for this class:</h3>
+                    <h3>Time Table for this class:</h3>
                     <div class="row" id="timetable">
                       <table class="table">
                         <thead class="thead-light">
@@ -1171,15 +1169,17 @@
 
                   </div>
                   <div class="row">
-                    <p>
+	                  <p>
 	                    {{description}}
 	                  </p>
-
-                  </div>
-
 	                </div>
+                  </div>
 	                <div class="tab-pane" id="photos" role="tabpanel">...</div>
-	                <div class="tab-pane" id="review" role="tabpanel">...</div>
+	                <div class="tab-pane" id="review" role="tabpanel">
+                    <div>
+                      {{> comment}}
+                    </div>
+                  </div>
 
                   <div class="tab-pane" id="location" role="tabpanel">
                     {{> displayMap}}
@@ -1187,9 +1187,9 @@
 	              </div>
 
 	          </div>
-	          <div class="col-lg-4 col-sm-12">
-	            <div class="row" id="rating">
-	              <table class="table">
+            <div class="col-lg-4 col-sm-12">
+              <div class="row" id="rating">
+                <table class="table">
 	                <tr>
 	                  <th>
 	                    <span class="glyphicon glyphicon-user"></span> 100
@@ -1212,11 +1212,12 @@
 	                </tr>
                   <tr>
 	                  <td id="tableFont" colspan="2">
+
 	                  </td>
 	                </tr>
 	              </table>
-	            </div>
 
+	            </div>
               {{#if isThisUser}}
 
               {{else}}
@@ -1230,7 +1231,6 @@
                   </button>
                   {{> bookClass}}
               </div>
-
               <div class="row">
                   <button type="button" id="reportBtn" class="btn btn-info" data-toggle="modal" data-target="#reportClassModal">
                   Report
@@ -1243,15 +1243,14 @@
 
 	        </div>
 
-	          {{/with}}
+	            {{/with}}
 
 	    </div>
       {{> footer}}
-
 	  </div>
 
 
-	</template>
+</template>
 
 <template name="reportClass">
   <div class="modal fade" id="reportClassModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -1326,6 +1325,7 @@
     </div>
   </div>
 </template>
+
 <!--Posts from User-->
 <template name='post'>
 <div class = "row">
@@ -1368,7 +1368,8 @@
                       <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <div class="modal-body">
                       <!--Content-->
-                    <div class = "container" style = "width: 100%" id="editButton">
+                      <div class = "container" style = "width: 100%" id="editButton">
+
                         {{> editForm}}
                     </div>
                     </div>
@@ -1525,15 +1526,12 @@
             <option value="Business" class="">Business</option>
             <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
         </select>
+        </div>
       </div>
-    </div>
-    <div class = "row form-group">
-            {{> editMap}}
-    </div>
+        <div class = "row form-group">
+           {{> editMap}}
 
-
-
-
+         </div>
   <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
   <!--Description-->
@@ -1553,7 +1551,6 @@
   {{/with}}
   </form>
 </template>
-
 
 <template name="newRequest">
 
@@ -1969,13 +1966,13 @@
             <option value="Fun & Lifestyle" class="">Fun & Lifestyle</option>
         </select>
         </div>
-    </div>
-    <div class = "row form-group">
-            {{> editREMap}}
-    </div>
 
 
+        </div>
+          <div class = "row form-group">
+          {{> editREMap}}
 
+        </div>
   <div class="col-xs-12 col-sm-12 col-lg-12" style="height:10px"></div>
 
   <!--Description-->
@@ -2136,7 +2133,6 @@
                 <p>
                   <a href="/classpage" class=" btn btn-primary " role="button" id="moreInfo">More</a>
 
-
                   <span class="input-group-btn">
                     <button class="btn btn-primary" id="removeClassBtn" type="button"><span class="glyphicon glyphicon-calendar" aria-hidden="true" id="remove_icon"></span></button>
                   </span>
@@ -2214,7 +2210,6 @@
     {{/each}}
 
   </div>
-
   <div class="map-container" id="dismap">
   </div>
 </template>
@@ -2242,7 +2237,6 @@
 
 </template>
 
-
 <template name='editREMap'>
   <label class = "control-label col-xs-12 col-sm-12 col-xs-12 col-lg-2 col-md-12">Location:</label>
       <div class="col-xs-12 col-sm-12 col-lg-12 col-md-12">
@@ -2260,7 +2254,16 @@
         <input id="map-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
 
         <div class="map-container" id="editREmap">
+
+
+
+
+
         </div>
+
+
+
+
       </div>
 
 
@@ -2528,6 +2531,7 @@
   <button class="btn btn-primary btn-block">Pay</button>
 </template>
 
+
 <template name = "messaging">
   <div class="bgcolor">
     {{> header}}
@@ -2544,7 +2548,7 @@
 </template>
 
 <template name="chatBox">
-  <div class = "row" id="chatbox">
+  <div class = "row" id= "chatBox">
 
     <div class="col-xs-12 col-sm-12 col-lg-4 col-md-5" style = "padding:0">
       <div class = "tabTitle">
@@ -2560,16 +2564,17 @@
     <div class = "col-xs-12 col-sm-12 col-lg-8 col-md-7" id= "messageTab">
       <div class = "tabUsername">
         <div class = "row">
-          <img src="" id="senderPic" alt="senderPic">
-           <h2 id= "senderName" style = "margin-left:2%; margin-top:1%"></h2>
+
+            <img src="" id="senderPic" alt="senderPic">
+            <h2 id= "senderName" style = "margin-left:2%; margin-top:1%"></h2>
+
         </div>
       </div>
-
       {{> chatWindow}}
       {{> inputMessage}}
-
-      </div>
     </div>
+
+  </div>
 </template>
 
 <template name = "sideChatButtons">
@@ -2600,7 +2605,7 @@
 </template>
 
 <template name ="chatWindow">
-  <div class ="tab-content vcenter" id="vcen">
+  <div class ="tab-content vcenter">
     {{#each msgs}}
 
         {{> message}}
@@ -2631,9 +2636,10 @@
 
 <template name ="message">
 
-    <div class = "message" id="userMsgs">
-      <span><strong>{{username}}</strong></span><br>
-      <span>{{text}}</span>
+    <div class = "message {{username}}" id="userMsgs">
+      <div class = "bubble {{userID}}">
+        <span>{{text}}</span>
+      </div>
     </div>
 
 
@@ -2644,7 +2650,6 @@
     <span><strong>{{username}}:</strong>{{text}}</span>
   </div>
 </template>
-
 
 <template name="enrolledClass">
   {{#if currentUser}}
@@ -2698,4 +2703,76 @@
 
     {{/each}}
   {{/if}}
+</template>
+
+<template name="comment">
+    <div class="container">
+        <div class="row">
+            <div class="panel panel-white commentPost">
+                <div class="post-footer">
+                  <div class="star_rating">4</div>
+                  <div class = "jumbotron" id="commentJumbo">
+                    <fieldset class="rating" id="insertRating">
+                      <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="5 stars"></label>
+                      <input type="radio" id="star4" name="rating" value="4" /><label class = "full" for="star4" title="4 stars"></label>
+                      <input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="3 stars"></label>
+                      <input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="2 stars"></label>
+                      <input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="1 star"></label>
+                    </fieldset>
+                    <div class="input-group">
+                      <textarea name = "inputComment" id= "inputComment" class = "form-control form-control-lg add_comment" rows = "1" placeholder = "Add a review..."></textarea>
+
+                      <!--<span class="input-group-addon">
+                            <a class="comment" href="#"><i class="glyphicon glyphicon-pencil"></i></a>
+                        </span>-->
+                    </div>
+                    <div class="text-right">
+                       <button class="btn btn-success btn-lg" type="submit" name = "saveReview" id="saveReview">Save</button>
+                   </div>
+                  </div>
+                    {{> commentList}}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<template name ="commentList">
+  <ul class="comments-list">
+      {{#if comments}}
+          {{#each comments }}
+            {{> listofcomments}}
+          {{/each}}
+      {{else}}
+          <p class = "textJustify">This product has no reviews.<p>
+            Let others know what do you think and be the first to write a review.
+          </p></p>
+      {{/if}}
+  </ul>
+</template>
+
+<template name = "listofcomments">
+  <li class="comment">
+    <div class = "col-xs-12 col-sm-12 col-lg-12 col-md-12">
+      <a class="pull-left" href="#">
+          <img class="avatar" src="https://www.svgimages.com/svg-image/s5/man-passportsize-silhouette-icon-256x256.png" alt="avatar">
+      </a>
+      <div class="comment-heading">
+          <h4 class="user">{{user}}</h4>
+          <!--<h5 class="time">{{created_at}}</h5>-->
+      </div>
+    </div>
+      <div class="comment-body">
+        <!--<div class="star_rating">4</div>-->
+        <fieldset class="rating" id="savedRating">
+          <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="5 stars"></label>
+          <input type="radio" id="star4" name="rating" value="4" /><label class = "full" for="star4" title="4 stars"></label>
+          <input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="3 stars"></label>
+          <input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="2 stars"></label>
+          <input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="1 star"></label>
+        </fieldset><br>
+        <p><br>{{comment}}</p>
+      </div>
+
+  </li>
 </template>
