@@ -29,12 +29,16 @@
   {{> topnavbar}}
   {{> findCourse}}
   {{> carousel_bg}}
-  {{> recommendBar}}
+  {{> homeAfterCarousel}}
 
 </template>
 
 <template name="findNearby">
-  <div class="container">
+  <div class="findnearbg">
+  <div class="container" >
+      <div class="row justify-content-md-center">
+        <h1>Find Classes nearby </h1>
+      </div>
 
       <input id="pac-input" name="pacInput" class="controls" type="text" placeholder="Search Box">
       <div class="row">
@@ -43,7 +47,6 @@
           </div>
         </div>
         <div class="col-lg-4" id="scrollNearBy">
-          <h1>Find classes nearby now</h1>
           <ul class="nav nav-tabs" id="nearbyTab" role="tablist">
             <li class="nav-item">
               <a class="nav-link active" id="post-tab" data-toggle="tab" href="#post" role="tab" aria-controls="post" aria-selected="true">Skill Providers</a>
@@ -102,7 +105,6 @@
                       <h5>{{class.skill}}</h5>
                     </div>
                   </div>
-
                   <div class="col-12">
                     Around {{distance}}km away
                   </div>
@@ -110,71 +112,115 @@
                 <div class="col-1" id="nearbyMore">
                   <a href="/classpage" class="btn" id="nearbyReqMorebtn"><span class="glyphicon glyphicon-chevron-right"></span></a>
                 </div>
-
-
               </div>
               {{/each}}
               {{else}}
               <div class="col-12">
                 Sorry, there is no classes nearby.
-
               </div>
               {{/if}}
             </div>
           </div>
-
         </div>
-
       </div>
+    </div>
+</div>
+</template>
 
-        </div>
+<template name="homeAfterCarousel">
+  <div class="homebg">
+    {{> recommendBar}}
 
+    {{> findNearby}}
+    {{> footer}}
+
+</div>
 </template>
 
 <template name="recommendBar">
-  <br/>
-  <br/>
+  <div class="recommendbg">
+    <div class="row justify-content-md-center">
+      <h1>Trending Now</h1>
+    </div>
+    <div id="recBar" class="carousel slide" data-ride="carousel">
 
-{{> findNearby}}
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-{{> rating}}
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  <br/>
-  {{#if isInRole 'admin'}}
-    <h1>HELLO</h1>hi
-    {{> admin}}
-  {{/if}}
-  <br/>
-{{> admin}}
-  <br/>
-  <br/>
-  <br/>
-  <fieldset class="rating">
-      <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="Awesome ! (5 stars)"></label>
-      <input type="radio" id="star4half" name="rating" value="4.5" /><label class="half" for="star4half" title="Pretty good. (4.5 stars)"></label>
-      <input type="radio" id="star4" name="rating" value="4" /><label class = "full " for="star4" title="Pretty good. (4 stars)"></label>
-      <input type="radio" id="star3half" name="rating" value="3.5" /><label class="half" for="star3half" title="Can be improve. (3.5 stars)"></label>
-      <input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="Can be improve. (3 stars)"></label>
-      <input type="radio" id="star2half" name="rating" value="2.5" /><label class="half" for="star2half" title="Kinda bad. (2.5 stars)"></label>
-      <input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="Kinda bad. (2 stars)"></label>
-      <input type="radio" id="star1half" name="rating" value="1.5" /><label class="half" for="star1half" title="Bad. (1.5 stars)"></label>
-      <input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="Very bad. (1 star)"></label>
-      <input type="radio" id="starhalf" name="rating" value=".5" /><label class="half" for="starhalf" title="Very bad. (0.5 stars)"></label>
-  </fieldset>
-  <br/>
-  <br/>
-  <br/>
-{{> footer}}
+        <ul class="carousel-indicators">
+          <li data-target="#recBar" data-slide-to="0" class="active"></li>
+          <li data-target="#recBar" data-slide-to="1"></li>
+          <li data-target="#recBar" data-slide-to="2"></li>
+        </ul>
+
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="container">
+              <div class="row">
+                {{#each count}}
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="thum-div">
+                  <div class="img-thumbnail" id="image1" >
+                    <div class="img">
+                      <img class = "postClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="100%" />
+                    </div>
+                    <div class="caption" id="capImg1">
+
+                      <!--<h3>Rating:{{rating}}</h3>-->
+                      <h3>{{title}}</h3>
+                      <h5>User: <!--<a href="#" id = "user">-->{{owner}}</h5>
+                      <h5>Category: {{skill}}</h5>
+                      <h5>RM {{price}} / Class</h5>
+                      <p>
+                        <a href="/classpage" class=" btn btn-primary " role="button" id="moreDetails">More</a>
+                      </p>
+
+                      <!--Edit Class Modal-->
+                      <div class="container-fluid">
+                            <!-- Trigger the modal with a button -->
+
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="editClass" role="dialog">
+                            <div class="modal-dialog modal-lg">
+
+                              <!-- Modal content-->
+                              <div class="modal-content">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                              <div class="modal-body">
+                                <!--Content-->
+                                <div class = "container" style = "width: 100%" id="editButton">
+
+                                  {{> editForm}}
+                              </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                {{/each}}
+            </div>
+          </div>
+          </div>
+
+        </div>
+
+        <!-- Left and right controls -->
+        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#demo" data-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </a>
+      </div>
+
+
+
+  </div>
+
 </template>
 
 <template name="adminpage">
@@ -183,7 +229,6 @@
     <br />
     <div class="container" id="containerBg">
       <div class="row">
-
         <div class="col-lg-3" >
           <div class="nav flex-column nav-pills" id="admin-manage-tab" role="tablist" aria-orientation="vertical">
             <a class="nav-link active" id="v-pills-review-tab" data-toggle="pill" href="#v-pills-review" role="tab" aria-controls="v-pills-review" aria-selected="true">Review Report</a>
@@ -201,23 +246,11 @@
           </div>
         </div>
       </div>
-
     </div>
-
-
 </div>
 </template>
-<template name="admin">
-  <div class="bgcolor">
-
-</div>
 
 
-</template>
-
-<template name="rating">
-
-</template>
 
 <template name="carousel_bg">
   <div id="myCarousel" class="carousel slide " data-ride="carousel">
@@ -283,7 +316,13 @@
             </li>
 
             <li class="nav-item">
-              <a class="nav-link js-scroll-trigger" href="#request">Request</a>
+              <a class="nav-link js-scroll-trigger" id="reqTab" data-toggle="modal" href="#request">Request
+              {{#if isReqCount}}<span class="badge badge-light">{{reqCount}}</span>
+              {{else}}
+              {{/if}}
+              </a>
+
+
             </li>
             {{/if}}
           {{/if}}
@@ -292,10 +331,10 @@
           </li>
 
         </ul>
-        {{> newNotif}}
       </div>
     </div>
   </nav>
+  {{>newNotif}}
 </template>
 
 <template name = "footer">
@@ -421,7 +460,7 @@
 
 <template name="newNotif">
   <div class="modal fade" id="request" tabindex="-1" role="dialog" aria-labelledby="bookClassLabel" aria-hidden="true">
-    <div class="modal-dialog " role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content" id="modalCont">
         <div class="modal-header">
           <h5 class="modal-title" id="bookClassLabel">Request</h5>
@@ -432,9 +471,11 @@
         <div class="modal-body" id="newNotiModalBody">
           <div class="col-lg-12">
             <div class="row justify-content-md-center " id="nnTitle">
-                Your Class Request
+                Your Class
             </div>
             {{#if ispostCount}}
+            <div class="scrollCont">
+
             {{#each postClassReq}}
                 <div class="row" id="reqclasstab">
                   <div class="col-sm-10 col-lg-10">
@@ -469,6 +510,7 @@
 
                 </div>
                 {{/each}}
+                </div>
                 {{else}}
                   <div class="row justify-content-md-center" style="color:grey">
                     <span class="glyphicon glyphicon-remove-circle"></span>There is no class to review now.
@@ -479,14 +521,14 @@
 
 
               <div class="row justify-content-md-center">
-                Your Request Class
+                Your Request
               </div>
               {{#if isreqCount}}
               {{#each reqClassReq}}
                   <div class="row" id="reqclasstab">
                     <div class="col-sm-10 col-lg-10">
                       <h2>{{title}}</h2>
-                      Offer From:{{skillSkrName}}
+                      Offer From:{{skillPvdName}}
 
                       <div class='table-responsive'>
                         <table class="table">
@@ -507,13 +549,12 @@
                       </div>
                     </div>
                     <div class="col-sm-2 col-lg-2">
-                      <button class="btn btn-info"  id="acceptBtn">Accept</button>
+                      <button class="btn btn-info"  id="paymentBtn"  >Accept</button>
                       <br/>
 
                       <button class="btn btn-danger" id="rejectBtn">Reject</button>
 
                     </div>
-
                   </div>
                   {{/each}}
                   {{else}}
@@ -523,13 +564,79 @@
                     </div>
                   {{/if}}
 
+                  <br />
+                  {{#if isreqPostClass}}
+                  <div class="row justify-content-md-center" >
+                    Request that you offer help
+                  </div>
+                  {{#each reqPostClass}}
+                      <div class="row" id="reqclasstab">
+
+                        <div class="col-sm-10 col-lg-10">
+                          <h2>{{title}}</h2>
+                          From:{{skillProvider}}
+
+                          <div class='table-responsive'>
+                            <table class="table">
+                              <thead class="thead-light">
+                                <th>Date</th>
+                                <th>Time</th>
+                              </thead>
+                              <tbody>
+                                {{#each session}}
+                                <tr>
+                                  <td>{{date}}</td>
+                                  <td>{{sestime}}</td>
+                                </tr>
+                                {{/each}}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="col-sm-2 col-lg-2">
+                            <button class="btn btn-info"  id="paymentBtn"  >Pay Now</button>
+                        </div>
+
+                      </div>
+                      {{/each}}
+                    {{/if}}
+                  {{#if isofferhelpCount}}
+                  <div class="row justify-content-md-center" >
+                    Request that you offer help
+                  </div>
+                  {{#each offerhelpCount}}
+                      <div class="row" id="reqclasstab">
+
+                        <div class="col-sm-10 col-lg-10">
+                          <h2>{{title}}</h2>
+                          From:{{skillSeeker}}
+
+                          <div class='table-responsive'>
+                            <table class="table">
+                              <thead class="thead-light">
+                                <th>Date</th>
+                                <th>Time</th>
+                              </thead>
+                              <tbody>
+                                {{#each session}}
+                                <tr>
+                                  <td>{{date}}</td>
+                                  <td>{{sestime}}</td>
+                                </tr>
+                                {{/each}}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="col-sm-2 col-lg-2">
+                          Total price: RM{{totalPrice}} is paid
+                        </div>
+
+                      </div>
+                      {{/each}}
+                    {{/if}}
 
           </div>
-
-
-
-
-
 
         </div>
         <div class="modal-footer">
@@ -594,6 +701,7 @@
       </div>
       {{> talentTab}}
       {{> classTab}}
+      {{> recommendClass}}
       {{> footer}}
     </div>
   </div>
@@ -852,6 +960,8 @@
       <li class="nav-item"><a class="nav-link active" id="yourClass-tab" data-toggle="tab" href="#yourClass" role="tab" aria-controls="yourClass" aria-selected="true">YOUR CLASS</a></li>
       <li class="nav-item"><a class="nav-link" id="enrolled-tab" data-toggle="tab" href="#enrolled" role="tab" aria-controls="enrolled" aria-selected="false">ENROLLED CLASS</a></li>
       <li class="nav-item"><a class="nav-link" id="requests-tab" data-toggle="tab" href="#requests" role="tab" aria-controls="requests" aria-selected="false">REQUESTS</a></li>
+      <li class="nav-item"><a class="nav-link" id="incoming-tab" data-toggle="tab" href="#incoming" role="tab" aria-controls="incoming" aria-selected="false">INCOMING</a></li>
+
     </ul>
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane active" id="yourClass" role="tabpanel" aria-labelledby="yourClass-tab">
@@ -875,8 +985,45 @@
           {{/if}}
         </div>
       </div>
+      <div class="tab-pane fade" id="incoming" role="tabpanel" aria-labelledby="incoming-tab">
+        <div class = "container">
+          {{#if currentUser}}
+          {{> incoming}}
+          {{/if}}
+        </div>
+      </div>
     </div>
 
+</template>
+
+<template name="incoming">
+  <div class = "row" style = "margin-right:25px">
+      {{#if currentUser}}
+        {{#each incoming}}
+        <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="thum-div">
+          <div class="img-thumbnail"  id="image1">
+            <div class="img"  >
+              <img class = "img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="100%"  />
+            </div>
+            <div class="caption" id="capImg1">
+
+              <h3>{{title}}</h3>
+              <h4>User: {{owner}}</h4>
+              <h4>Category: {{skill}}</h4>
+              <h4>RM {{price}} / Class</h4>
+              <p>
+                <a href="/classpage" class=" btn btn-primary " id="moreInfo" role="button">More</a>
+
+              </p>
+
+
+
+            </div>
+          </div>
+        </div>
+        {{/each}}
+      {{/if}}
+  </div>
 </template>
 
 <template name="class">
@@ -1134,12 +1281,14 @@
 	                <li class="nav-item">
 	                  <a class="nav-link active" data-toggle="tab" href="#about" role="tab">About</a>
 	                </li>
+                  {{#if isPost}}
 	                <li class="nav-item">
 	                  <a class="nav-link" data-toggle="tab" href="#photos" role="tab">Photos</a>
 	                </li>
-	                <li class="nav-item">
+                  <li class="nav-item">
 	                  <a class="nav-link" data-toggle="tab" href="#review" role="tab">Review</a>
 	                </li>
+                  {{/if}}
 	                <li class="nav-item">
 	                  <a class="nav-link" data-toggle="tab" href="#location" role="tab">Location</a>
 	                </li>
@@ -1175,12 +1324,15 @@
 	                  </p>
 	                </div>
                   </div>
+                  {{#if isPost}}
+
 	                <div class="tab-pane" id="photos" role="tabpanel">...</div>
 	                <div class="tab-pane" id="review" role="tabpanel">
                     <div>
                       {{> comment}}
                     </div>
                   </div>
+                  {{/if}}
 
                   <div class="tab-pane" id="location" role="tabpanel">
                     {{> displayMap}}
@@ -1189,14 +1341,20 @@
 
 	          </div>
             <div class="col-lg-4 col-sm-12">
+              {{#if isPost}}
+
               <div class="row" id="rating">
                 <table class="table">
 	                <tr>
 	                  <th>
-	                    <span class="glyphicon glyphicon-user"></span> 100
+                      <center>
+                        <span class="glyphicon glyphicon-user"></span>{{enrolledCount}}
+                      </center>
 	                  </th>
 	                  <th>
-	                    <span class="glyphicon glyphicon-thumbs-up"></span> 4.5/5
+                      <center>
+                        <span class="glyphicon glyphicon-thumbs-up"></span> {{rating}}/5
+                      </center>
 	                  </th>
 	                </tr>
 	                <tr>
@@ -1219,33 +1377,41 @@
 	              </table>
 
 	            </div>
+              {{/if}}
               {{#if isThisUser}}
 
               {{else}}
-              <div class="row">
-                <a class ="btn btn-info btn-lg" id="contactMeBtn" href="/messaging">Contact Me</a>
-
+                {{#if currentUser}}
+              <div class="row justify-content-md-center">
+                <button type="button" id="contactMeBtn" class="btn btn-info"  data-target="/messaging">
+                    Contact Me
+                  </button>
               </div>
-              <div class="row">
+              <div class="row justify-content-md-center">
+                  {{#if isPost}}
                   <button type="button" id="bookBtn" class="btn btn-info" data-toggle="modal" data-target="#bookClassModal">
                   Book Now
                   </button>
                   {{> bookClass}}
+                  {{else}}
+                  <button type="button" id="bookReqBtn" class="btn btn-info" data-toggle="modal" data-target="#bookReqClassModal">
+                  Offer Help
+                  </button>
+                  {{> bookReqClass}}
+                  {{/if}}
               </div>
-              <div class="row">
-                  <button type="button" id="reportBtn" class="btn btn-info" data-toggle="modal" data-target="#reportClassModal">
+              <div class="row justify-content-md-center">
+                  <button type="button" id="reportBtn" class="btn btn-danger" data-toggle="modal" data-target="#reportClassModal">
                   Report
                   </button>
                   {{> reportClass}}
-              </div>
+                </div>
+                {{/if}}
               {{/if}}
 	          </div>
 	        </div>
-
 	        </div>
-
-	            {{/with}}
-
+	       {{/with}}
 	    </div>
       {{> footer}}
 	  </div>
@@ -1335,8 +1501,8 @@
 
       <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="thum-div">
         <div class="img-thumbnail" id="image1" >
-          <div class="img">
-            <img class = "postClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="100%" />
+          <div class="img" >
+            <img class = "postClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="100%"  />
           </div>
           <div class="caption" id="capImg1">
 
@@ -1754,8 +1920,8 @@
       {{#each requestClasses}}
       <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="thum-div">
         <div class="img-thumbnail"  id="image1">
-          <div class="img">
-            <img class = "requestClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="100%" height="200px" />
+          <div class="img"  >
+            <img class = "requestClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="100%"  />
           </div>
           <div class="caption" id="capImg1">
 
@@ -2122,7 +2288,7 @@
           {{#each searchResult}}
           <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="thum-div">
             <div class="img-thumbnail" id="image1" >
-              <div class="img">
+              <div class="img" >
                 <img class = "requestClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}"  />
               </div>
               <div class="caption" id="capImg1">
@@ -2256,18 +2422,8 @@
 
         <div class="map-container" id="editREmap">
 
-
-
-
-
         </div>
-
-
-
-
-      </div>
-
-
+  </div>
 </template>
 
 <template name="bookClass">
@@ -2463,7 +2619,6 @@
                   <tr>
                     <th>Date</th>
                     <th>Time</th>
-                    <th>Status</th>
                   </tr>
                 </thead>
 
@@ -2473,9 +2628,236 @@
                   <tr>
                     <td>{{date}}</td>
                     <td>{{sestime}}</td>
-                    <td>{{status}}</td>
+                 </tr>
+                  {{/each}}
+                  {{/each}}
+                </tbody>
 
+              </table>
+
+              <div class="row justify-content-md-center">
+                  <div class="row" id="payBtn">
+                    {{#if isApproved}}
+                    <a  id="proceedPay" href="#" aria-selected="false" >Proceed to Payment</a>
+                    {{else}}
+
+                    {{/if}}
+
+                  </div>
+              </div>
+              {{/with}}
+            </div>
+            <div class="tab-pane fade" id="pills-payment" role="tabpanel" aria-labelledby="pills-payment-tab">
+            {{> payment}}</div>
+            <div class="tab-pane fade" id="pills-success" role="tabpanel" aria-labelledby="pills-success-tab">
+              <div class="row justify-content-md-center">
+                <img src="mailsent.png" />
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="row ">
+                  <h4>Your transaction had been made successfully.</h4>
+                </div>
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="row ">
+                  {{#with transID}}
+                  <h4>Your transactionId for this payment is: {{_id}}</h4>
+                  {{/with}}
+                </div>
+              </div>
+
+            </div>
+
+
+            </div>
+            {{/with}}
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<template name="bookReqClass">
+  <div class="modal fade" id="bookReqClassModal" tabindex="-1" role="dialog" aria-labelledby="bookReqClassLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content" id="modalCont">
+        <div class="modal-header">
+          <h5 class="modal-title" id="bookClassLabel">
+            <img src="book.png" width="30px"/>Offer Help
+          </h5>
+
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <!--FORM -->
+        <div class="modal-body">
+          <form class="custom-form-horizontal" id ="bookClass" data-toggle="validator" role="form">
+            {{#with class}}
+            <ul class="nav nav-fill" id="progTab" >
+              <li class="nav-item">
+                <a class="nav-link active" id="pills-booking-tab" data-toggle="pill" href="#pills-booking" role="tab" aria-controls="pills-booking" aria-selected="true">Booking</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link cntCl" id="pills-app-tab" data-toggle="pill" href="#pills-app" role="tab" aria-controls="pills-app" aria-selected="false" >Appointment Sent</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link cntCl" id="pills-status-tab" data-toggle="pill" href="#pills-status" role="tab" aria-controls="pills-status" aria-selected="false">Status</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link cntCl" id="pills-payment-tab" data-toggle="pill" href="#pills-payment" role="tab" aria-controls="pills-payment" aria-selected="false">Payment</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link cntCl" id="pills-success-tab" data-toggle="pill" href="#pills-success" role="tab" aria-controls="pills-success" aria-selected="false">Success!</a>
+              </li>
+            </ul>
+
+
+            <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-booking" role="tabpanel" aria-labelledby="pills-booking-tab">
+              <div class="form-group">
+                <div class="row">
+                  <label class="control-label col-sm-4 col-4 col-lg-3 col-md-4">Title:</label>
+                  <div class="col-8 col-sm-8 col-lg-9 col-md-8">
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{title}}">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="row">
+                  <label class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4">Skill Provide by:</label>
+                  <div class="col-xs-8 col-sm-8 col-lg-9 col-md-8">
+                    <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{owner}}">
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="row">
+                  <label class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4">Location:</label>
+                  <div class="col-xs-8 col-sm-8 col-lg-9 col-md-8">
+                    <select id="inputLocation" class="form-control">
+                      <option disabled>Choose one location</option>
+                      {{#each location}}
+                      <option>{{name}}</option>
+                      {{/each}}
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <div class="row">
+                  <label class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4 col-xl-3">Session:</label>
+                  <div class="col-xs-3 col-sm-3 col-lg-3 col-xl-3 col-md-3" id="datepicker">
+                    <div class="input-group date" id="datetimepicker" data-provide="datepicker">
+                       <input type='text' class="form-control"  id="dateInput" required/>
+                      <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                       </div>
+                  </div>
+                  <div class="col-xs-4 col-sm-4 col-lg-3 col-md-4 col-xl-3">
+                    <select id="timeSelection" class="form-control" required>
+                      <option disabled>Choose one session</option>
+                      {{#each time}}
+                      <option>
+                        {{timeFrom}}-{{timeTo}}
+                      </option>
+                      {{/each}}
+                    </select>
+                  </div>
+
+                </div>
+                <div class="row">
+                  <div class="control-label col-sm-4 col-xs-4 col-lg-3 col-md-4 col-xl-3">
+                  </div>
+                  <div class="col-sm-3 col-lg-3 col-xl-3 col-md-3 ">
+                    <button type="button" name="addSes" id= "addSes" class="btn btn-default btn-block" >Add Session</button>
+                  </div>
+                </div>
+              </div>
+
+                <div class="form-group" >
+                  <div class="row">
+                    <label class="control-label col-sm-0 col-xs-0 col-lg-3 col-md-0 "></label>
+                    <div class="col-xs-12 col-sm-12 col-lg-9 col-md-12" id="sesBtn" >
+
+                      {{#each selectedSes}}
+                        <button class="btn btn-primary " id=smallPlaceTab>
+                        {{date}}  ({{sestime}})
+                        <button id="deleteSes" class="btn btn-group"><span class="glyphicon glyphicon-remove"></span></button>
+                        </button>
+                      {{/each}}
+                    </div>
+                  </div>
+                </div>
+                <div class="row" id="submitBtn">
+                  <button class="btn btn-block btn-info" id="confirmApp">Confirm Appointment</button>
+                </div>
+            </div>
+            <div class="tab-pane fade" id="pills-app" role="tabpanel" aria-labelledby="pills-app-tab">
+              <div class="row justify-content-md-center">
+                <img src="mailsent.png" />
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="row ">
+                  {{#with appInfo}}
+                  <h4>Booking Confirmed. Your appointment (AppointmentID:{{_id}}) is under processing.</h4>
+                  {{/with}}
+                </div>
+              </div>
+              <div class="row justify-content-md-center">
+                <div class="row">
+                  <h5>Please wait for skill seeker ({{owner}}) approved your appointment.</h5>
+                </div>
+              </div>
+              <div class="row justify-content-md-center">
+                  <div class="row" id="submitBtn">
+                    <a  id="checkStatus" href="#" aria-selected="false" >Check Status</a>
+                  </div>
+              </div>
+
+            </div>
+            <div class="tab-pane fade" id="pills-status" role="tabpanel" aria-labelledby="pills-status-tab">
+              {{#with appInfo}}
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Appointment ID</th>
+                    <th>Class Name</th>
+                    <th>Status</th>
                   </tr>
+                </thead>
+
+                <tbody>
+                  {{#each sesOfApp}}
+                  <tr>
+                    <td><h4>{{_id}}</h4></td>
+                    <td>{{title}}</td>
+                    <td>{{status}}</td>
+                  </tr>
+                  {{/each}}
+                </tbody>
+
+              </table>
+
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {{#each sesOfApp}}
+                  {{#each session}}
+                  <tr>
+                    <td>{{date}}</td>
+                    <td>{{sestime}}</td>
+                 </tr>
                   {{/each}}
                   {{/each}}
                 </tbody>
@@ -2668,35 +3050,8 @@
           <h5>RM {{price}} / Class</h5>
           <p>
             <a href="/classpage" class=" btn btn-primary " role="button" id="moreDetails">More</a>
-            <span class="input-group-btn">
-              <button class="btn btn-danger" id="removeClassBtn" type="button"><span class="glyphicon glyphicon-trash" aria-hidden="true" id="remove_icon"></span></button>
-            </span>
-            <span class="input-group-btn" >
-              <button class="btn btn-default" id="editClassBtn" type="button" data-toggle="modal" data-target="#editClass" ><span class="glyphicon glyphicon-pencil" aria-hidden="true" id="edit_icon"></span></button>
-            </span>
+
           </p>
-
-          <div class="container-fluid">
-                <div class="modal fade" id="editClass" role="dialog">
-                <div class="modal-dialog modal-lg">
-
-                  <!-- Modal content-->
-                  <div class="modal-content">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  <div class="modal-body">
-                    <!--Content-->
-                  <div class = "container" style = "width: 100%" id="editButton">
-                      {{> editForm}}
-                  </div>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                  </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
 
         </div>
       </div>
@@ -2711,7 +3066,7 @@
         <div class="row">
             <div class="panel panel-white commentPost">
                 <div class="post-footer">
-                  <div class="star_rating">4</div>
+                  {{#if isRated}}
                   <div class = "jumbotron" id="commentJumbo">
                     <fieldset class="rating" id="insertRating">
                       <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="5 stars"></label>
@@ -2728,9 +3083,10 @@
                         </span>-->
                     </div>
                     <div class="text-right">
-                       <button class="btn btn-success btn-lg" type="submit" name = "saveReview" id="saveReview">Save</button>
+                       <button class="btn btn-success btn-lg" type="submit" name = "saveReview" id="saveReview">Post</button>
                    </div>
                   </div>
+                  {{/if}}
                     {{> commentList}}
                 </div>
             </div>
@@ -2764,16 +3120,100 @@
       </div>
     </div>
       <div class="comment-body">
-        <!--<div class="star_rating">4</div>-->
-        <fieldset class="rating" id="savedRating">
-          <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="5 stars"></label>
-          <input type="radio" id="star4" name="rating" value="4" /><label class = "full" for="star4" title="4 stars"></label>
-          <input type="radio" id="star3" name="rating" value="3" /><label class = "full" for="star3" title="3 stars"></label>
-          <input type="radio" id="star2" name="rating" value="2" /><label class = "full" for="star2" title="2 stars"></label>
-          <input type="radio" id="star1" name="rating" value="1" /><label class = "full" for="star1" title="1 star"></label>
+
+        <fieldset class="userrating " id="{{_id}}">
+          <input type="radio" id="star5" name="{{_id}}" value="5" /><label class = "full" for="star5" title="5 stars"></label>
+          <input type="radio" id="star4" name="{{_id}}" value="4" /><label class = "full" for="star4" title="4 stars"></label>
+          <input type="radio" id="star3" name="{{_id}}" value="3" /><label class = "full" for="star3" title="3 stars"></label>
+          <input type="radio" id="star2" name="{{_id}}" value="2" /><label class = "full" for="star2" title="2 stars"></label>
+          <input type="radio" id="star1" name="{{_id}}" value="1" /><label class = "full" for="star1" title="1 star"></label>
         </fieldset><br>
-        <p><br>{{comment}}</p>
+        <p>{{comment}}</p>
       </div>
 
   </li>
+</template>
+
+<template name="recommendClass">
+  <div class="recommendbg">
+    <div class="row justify-content-md-center">
+      <h1>Recommend for you</h1>
+    </div>
+    <div id="recBar" class="carousel slide" data-ride="carousel">
+
+        <ul class="carousel-indicators">
+          <li data-target="#recBar" data-slide-to="0" class="active"></li>
+          <li data-target="#recBar" data-slide-to="1"></li>
+          <li data-target="#recBar" data-slide-to="2"></li>
+        </ul>
+
+        <div class="carousel-inner">
+          <div class="carousel-item active">
+            <div class="container">
+              <div class="row">
+                {{#each recommendClass}}
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="thum-div">
+                  <div class="img-thumbnail" id="image1" >
+                    <div class="img">
+                      <img class = "postClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="100%" />
+                    </div>
+                    <div class="caption" id="capImg1">
+
+                      <!--<h3>Rating:{{rating}}</h3>-->
+                      <h3>{{title}}</h3>
+                      <h5>User: <!--<a href="#" id = "user">-->{{owner}}</h5>
+                      <h5>Category: {{skill}}</h5>
+                      <h5>RM {{price}} / Class</h5>
+                      <p>
+                        <a href="/classpage" class=" btn btn-primary " role="button" id="moreDetails">More</a>
+                      </p>
+
+                      <!--Edit Class Modal-->
+                      <div class="container-fluid">
+                            <!-- Trigger the modal with a button -->
+
+
+                            <!-- Modal -->
+                            <div class="modal fade" id="editClass" role="dialog">
+                            <div class="modal-dialog modal-lg">
+
+                              <!-- Modal content-->
+                              <div class="modal-content">
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                              <div class="modal-body">
+                                <!--Content-->
+                                <div class = "container" style = "width: 100%" id="editButton">
+
+                                  {{> editForm}}
+                              </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+                {{/each}}
+            </div>
+          </div>
+          </div>
+
+        </div>
+
+        <!-- Left and right controls -->
+        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
+        </a>
+        <a class="carousel-control-next" href="#demo" data-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </a>
+      </div>
+
+  </div>
+
 </template>
