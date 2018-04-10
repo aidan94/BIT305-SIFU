@@ -705,7 +705,7 @@ border-radius: 5px;
 
  #nearbtTabCont{
    overflow-y: scroll;
-     height: 400px;
+     height: 470px;
 
  }
  #nearbyimg{
@@ -794,7 +794,25 @@ border-radius: 5px;
 
 /*Class Page*/
 #bookBtn{
-  width: 100%;
+  width: 50%;
+  margin-bottom: 10px;
+}
+
+#contactMeBtn{
+  width: 50%;
+  margin-bottom: 10px;
+
+}
+
+#bookReqBtn{
+  width: 50%;
+  margin-bottom: 10px;
+}
+#reportBtn {
+  width:50%;
+  margin-bottom: 10px;
+  margin-left: 15px
+
 }
 
 #bookClassLabel{
@@ -1009,13 +1027,7 @@ border-radius: 5px;
 
 }
 
-#contactMeBtn{
-  margin-top: 10%;
-  height:55px;
-  width: 100%;
-  font-size: 15pt;
-  border-radius: 10px;
-}
+
 
 .more-messages {
   position: absolute;
@@ -1096,9 +1108,12 @@ border-radius: 5px;
 
 #rejectBtn{
   width: 100%;
-
 }
 
+#paymentBtn{
+  width: 100%;
+  margin-bottom: 5px;
+}
 /*Comment Function*/
 
 .panel-white {
@@ -1162,7 +1177,6 @@ border-radius: 5px;
 
 /*Rating Function*/
 
-@import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
 
 fieldset, label { margin: 0; padding: 0; }
 body{ margin: 20px; }
@@ -1209,6 +1223,37 @@ h1 { font-size: 1.5em; margin: 10px; }
 .rating > label:hover ~ input:checked ~ label, /* lighten current selection */
 .rating > input:checked ~ label:hover ~ label { color: #FFED85;  }
 
+
+/****** Style Star Rating Widget *****/
+
+.userrating {
+  border: none;
+  float: left;
+  font-size: 18px;
+  padding:0;
+}
+
+.userrating > input { display: none; }
+.userrating > label:before {
+  margin: 5px;
+  font-size: 1.25em;
+  font-family: FontAwesome;
+  display: inline-block;
+  content: "\f005";
+}
+.userrating > label {
+  color: #ddd;
+ float: right;
+}
+
+/***** CSS Magic to Highlight Stars on Hover *****/
+
+.userrating > input:checked ~ label, /* show gold star when clicked */
+.userrating:not(:checked) > label:hover ~ label { color: #FFD700;  } /* hover previous stars in list */
+.userrating > input:checked >label.active{
+   color: #FFD700;
+}
+
 #inputComment{
   margin-bottom: 2%;
   resize: none;
@@ -1232,7 +1277,7 @@ h1 { font-size: 1.5em; margin: 10px; }
 }
 
 /*commentRatings*/
-@import "compass/css3";
+
 
 .star_rating {
   position: relative;
@@ -1294,4 +1339,32 @@ h1 { font-size: 1.5em; margin: 10px; }
 #optionForReport{
   margin-left: 20px;
 
+}
+
+.homebg{
+  background-image: url(background-banner.jpg);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+
+  width: 100%;
+}
+
+.findnearbg{
+  background-color: white;
+  padding: 20px 0;
+}
+.recommendbg {
+  background-color: rgb(165, 144, 146);
+  padding: 10px 0;
+}
+
+#thumbImg{
+  height: 160px;
+  width: 100%;
+  overflow: hidden;
+}
+
+.scrollCont{
+  overflow-y: scroll;
+    height: 300px;
 }
