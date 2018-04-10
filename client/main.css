@@ -14,10 +14,6 @@
 .list-unstyled >li {
   margin-bottom: :0%;
 }
-.thumbnail {
-  display: flex;
-  flex-direction: column;
-}
 .control-label{
   color: #333;
 }
@@ -44,7 +40,7 @@ ul.nav.navbar-nav {
   margin-top: 0%;
 }
 
-.thumbnail{
+#image{
   display: flex;
   flex-direction: column;
   border: 1px solid #ced4da;
@@ -197,13 +193,15 @@ font-size: .8em;
  /*~~~~~CSS FOR LOGINBUTTON~~~~~*/
 #login-dropdown-list {
   color: black;
-  background-color: rgba(255, 255, 255 ,0.9);
+  border: 1px solid #dee2e6;
+  background-color: rgb(255, 255, 255);
   padding: 10pt;
   border-radius: 2pt;
   position: absolute;
   width: 20%;
   font-size: 1.5vw;
   text-transform: capitalize;
+  z-index:2;
 }
 
 #login-dropdown-list .login-close-text {
@@ -221,6 +219,30 @@ font-size: .8em;
   text-transform: capitalize;
   color: white;
   padding: 2pt;
+}
+#login-buttons-google{
+  margin-top: 10pt;
+  border-radius: 2pt;
+  background-color: rgb(233, 85, 85);
+  text-align: center;
+  text-transform: capitalize;
+  color: white;
+  padding: 2pt;
+}
+
+.or{
+  text-align:center;
+  margin-top:2%;
+}
+
+#login-username-or-email-label-and-input{
+  text-align: center;
+  margin-top:2%;
+}
+
+#login-password-label-and-input{
+  text-align: center;
+  margin-top:2%;
 }
 
 .additional-link-container{
@@ -674,7 +696,7 @@ border-radius: 5px;
   color: black;
   font-size: 25px;
   font-weight: 500;
-  padding: 6px 12px;
+  padding-bottom: 1%;
 }
 
 #target {
@@ -792,6 +814,7 @@ border-radius: 5px;
   background-color: transparent;
 }
 
+/*Class Page*/
 /*Class Page*/
 #bookBtn{
   width: 50%;
@@ -1027,8 +1050,6 @@ border-radius: 5px;
 
 }
 
-
-
 .more-messages {
   position: absolute;
   bottom: 6rem;
@@ -1087,16 +1108,18 @@ border-radius: 5px;
 /*Notif*/
 #newNotiModalBody {
   padding: 10px 10px;
+  overflow-y: scroll;
+  height: 400px;
 
 }
 
 #nnTitle{
   text-align: center;
+  font-size:14pt;
 
 }
 
 #reqclasstab{
-  border-bottom: .5px solid #c7c9cc;
   padding: 5px;
 }
 
@@ -1108,12 +1131,20 @@ border-radius: 5px;
 
 #rejectBtn{
   width: 100%;
+  margin-right:0;
+  float: none;
+  margin-right: 0;
 }
 
 #paymentBtn{
   width: 100%;
   margin-bottom: 5px;
 }
+
+.reportLine{
+  margin-bottom: 0;
+}
+
 /*Comment Function*/
 
 .panel-white {
@@ -1177,7 +1208,6 @@ border-radius: 5px;
 
 /*Rating Function*/
 
-
 fieldset, label { margin: 0; padding: 0; }
 body{ margin: 20px; }
 h1 { font-size: 1.5em; margin: 10px; }
@@ -1222,7 +1252,6 @@ h1 { font-size: 1.5em; margin: 10px; }
 .rating > input:checked ~ label:hover,
 .rating > label:hover ~ input:checked ~ label, /* lighten current selection */
 .rating > input:checked ~ label:hover ~ label { color: #FFED85;  }
-
 
 /****** Style Star Rating Widget *****/
 
@@ -1277,7 +1306,7 @@ h1 { font-size: 1.5em; margin: 10px; }
 }
 
 /*commentRatings*/
-
+@import "compass/css3";
 
 .star_rating {
   position: relative;
@@ -1324,6 +1353,41 @@ h1 { font-size: 1.5em; margin: 10px; }
   padding-left:0
 
 }
+.imgWrapper{
+  padding-left: 3%;
+  height:80px;
+  white-space: nowrap;
+
+  text-align: center; margin: 1em 0;
+}
+.helper {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+}
+.reportThumbnail{
+  vertical-align: middle;
+  max-height: 80px;
+  max-width: 90px;
+  border: 1px solid #e7e7e7;
+
+}
+.wrapper {
+    text-align: center;
+}
+#removeReportBtn{
+  width: 100%;
+  margin-right:0;
+  float: none;
+  margin-right: 0;
+}
+
+#deleteBtn{
+  width: 100%;
+  margin-right:0;
+  float: none;
+  margin-right: 0;
+}
 
 #admin-manage-tab a {
   height: 50px;
@@ -1340,7 +1404,6 @@ h1 { font-size: 1.5em; margin: 10px; }
   margin-left: 20px;
 
 }
-
 .homebg{
   background-image: url(background-banner.jpg);
   background-attachment: fixed;
@@ -1353,6 +1416,7 @@ h1 { font-size: 1.5em; margin: 10px; }
   background-color: white;
   padding: 20px 0;
 }
+
 .recommendbg {
   background-color: rgb(165, 144, 146);
   padding: 10px 0;
@@ -1367,4 +1431,32 @@ h1 { font-size: 1.5em; margin: 10px; }
 .scrollCont{
   overflow-y: scroll;
     height: 300px;
+}
+
+/* Notification CSS*/
+#centerLabel{
+  text-align:center;
+  font-size: 13pt;
+}
+
+#inputReason{
+  font-size:11pt;
+}
+
+.textNot{
+  text-align: center;
+  color:gray;
+}
+
+.textReason{
+  text-align: center;
+  color:#3d3d3d;
+  font-weight: bold;
+}
+
+.classDesc{
+  max-width: 100%;
+  word-break:break-word;
+  margin-bottom:3rem;
+  margin-left: 1.5rem;
 }
