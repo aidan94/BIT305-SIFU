@@ -14,22 +14,11 @@ admin=new Mongo.Collection('admin');
 report=new Mongo.Collection('report');
 famousPost=new Mongo.Collection('famousPost');
 
-
-
 Meteor.publish("users", function() {
     return Meteor.users.find({}, {fields:{createdAt: true, profile:true, emails: true, username: true}});
 });
 
-/*
-Accounts.validateNewUser(function (user) {
-  var loggedInUser = Meteor.user();
-  if (Roles.userIsInRole(loggedInUser, 'admin')) {
-    return true;
-  }
 
-  throw new Meteor.Error(403, "Not authorized to create new users");
-});
-*/
 Meteor.publish('comments', function() {
   return Comments.find();
 });
@@ -64,6 +53,7 @@ Meteor.publish('theRequest',function(){
   var currentUserId= this.userId;
   return requestList.find({createdBy:currentUserId})
 });
+
 
 
 Meteor.methods({
@@ -109,7 +99,9 @@ Meteor.methods({
           createdTime: new Date(),
           rating:0,
           owner: user,
-          type: "post"
+          type: "post",
+          status: "Normal",
+          isread:"false"
         });
       },
 
@@ -130,7 +122,9 @@ Meteor.methods({
           createdTime: new Date(),
           rating:0,
           owner: user,
-          type: "request"
+          type: "request",
+          status: "Normal",
+          isread:"false"
         });
       },
 
@@ -155,10 +149,10 @@ Meteor.methods({
           title:className,
           ispaid:ispaid,
           isread:"false",
-          type:type,
           createdDate:new Date()
         });
       },
+
       'insertReqApp':function(session,classID,skillSkr,totalPrice,status, className,ispaid,currentDate,type){
         var currentUserId=this.userId;
         appointment.insert({
@@ -176,10 +170,12 @@ Meteor.methods({
           createdDate:new Date()
         });
       },
+
       'insertTrans':function(transID,classID,paymentType,cardBrand,
     cardType,userID,amount,appointmentID,paymentDate,cardExpMonth,cardExpYear,status){
         var currentUserId=this.userId;
           var stripe = StripeAPI("sk_test_BJQdg83NbQFbFaBlcW7dEwX6");
+
         transaction.insert({
           transID: transID,
           classID: classID,
@@ -215,13 +211,14 @@ Meteor.methods({
         });
       },
 
-      'submitReport':function(currentUser,classType, classID,reportVal){
+      'submitReport':function(currentUser,classType, classID,reportVal, ownerID){
         report.insert({
           reportBy:currentUser,
           classType:classType,
           classID:classID,
           reason:reportVal,
-          createdDate: new Date()
+          createdDate: new Date(),
+          ownerID: ownerID
         })
       },
 
@@ -288,6 +285,15 @@ Meteor.methods({
         })
       },
 
+      'updateReadRep':function(classID){
+        postList.update(classID,{
+          $set:{
+            isread:"true",
+          }
+        })
+      },
+
+
       'approvedAppStatus':function(appID){
         appointment.update(appID,{
           $set:{
@@ -307,7 +313,7 @@ Meteor.methods({
       'insertComment': function(comment){
         if(!_.isEmpty(comment))
            Comments.insert(comment);
-      },
+        },
 
       'updatePostRating':function(new_rateValue, selectedClassRequestID){
         postList.update(selectedClassRequestID,{
@@ -315,6 +321,30 @@ Meteor.methods({
             rating: new_rateValue
           }
         })
-      }
+      },
 
+       'removeReports':function(classID){
+         report.remove({classID:classID});
+       },
+
+       'hideClass':function(classID, reason){
+         postList.update(classID,{
+           $set:{
+             status:{
+               isdelete:"true",
+               reason:reason
+             }
+           }
+         })
+       },
+       'hideRequest':function(classID, reason){
+         requestList.update(classID,{
+           $set:{
+             status:{
+               isdelete:"true",
+               reason:reason
+             }
+           }
+         })
+       }
     });
