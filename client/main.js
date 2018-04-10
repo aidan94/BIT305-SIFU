@@ -22,6 +22,7 @@ Meteor.subscribe('theRequest');
 Meteor.subscribe("users");
 Meteor.subscribe("comments");
 Meteor.subscribe("getfamousPost");
+
 Resume = new Mongo.Collection('Resume');
 postList = new Mongo.Collection('postList');
 requestList=new Mongo.Collection('requestList');
@@ -94,7 +95,6 @@ Template.recommendBar.helpers({
   },
 
 })
-
 
 //Aidan's Part
 Template.newClass.events({
@@ -219,10 +219,10 @@ Template.post.helpers({
     var selectedUserId = Session.get('selectedUserId');
 
     if (selectedUserId != null){
-      return postList.find({createdBy:selectedUserId},{sort: {createdTime:-1}});
+      return postList.find({createdBy:selectedUserId, status:"Normal"},{sort: {createdTime:-1}});
     }
     else
-        return postList.find({},{sort: {createdTime:-1}});
+        return postList.find({status:"Normal"},{sort: {createdTime:-1}});
   },
 
   'selectedClass':function(){
@@ -345,10 +345,10 @@ Template.request.helpers({
     console.log(selectedUser);
     if(selectedUser != null){*/
     if (selectedUserId != null){
-      return requestList.find({createdBy:selectedUserId},{sort: {createdTime:-1}});
+      return requestList.find({createdBy:selectedUserId, status:"Normal"},{sort: {createdTime:-1}});
     }
     else
-        return requestList.find({},{sort: {createdTime:-1}});
+        return requestList.find({status:"Normal"},{sort: {createdTime:-1}});
   },
 
   'selectedClass':function(){
@@ -1451,7 +1451,6 @@ Template.payment.events({
 
         }else if( Session.get('selectedAppClass')){
           var app=appointment.findOne({_id:Session.get('selectedAppClass'),skillSkr:user_ID});
-
         }
         var amount=app.totalPrice*100;
         StripeCheckout.open({
@@ -1776,7 +1775,9 @@ Template.bookReqClass.onRendered(function() {
 
   });
 });
+
 /*Book Class*/
+
 Template.bookClass.events({
   'click #timeSelection':function(){
     var dateInput = document.getElementById("dateInput").value;
@@ -1802,7 +1803,6 @@ Template.bookClass.events({
     if(Session.get('selectedClass')){
       var smtg=postList.findOne({ '_id': { $eq: Session.get('selectBookClass')},'dayTimeVar.day': { $eq: dayName }}).dayTimeVar;
     }
-
 
     Session.set('dateSel',smtg);
 
@@ -1882,7 +1882,9 @@ Template.bookClass.helpers({
       return postList.findOne({'_id':Session.get('selectedClass')});
     }
     else if(Session.get('selectedRequest')){
+
       return requestList.findOne({'_id':Session.get('selectedRequest')});
+
     }
   },
   location:function(){
@@ -1980,7 +1982,6 @@ Template.bookClass.helpers({
     //var classID=appointment.findOne({classID:Session.get('selectBookClass'),skillSkr:userID}).classID;
     return transaction.findOne({userID:userID,classID:Session.get('selectBookClass'),status:'incoming'});
   },
-
 });
 
 Template.bookClass.onRendered(function() {
@@ -2103,6 +2104,7 @@ Template.topnavbar2.events({
     var classid;
     var newpostcount=appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).fetch();
     var newreqcount=appointment.find({$and:[{skillSkr:currentUser},{status:"processing"},{isread:"false"}]}).fetch();
+    var newrepcount = postList.find({$and:[{createdBy: Meteor.userId()},{'status.isdelete': "true"},{'isread':"false"}]}).fetch();
     if(appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count()>0){
       for(var j in newpostcount){
 
@@ -2114,6 +2116,13 @@ Template.topnavbar2.events({
       for(var j in newreqcount){
         appID=newreqcount[j]._id
           Meteor.call('updateread',appID)
+
+      }
+    }
+    if(postList.find({$and:[{createdBy: Meteor.userId()},{'status.isdelete': "true"},{'isread':"false"}]}).count()>0){
+      for(var j in newrepcount){
+        classID=newrepcount[j]._id
+          Meteor.call('updateReadRep',classID)
 
       }
     }
@@ -2143,14 +2152,16 @@ Template.topnavbar2.helpers({
     var currentUser= Meteor.userId();
     var newpostcount=appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count();
     var newreqcount=appointment.find({$and:[{skillSkr:currentUser},{status:"processing"},{isread:"false"}]}).count();
-    return newpostcount+newreqcount;
+    var newrepcount = postList.find({$and:[{createdBy: Meteor.userId()},{'status.isdelete': "true"},{'isread':"false"}]}).count();
+    return newpostcount+newreqcount+newrepcount;
 
   },
   'isReqCount':function(){
     var currentUser= Meteor.userId();
     var newpostcount=appointment.find({$and:[{skillPvd: Meteor.userId()},{status:"processing"},{isread:"false"}]}).count();
     var newreqcount=appointment.find({$and:[{skillSkr:currentUser},{status:"processing"},{isread:"false"}]}).count();
-    var count=newpostcount+newreqcount;
+    var newrepcount = postList.find({$and:[{createdBy: Meteor.userId()},{'status.isdelete': "true"},{'isread':"false"}]}).count();
+    var count=newpostcount+newreqcount+newrepcount;
     if( count>0)
     {
       return true;
@@ -2172,7 +2183,6 @@ Template.resultpage.events({
     var classID = this._id;
     Session.set('selectedClass', classID);
     delete Session.keys['selectedRequest'];
-
   }
 });
 
@@ -2346,6 +2356,7 @@ Template.classpage.helpers({
       return false;
     }
   },
+
   isPost:function(){
     if(Session.get('selectedRequest')){
         return false;
@@ -2354,6 +2365,7 @@ Template.classpage.helpers({
       return true;
     }
   },
+
   enrolledCount:function(){
     return appointment.find({classID:Session.get('selectedClass')}).count();
   }
@@ -2419,11 +2431,7 @@ Template.classpage.events({
       })
     }
   },
-/*
-  'click #bookReqBtn':function(){
 
-  }
-*/
   'click #contactMeBtn': function(){
     var selectedUserID = this.createdBy;
     var selectedClassRequestID = this._id;
@@ -2484,7 +2492,8 @@ Template.resultpage.helpers({
     var query=Session.get('query');
     var allPost = postList.find();
     if(query){
-        return postList.find({"title": { $regex: ".*"+ query + ".*", $options: 'i' }}).fetch();
+
+        return postList.find({"title": { $regex: ".*"+ query + ".*", $options: 'i' }, status:"Normal"}).fetch();
       }else
        {
         return allPost;
@@ -2493,7 +2502,7 @@ Template.resultpage.helpers({
   },
   searchCount: function() {
     var query=Session.get('query');
-    var count=postList.find({"title": { $regex: ".*"+ query + ".*", $options: 'i' }}).count();
+    var count=postList.find({"title": { $regex: ".*"+ query + ".*", $options: 'i' }, status:"Normal"}).count();
         return count;
   },
   oriQuery:function(){
@@ -2520,6 +2529,7 @@ Template.updatePI.helpers({
 
 Template.updatePI.events({
   'submit form':function(event){
+      event.preventDefault();
     var contactNo = event.target.contactNo.value;
     var dob_date = event.target.dob_date.value;
     var dob_month = event.target.dob_month.value;
@@ -2793,10 +2803,13 @@ Template.chatWindow.helpers({
       if(testArray[i].username == Meteor.user().username){
         console.log(testArray[i]);
         console.log("true");
+
+
       }
       else{
         console.log(testArray[i]);
         console.log("false");
+
         }
       }
     })
@@ -3009,6 +3022,18 @@ Template.enrolledClass.helpers({
        return false;
      }
    },
+   'getPostReports':function(){
+     var currentUser= Meteor.userId();
+     return postList.find({$and:[{createdBy: currentUser},{'status.isdelete': "true"}]}).fetch();
+   },
+   'isPostRepCount':function(){
+     var currentUser= Meteor.userId();
+     if(postList.find({$and:[{createdBy: currentUser},{'status.isdelete': "true"}]}).count()>0){
+       return true;
+     }else{
+       return false;
+     }
+   },
    'isofferhelpCount':function(){
      var currentUser= Meteor.userId();
      if(appointment.find({$and:[{skillPvd:currentUser},{type:"request"},{status:"approved"},{ispaid:"true"}]}).count()>0){
@@ -3040,19 +3065,20 @@ Template.enrolledClass.helpers({
    skillProvider:function(){
      var a= appointment.find({$and:[{skillSkr:Meteor.userId()},{type:"post"},{status:"approved"},{ispaid:"false"}]}).fetch();
      return postList.findOne({_id:a[0].classID}).owner;
-   },
+   }
 
  });
 
-Template.newNotif.onRendered(function(){
+ Template.newNotif.onRendered(function(){
   Stripe.setPublishableKey('pk_test_y3Qb096sbp39phssCP308roZ');
   var handler = StripeCheckout.configure({
         key: 'pk_test_y3Qb096sbp39phssCP308roZ',
         token: function(token) {
       console.log(token);
     }
+
+
   });
-})
 
  Template.newNotif.events({
    'click #paymentBtn':function(){
@@ -3097,13 +3123,13 @@ Template.newNotif.onRendered(function(){
              }
          });
    },
+
    'click #acceptBtn':function(){
      event.preventDefault();
      var appID=this._id;
      Meteor.call('approvedAppStatus',appID);
 
    },
-
    'click #rejectBtn':function(){
      event.preventDefault();
      var appID=this._id;
@@ -3149,47 +3175,49 @@ Template.newNotif.onRendered(function(){
     },
   });
 
-  Template.findNearby.onRendered(function() {
-   var markerAr=Markers.find({type:"nearby"}).fetch();
-   var markerAr2=Markers.find({type:"nearbyReq"}).fetch();
+Template.findNearby.onRendered(function() {
+ var markerAr=Markers.find({type:"nearby"}).fetch();
+ var markerAr2=Markers.find({type:"nearbyReq"}).fetch();
 
-   if(markerAr!="" || markerAr2!=""){
-     markerAr.forEach(function(element){
-       Markers.remove(element._id);
-     })
-     markerAr2.forEach(function(element){
-       Markers.remove(element._id);
-     })
-   }
-   Session.set('filterNearby', "post");
-
-   GoogleMaps.load( {  key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
-     libraries: 'geometry,places'});
-
-   this.autorun(function(c) {
-     if (GoogleMaps.loaded()) {
-       GoogleMaps.create({
-         name: 'nearbymap',
-         element: document.getElementById('nearbymap'),
-         options: {
-           center: new google.maps.LatLng(3.1390, 101.6869),
-           zoom: 15
-         }
-       });
-       c.stop();
-     }
-   });
-   /*
-   var array=Markers.find({type:'nearby'}).fetch();
-   array.forEach(function(ele){
-     if(Session.get('selectMarker')==ele.markerid){
-        document.getElementById('nearbytab').style.backgroundColor="#d8e7ff";
-     }else {
-        document.getElementById('nearbytab').style.backgroundColor="white";
-     }
+ if(markerAr!="" || markerAr2!=""){
+   markerAr.forEach(function(element){
+     Markers.remove(element._id);
    })
-*/
+   markerAr2.forEach(function(element){
+     Markers.remove(element._id);
+   })
+ }
+ Session.set('filterNearby', "post");
+
+ GoogleMaps.load( {  key: 'AIzaSyBpBCArAIOHtvLTmSTjjLzzViT9fm366FA',
+   libraries: 'geometry,places'});
+
+ this.autorun(function(c) {
+   if (GoogleMaps.loaded()) {
+     GoogleMaps.create({
+       name: 'nearbymap',
+       element: document.getElementById('nearbymap'),
+       options: {
+         center: new google.maps.LatLng(3.1390, 101.6869),
+         zoom: 15
+       }
+     });
+     c.stop();
+   }
  });
+ /*
+ var array=Markers.find({type:'nearby'}).fetch();
+ array.forEach(function(ele){
+   if(Session.get('selectMarker')==ele.markerid){
+      document.getElementById('nearbytab').style.backgroundColor="#d8e7ff";
+
+   }else {
+      document.getElementById('nearbytab').style.backgroundColor="white";
+
+   }
+ })
+*/
+});
 
 Template.findNearby.events({
   'click #nearbyMorebtn':function(){
@@ -3333,8 +3361,10 @@ Template.findNearby.events({
                 })
                 markers.push(marker)
                 var distInKm=Number(distance/1000).toFixed(2);
+
                 Markers.insert({markerid:marker.id,currentUser:Meteor.userId(),class:locationAr[j],type:"nearby",distance:distInKm,latlng:coord})
                 google.maps.event.addListener(marker,'click', function() {
+
                   Session.set('selectMarker',this.id);
                   if(prevMarker!=''){
                     $('#'+prevMarker).css('background-color',"white");
@@ -3347,6 +3377,9 @@ Template.findNearby.events({
                     $('#'+this.id).css('transition'," background-color 1s ease-in .2s");
                     prevMarker=this.id;
                   }
+
+
+
                   });
                 }
             }
@@ -3445,6 +3478,7 @@ Template.findNearby.events({
        else if(content.length > 0 && rate == ""){
          $('#insertRating').css('border', '1px solid red');
          $('.add_comment').css('border', 'none');
+
          console.log("rate no value");
          document.getElementById("inputComment").value = "";
          return false;
@@ -3452,6 +3486,7 @@ Template.findNearby.events({
        else if(content.length <= 0 && rate == ""){
          $('.add_comment').css('border', '1px solid red');
          $('#insertRating').css('border', '1px solid red');
+
          console.log("both no value");
          document.getElementById("inputComment").value = "";
          return false;
@@ -3461,6 +3496,7 @@ Template.findNearby.events({
        if (Session.get("selectedClass") != ""){
          var selectedClassRequestID = Session.get("selectedClass");
        }
+
        //Let's build our comment object
        comment = {
            'classRequestID': selectedClassRequestID,
@@ -3481,25 +3517,136 @@ Template.findNearby.events({
  });
 
  Template.comment.helpers({
-   isRated:function(){
-     var count= Comments.find({$and:[{classRequestID:Session.get('selectedClass')},{user:Meteor.user().username}]}).count();
-     if(count==0){
-       return true;
-     }else{
-       return false;
-     }
-   }
+  isRated:function(){
+    var count= Comments.find({$and:[{classRequestID:Session.get('selectedClass')},{user:Meteor.user().username}]}).count();
+    if(count==0){
+      return true;
+    }else{
+      return false;
+    }
+  }
 })
 
 
- Template.reportClass.helpers({
-   class:function(){
+Template.reportClass.helpers({
+  class:function(){
 
+  }
+})
 
-
-
-   }
+ Template.adminpage.helpers({
+     'reports':function(){
+       return report.find({},{sort: {createdDate:-1}});
+     }
  })
+
+ Template.eachReport.onRendered(function(){
+   //document.getElementById()
+   var classID = this.data.classID;
+   var classType = this.data.classType;
+   var reportedBy = this.data.reportBy;
+   $('.'+Meteor.user().username).css('text-align','right');
+   $('.'+Meteor.userId()).css('background-color', 'rgb(191, 234, 255)');
+   if(classType == "post"){
+     $("img."+classID).attr("src", postList.findOne({"_id": classID}).fileSource);
+     $('.'+classID).html('Title: '+ postList.findOne({"_id": classID}).title);
+     $('p.'+classID).html('From: '+ Meteor.users.findOne({"_id":reportedBy}).username);
+   }
+   else{
+      $("img."+classID).attr("src", requestList.findOne({"_id": classID}).fileSource);
+      $('.'+classID).html('From: '+ requestList.findOne({"_id": classID}).title);
+      $('p.'+classID).html('From: '+ Meteor.users.findOne({"_id":reportedBy}).username);
+   }
+ });
+
+ Template.eachReport.events({
+   'click #imgClass':function(){
+     var classID = this.classID;
+     if(this.classType == "post"){
+       Session.set('selectedClass', classID);
+       delete Session.keys['selectedRequest'];
+     }
+     else{
+       Session.set('selectedRequest', classID);
+       delete Session.keys['selectedClass'];
+     }
+
+   },
+
+   'click #deleteBtn':function(){
+     var classID = this.classID;
+     var classType = this.classType;
+     var hasMore = report.find({classID: classID}).fetch().length;
+     if(hasMore > 1){
+       $('#confirmDeleteModal').modal('toggle');
+       $("#continueProcess").click(function(){
+       $('#confirmDeleteModal').modal('toggle');
+
+         $('#insertReason').modal('toggle');
+         var reason = document.getElementById("inputReason").value;
+
+         $("#submit").click(function(){
+           var reason = document.getElementById("inputReason").value;
+           console.log("works");
+           if(reason == ""){
+             $('.inputReason').css('border', '1px solid red');
+           }
+           else{
+             $('.inputReason').css('border', '1px solid lightgray');
+             document.getElementById("inputReason").value = "";
+             $('#insertReason').modal('toggle');
+
+             if(classType == "post"){
+               Meteor.call('hideClass',classID, reason);
+               Meteor.call('removeReports', classID);
+
+             }
+             else{
+               Meteor.call('hideRequest',classID, reason);
+               Meteor.call('removeReports', classID);
+             }
+           }
+         });
+
+       });
+      }
+
+     else{
+       $('#confirmModal').modal('toggle');
+       $("#continue").click(function(){
+       $('#confirmModal').modal('toggle');
+
+         $('#insertReason').modal('toggle');
+         var reason = document.getElementById("inputReason").value;
+
+         $("#submit").click(function(){
+           console.log("works");
+           var reason = document.getElementById("inputReason").value;
+           if(reason == ""){
+             $('.inputReason').css('border', '1px solid red');
+           }
+           else{
+             $('.inputReason').css('border', '1px solid lightgray');
+             document.getElementById("inputReason").value = "";
+             $('#insertReason').modal('toggle');
+
+
+
+             if(classType == "post"){
+               Meteor.call('hideClass',classID, reason);
+               Meteor.call('removeReports', classID);
+
+             }
+             else{
+               Meteor.call('hideRequest',classID, reason);
+               Meteor.call('removeReports', classID);
+             }
+           }
+         });
+       });
+      }
+     }
+ });
 
  Template.reportClass.events({
    'click #options':function(){
@@ -3513,10 +3660,12 @@ Template.findNearby.events({
      if(Session.get('selectedClass')){
        classType="post";
        classID=Session.get('selectedClass');
+       ownerID = postList.findOne({"_id":classID}).createdBy;
      }
      else if(Session.get('selectedRequest')){
        classType="request";
        classID=Session.get('selectedRequest');
+       ownerID = requestList.findOne({"_id":classID}).createdBy;
 
      }
      for (var i = 0, length = radios.length; i < length; i++)
@@ -3525,7 +3674,7 @@ Template.findNearby.events({
       {
         var reportVal=radios[i].value;
 
-       Meteor.call('submitReport',currentUser,classType, classID,reportVal)
+       Meteor.call('submitReport',currentUser,classType, classID,reportVal, ownerID);
       }
      }
    }
@@ -3539,128 +3688,128 @@ Template.findNearby.events({
        else{
          var selectedClassRequestID = Session.get("selectedRequest");
        }
-
        var comments = Comments.find({classRequestID: selectedClassRequestID}).fetch();
+
+
        //$( "[name=r]" ).val( ["10"]);
        return comments;
      },
-     rating:function(){
-       if (Session.get("selectedClass") != ""){
-         var selectedClassRequestID = Session.get("selectedClass");
-       }
-       else  if (Session.get("selectedRequest")) {
-         var selectedClassRequestID = Session.get("selectedRequest");
-       }
+    rating:function(){
+      if (Session.get("selectedClass") != ""){
+        var selectedClassRequestID = Session.get("selectedClass");
+      }
+      else  if (Session.get("selectedRequest")) {
+        var selectedClassRequestID = Session.get("selectedRequest");
+      }
 
-     },
+    }
+   });
+
+   Template.listofcomments.onRendered(function(){
+   if (Session.get("selectedClass") ){
+     var array=Comments.find({classRequestID:Session.get("selectedClass")}).fetch();
+   }
+   else  if (Session.get("selectedRequest")) {
+     var array=Comments.find({classRequestID:Session.get("selectedRequest")}).fetch();
+   }
+
+   array.forEach(function(ele){
+     var rate;
+     var oriRate=ele.rating;
+     var a = document.getElementById(ele._id);
+       document.getElementById(ele._id).getElementsByTagName('input')[Math.abs(oriRate-5)].checked=true;
+       document.getElementById(ele._id).getElementsByTagName('input').disabled = true;
+   })
 
    });
 
-Template.listofcomments.onRendered(function(){
-if (Session.get("selectedClass") ){
-  var array=Comments.find({classRequestID:Session.get("selectedClass")}).fetch();
-}
-else  if (Session.get("selectedRequest")) {
-  var array=Comments.find({classRequestID:Session.get("selectedRequest")}).fetch();
-}
+   Template.incoming.helpers({
+     incoming:function(){
+       var array=[];
+       var classid=[]
+       var a= appointment.find({$and:[{skillSkr:Meteor.userId()},{status:"approved"},{ispaid:"true"}]})
+       var b= appointment.find({$and:[{skillPvd:Meteor.userId()},{status:"approved"},{ispaid:"true"}]})
 
-array.forEach(function(ele){
-  var rate;
-  var oriRate=ele.rating;
-  var a = document.getElementById(ele._id);
-    document.getElementById(ele._id).getElementsByTagName('input')[Math.abs(oriRate-5)].checked=true;
-    document.getElementById(ele._id).getElementsByTagName('input').disabled = true;
-})
+       a.forEach(function(ele){
+         if(classid.includes(ele._id)==false){
+           classid.push(ele._id);
+           array.push(postList.findOne({_id:ele.classID}));
+         }
+       })
+       b.forEach(function(ele){
+         if(classid.includes(ele._id)==false){
+           classid.push(ele._id);
+           array.push(requestList.findOne({_id:ele.classID}));
+         }
+       })
+       return array;
+     }
+   })
 
-});
+   Template.incoming.events({
+     'click #moreInfo': function(){
+       var classID = this._id;
+       var classType=this.type;
+         if(classType=="request"){
+           Session.set('selectedRequest', classID);
+           delete Session.keys['selectedClass'];
+         }else if(classType=="post"){
+           Session.set('selectedClass', classID);
+           delete Session.keys['selectedRequest'];
+         }
+     },
 
-Template.incoming.helpers({
-  incoming:function(){
-    var array=[];
-    var classid=[]
-    var a= appointment.find({$and:[{skillSkr:Meteor.userId()},{status:"approved"},{ispaid:"true"}]})
-    var b= appointment.find({$and:[{skillPvd:Meteor.userId()},{status:"approved"},{ispaid:"true"}]})
+   })
 
-    a.forEach(function(ele){
-      if(classid.includes(ele._id)==false){
-        classid.push(ele._id);
-        array.push(postList.findOne({_id:ele.classID}));
-      }
-    })
-    b.forEach(function(ele){
-      if(classid.includes(ele._id)==false){
-        classid.push(ele._id);
-        array.push(requestList.findOne({_id:ele.classID}));
-      }
-    })
-    return array;
-  }
-})
+   Template.recommendClass.helpers({
+     recommendClass:function(){
+         var array=[];
+         var classID=[];
+         var topClasses=[];
+         var skillArray=[]
+         var skill=[]
+         var currentUser=Meteor.userId();
+         var app=appointment.find({skillSkr:currentUser}).fetch();
+         var post=postList.find().fetch();
 
-Template.incoming.events({
-  'click #moreInfo': function(){
-    var classID = this._id;
-    var classType=this.type;
-      if(classType=="request"){
-        Session.set('selectedRequest', classID);
-        delete Session.keys['selectedClass'];
-      }else if(classType=="post"){
-        Session.set('selectedClass', classID);
-        delete Session.keys['selectedRequest'];
-      }
-  },
+         app.forEach(function(ele){
+           var b=postList.findOne({_id:ele.classID}).skill;
 
-})
+           if(skillArray.includes(b)==false){
+             skill.push(b)
+             skillArray.push({"skill":b, "count":1})
+           }else{
+             for (var i in skillArray) {
+               if (skillArray[i].skill == b) {
+                  skillArray[i].count++;
+               }
+             }
+           }
+         })
 
-Template.recommendClass.helpers({
-  recommendClass:function(){
-      var array=[];
-      var classID=[];
-      var topClasses=[];
-      var skillArray=[]
-      var skill=[]
-      var currentUser=Meteor.userId();
-      var app=appointment.find({skillSkr:currentUser}).fetch();
-      var post=postList.find().fetch();
+         function compare(a,b) {
+           if (a.count < b.count)
+             return 1;
+           if (a.count > b.count)
+             return -1;
+           return 0;
+         }
+         skillArray.sort(compare).slice(0,10);
+         skillArray.forEach(function(ele){
+           //topClasses.push( postList.find({type:ele.skill},{rating:{$gt:4}}).fetch())
+         //  topClasses.push( postList.find({$and:[{type:ele.skill},{rating:{$gt:4}}]}).fetch())
+         console.log(ele.skill)
+         var countA= postList.find({skill:ele.skill}).count()
+         if(countA==0){
 
-      app.forEach(function(ele){
-        var b=postList.findOne({_id:ele.classID}).skill;
+         }else{
+           topClasses.push(postList.find({skill:ele.skill}).fetch())
 
-        if(skillArray.includes(b)==false){
-          skill.push(b)
-          skillArray.push({"skill":b, "count":1})
-        }else{
-          for (var i in skillArray) {
-            if (skillArray[i].skill == b) {
-               skillArray[i].count++;
-            }
-          }
-        }
-      })
+         }
 
-      function compare(a,b) {
-        if (a.count < b.count)
-          return 1;
-        if (a.count > b.count)
-          return -1;
-        return 0;
-      }
-      skillArray.sort(compare).slice(0,10);
-      skillArray.forEach(function(ele){
-        //topClasses.push( postList.find({type:ele.skill},{rating:{$gt:4}}).fetch())
-      //  topClasses.push( postList.find({$and:[{type:ele.skill},{rating:{$gt:4}}]}).fetch())
-      console.log(ele.skill)
-      var countA= postList.find({skill:ele.skill}).count()
-      if(countA==0){
+         })
+   console.log(topClasses)
+         return  topClasses[0];
 
-      }else{
-        topClasses.push(postList.find({skill:ele.skill}).fetch())
-
-      }
-
-      })
-console.log(topClasses)
-      return  topClasses[0];
-
-  }
-})
+     }
+   })
