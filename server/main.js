@@ -12,12 +12,15 @@ chatRooms = new Mongo.Collection('chatRooms');
 Comments = new Mongo.Collection("comments");
 admin=new Mongo.Collection('admin');
 report=new Mongo.Collection('report');
+famousPost=new Mongo.Collection('famousPost');
+
 
 
 Meteor.publish("users", function() {
     return Meteor.users.find({}, {fields:{createdAt: true, profile:true, emails: true, username: true}});
 });
 
+/*
 Accounts.validateNewUser(function (user) {
   var loggedInUser = Meteor.user();
   if (Roles.userIsInRole(loggedInUser, 'admin')) {
@@ -26,7 +29,7 @@ Accounts.validateNewUser(function (user) {
 
   throw new Meteor.Error(403, "Not authorized to create new users");
 });
-
+*/
 Meteor.publish('comments', function() {
   return Comments.find();
 });
@@ -61,7 +64,6 @@ Meteor.publish('theRequest',function(){
   var currentUserId= this.userId;
   return requestList.find({createdBy:currentUserId})
 });
-
 
 
 Meteor.methods({
@@ -105,7 +107,7 @@ Meteor.methods({
           description:descVar,
           createdBy:currentUserId,
           createdTime: new Date(),
-          rating:null,
+          rating:0,
           owner: user,
           type: "post"
         });
@@ -126,7 +128,7 @@ Meteor.methods({
           description:descVarR,
           createdBy:currentUserId,
           createdTime: new Date(),
-          rating:null,
+          rating:0,
           owner: user,
           type: "request"
         });
@@ -140,7 +142,7 @@ Meteor.methods({
         });
       },
 
-      'insertApp':function(session,classID,skillPvd,totalPrice,status, className,ispaid,currentDate){
+      'insertApp':function(session,classID,skillPvd,totalPrice,status, className,ispaid,currentDate,type){
         var currentUserId=this.userId;
         appointment.insert({
           session: session,
@@ -153,6 +155,24 @@ Meteor.methods({
           title:className,
           ispaid:ispaid,
           isread:"false",
+          type:type,
+          createdDate:new Date()
+        });
+      },
+      'insertReqApp':function(session,classID,skillSkr,totalPrice,status, className,ispaid,currentDate,type){
+        var currentUserId=this.userId;
+        appointment.insert({
+          session: session,
+          classID: classID,
+          skillPvd:Meteor.userId(),
+          skillSkr:skillSkr,
+          skillPvdName:Meteor.user().username,
+          totalPrice:totalPrice,
+          status:status,
+          title:className,
+          ispaid:ispaid,
+          isread:"false",
+          type:type,
           createdDate:new Date()
         });
       },
@@ -160,7 +180,6 @@ Meteor.methods({
     cardType,userID,amount,appointmentID,paymentDate,cardExpMonth,cardExpYear,status){
         var currentUserId=this.userId;
           var stripe = StripeAPI("sk_test_BJQdg83NbQFbFaBlcW7dEwX6");
-
         transaction.insert({
           transID: transID,
           classID: classID,
@@ -252,6 +271,15 @@ Meteor.methods({
         })
       },
 
+      'updateReqPayStatus':function(appID){
+        appointment.update(appID,{
+          $set:{
+            ispaid:"true",
+            status: "approved"
+          }
+        })
+      },
+
       'updateread':function(appID){
         appointment.update(appID,{
           $set:{
@@ -279,5 +307,14 @@ Meteor.methods({
       'insertComment': function(comment){
         if(!_.isEmpty(comment))
            Comments.insert(comment);
-         }
+      },
+
+      'updatePostRating':function(new_rateValue, selectedClassRequestID){
+        postList.update(selectedClassRequestID,{
+          $set:{
+            rating: new_rateValue
+          }
+        })
+      }
+
     });
