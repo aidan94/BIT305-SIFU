@@ -3079,6 +3079,7 @@ Template.enrolledClass.helpers({
 
 
   });
+});
 
  Template.newNotif.events({
    'click #paymentBtn':function(){
@@ -3744,7 +3745,7 @@ Template.reportClass.helpers({
        })
        return array;
      }
-   })
+   });
 
    Template.incoming.events({
      'click #moreInfo': function(){
@@ -3757,9 +3758,8 @@ Template.reportClass.helpers({
            Session.set('selectedClass', classID);
            delete Session.keys['selectedRequest'];
          }
-     },
-
-   })
+     }
+   });
 
    Template.recommendClass.helpers({
      recommendClass:function(){
@@ -3785,7 +3785,7 @@ Template.reportClass.helpers({
                }
              }
            }
-         })
+         });
 
          function compare(a,b) {
            if (a.count < b.count)
@@ -3799,17 +3799,16 @@ Template.reportClass.helpers({
            //topClasses.push( postList.find({type:ele.skill},{rating:{$gt:4}}).fetch())
          //  topClasses.push( postList.find({$and:[{type:ele.skill},{rating:{$gt:4}}]}).fetch())
          console.log(ele.skill)
-         var countA= postList.find({skill:ele.skill}).count()
+         var countA= postList.find({skill:ele.skill}).count();
          if(countA==0){
 
          }else{
-           topClasses.push(postList.find({skill:ele.skill}).fetch())
+           topClasses.push(postList.find({skill:ele.skill}).fetch());
 
          }
 
-         })
-   console.log(topClasses)
+       });
+         console.log(topClasses);
          return  topClasses[0];
-
      }
-   })
+   });
