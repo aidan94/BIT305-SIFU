@@ -3574,6 +3574,10 @@ Template.reportClass.helpers({
 
    },
 
+   'click #removeReportBtn':function(){
+     report.remove(this._id);
+   },
+
    'click #deleteBtn':function(){
      var classID = this.classID;
      var classType = this.classType;
