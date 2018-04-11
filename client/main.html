@@ -8,6 +8,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
   <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -275,9 +276,9 @@
 
     </div>
 
-{{> footer}}
-</div>
 
+</div>
+{{> footer}}
 </template>
 
 <template name ="eachReport">
@@ -463,18 +464,61 @@
 </template>
 
 <template name = "footer">
-  <hr>
-      <!-- Footer -->
-      <footer>
-          <div class="row">
-              <div class="col-lg-12">
-                  <p>Copyright &copy; Your Website 2018</p>
-                  <br><br><br><br><br><br><br><br><br><br><br>
-              </div>
-              <!-- /.col-lg-12 -->
-          </div>
-          <!-- /.row -->
-      </footer>
+  <!-- Footer -->
+	<section id="footer" style ="padding-bottom: 25px;padding-top: 45px;">
+		<div class="container">
+			<div class="row text-center text-xs-center text-sm-left text-md-left" style = "margin-left:15%">
+				<div class="col-xs-12 col-sm-4 col-md-4">
+					<h5 style= "font-size:14pt">Quick links</h5>
+					<ul class="list-unstyled quick-links">
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>Home</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>About</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>FAQ</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>Get Started</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>Videos</a></li>
+					</ul>
+				</div>
+				<div class="col-xs-12 col-sm-4 col-md-4">
+					<h5 style= "font-size:14pt">Quick links</h5>
+					<ul class="list-unstyled quick-links">
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>Home</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>About</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>FAQ</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>Get Started</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>Videos</a></li>
+					</ul>
+				</div>
+				<div class="col-xs-12 col-sm-4 col-md-4">
+					<h5 style= "font-size:14pt">Quick links</h5>
+					<ul class="list-unstyled quick-links">
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>Home</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>About</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>FAQ</a></li>
+						<li><a href="javascript:void();"><i class="fa fa-angle-double-right"></i>Get Started</a></li>
+						<li><a href="https://wwwe.sunlimetech.com" title="Design and developed by"><i class="fa fa-angle-double-right"></i>Imprint</a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-5">
+					<ul class="list-unstyled list-inline social text-center" style ="font-size:30pt">
+						<li class="list-inline-item"><a href="javascript:void();"><i class="fab fa-facebook"></i></a></li>
+						<li class="list-inline-item"><a href="javascript:void();"><i class="fab fa-twitter"></i></a></li>
+						<li class="list-inline-item"><a href="javascript:void();"><i class="fab fa-instagram"></i></a></li>
+						<li class="list-inline-item"><a href="javascript:void();"><i class="fab fa-google-plus-g"></i></a></li>
+						<li class="list-inline-item"><a href="javascript:void();" target="_blank"><i class="fas fa-envelope"></i></a></li>
+					</ul>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 mt-2 mt-sm-2 text-center text-white">
+					<p>SIFU Sdn Bhd Corporation is a Registered MSP/ISO of Sensei, Inc. Malaysia [ a wholly owned subsidiary of Malaysia, Selangor, PJ ]</p>
+					<p class="h6">Copy All right Reversed.<a class="text-green ml-2" href="#" target="_blank">SIFU Sdn Bhd</a></p>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- ./Footer -->
 
 </template>
 
@@ -856,8 +900,9 @@
       {{> talentTab}}
       {{> classTab}}
       {{> recommendClass}}
-      {{> footer}}
+
     </div>
+    {{> footer}}
   </div>
 
 </template>
@@ -1533,30 +1578,41 @@
 
               {{else}}
                 {{#if currentUser}}
-              <div class="row justify-content-md-center">
-                <button type="button" id="contactMeBtn" class="btn btn-info"  data-target="/messaging">
-                    Contact Me
-                  </button>
+            <div class = "card-body">
+
+              <div class="col-12 col-sm-12 col-md-12 cold-lg-12">
+                <a href="/messaging" role="button" id="contactMeBtn" class="btn btn-succss btn-lg"  data-target="/messaging">
+                    Contact Me&nbsp;&nbsp;<span class = "glyphicon glyphicon-comment"></span>
+                </a>
               </div>
-              <div class="row justify-content-md-center">
+              <div class="col-12 col-sm-12 col-md-12 cold-lg-12">
                   {{#if isPost}}
-                  <button type="button" id="bookBtn" class="btn btn-info" data-toggle="modal" data-target="#bookClassModal">
-                  Book Now
-                  </button>
+                  <div class="wrapper">
+                    <button type="button" id="bookBtn" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#bookClassModal">
+                    Book Now&nbsp;&nbsp;&nbsp;<span class = "glyphicon glyphicon-calendar"></span>
+                    </button>
+                  </div>
                   {{> bookClass}}
                   {{else}}
-                  <button type="button" id="bookReqBtn" class="btn btn-info" data-toggle="modal" data-target="#bookReqClassModal">
-                  Offer Help
-                  </button>
+                  <div class="wrapper">
+                    <button type="button" id="bookReqBtn" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#bookReqClassModal">
+                    Offer Help&nbsp;&nbsp;&nbsp;<span class = "glyphicon glyphicon-thumbs-up"></span>
+                    </button>
+                  </div>
                   {{> bookReqClass}}
                   {{/if}}
               </div>
-              <div class="row justify-content-md-center">
-                  <button type="button" id="reportBtn" class="btn btn-danger" data-toggle="modal" data-target="#reportClassModal">
-                  Report
+
+              <div class="col-12 col-sm-12 col-md-12 cold-lg-12">
+                <div class="wrapper">
+                  <button type="button" id="reportBtn" class="btn btn-danger btn-lg" data-toggle="modal" data-target="#reportClassModal">
+                  Report&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class = "glyphicon glyphicon-exclamation-sign"></span>
                   </button>
+
                   {{> reportClass}}
+                  </div>
                 </div>
+              </div>
                 {{/if}}
               {{/if}}
 	          </div>
@@ -2452,7 +2508,9 @@
                   <a href="/classpage" class=" btn btn-primary " role="button" id="moreInfo">More</a>
 
                   <span class="input-group-btn">
-                    <button class="btn btn-primary" id="removeClassBtn" type="button"><span class="glyphicon glyphicon-calendar" aria-hidden="true" id="remove_icon"></span></button>
+                    <button type="button" id="removeClassBtn" class="btn btn-primary" data-toggle="modal" data-target="#bookClassModal">
+                      <span class="glyphicon glyphicon-calendar" aria-hidden="true" id="remove_icon"></span>
+                    </button>
                   </span>
                 </p>
 
@@ -3087,9 +3145,9 @@
         {{> chatBox}}
       </div>
     </div>
-    {{> footer}}
-    </div>
 
+    </div>
+    {{> footer}}
 </template>
 
 <template name="chatBox">
@@ -3281,6 +3339,8 @@
           <!--<h5 class="time">{{created_at}}</h5>-->
       </div>
     </div>
+    <div class="col-xs-12 col-sm-12 col-lg-12" style= "height:20px"></div>
+    <div class = "col-12 col-sm-12 col-lg-12 col-md-12">
       <div class="comment-body">
         <fieldset class="userrating " id="{{_id}}">
           <input type="radio" id="star5" name="{{_id}}" value="5" /><label class = "full" for="star5" title="5 stars"></label>
@@ -3289,8 +3349,11 @@
           <input type="radio" id="star2" name="{{_id}}" value="2" /><label class = "full" for="star2" title="2 stars"></label>
           <input type="radio" id="star1" name="{{_id}}" value="1" /><label class = "full" for="star1" title="1 star"></label>
         </fieldset><br>
-        <p>{{comment}}</p>
-      </div>
+      </div><br>
+    </div>
+    <div class = "col-12 col-sm-12 col-lg-12 col-md-12">
+      <p class = "commentText">{{comment}}</p>
+    </div>
 
   </li>
 </template>
