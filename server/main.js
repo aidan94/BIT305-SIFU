@@ -149,6 +149,7 @@ Meteor.methods({
           title:className,
           ispaid:ispaid,
           isread:"false",
+          type:type,
           createdDate:new Date()
         });
       },
