@@ -457,10 +457,10 @@
           {{/if}}
 
         </ul>
-        {{> newNotif}}
       </div>
     </div>
   </nav>
+  {{> newNotif}}
 </template>
 
 <template name = "footer">
@@ -1641,7 +1641,7 @@
         </div>
         <!--FORM -->
         <div class="modal-body">
-          <form class="custom-form-horizontal" id ="reportClass" data-toggle="validator" role="form">
+          <form class="custom-form-horizontal" id ="reportClass" data-toggle="validator" role="form" style = "text-align:left;">
               <h2>Help us understand what's happening</h2>
               <div class="form-check">
                 <input class="form-check-input" type="radio" name="reportClass" id="inappropriateCont" value="Inappropriate content" >
@@ -2506,12 +2506,12 @@
                 <h5>RM {{price}} / Class</h5>
                 <p>
                   <a href="/classpage" class=" btn btn-primary " role="button" id="moreInfo">More</a>
-
+                  <!--
                   <span class="input-group-btn">
                     <button type="button" id="removeClassBtn" class="btn btn-primary" data-toggle="modal" data-target="#bookClassModal">
                       <span class="glyphicon glyphicon-calendar" aria-hidden="true" id="remove_icon"></span>
                     </button>
-                  </span>
+                  </span>-->
                 </p>
 
               </div>
@@ -3303,7 +3303,7 @@
                         </span>-->
                     </div>
                     <div class="text-right">
-                       <button class="btn btn-success btn-lg" type="submit" name = "saveReview" id="saveReview">Post</button>
+                       <button class="btn btn-success btn-lg" type="submit" name = "saveReview" id="saveReviewBtn">Post</button>
                    </div>
                   </div>
                   {{/if}}
