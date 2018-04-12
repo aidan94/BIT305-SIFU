@@ -3000,7 +3000,7 @@ Template.enrolledClass.helpers({
  Template.newNotif.helpers({
    'postClassReq':function(){
      var currentUser= Meteor.userId();
-     return appointment.find({$and:[{skillPvd:currentUser},{type:"post"},{status:"processing"}]}).fetch();
+     return appointment.find({$and:[{skillPvd: Meteor.userId()},{type:"post"},{status:"processing"}]}).fetch();
 
    },
    'ispostCount':function(){
@@ -3443,7 +3443,7 @@ Template.findNearby.events({
 
 //Comment Functions
  Template.comment.events({
-     "click #saveReview": function(event, template){
+     "click #saveReviewBtn": function(event, template){
        var rate = "";
        if (document.getElementById('star1').checked) {
          rate = document.getElementById('star1').value;
@@ -3479,7 +3479,6 @@ Template.findNearby.events({
        else if(content.length > 0 && rate == ""){
          $('#insertRating').css('border', '1px solid red');
          $('.add_comment').css('border', 'none');
-
          console.log("rate no value");
          document.getElementById("inputComment").value = "";
          return false;
@@ -3487,7 +3486,6 @@ Template.findNearby.events({
        else if(content.length <= 0 && rate == ""){
          $('.add_comment').css('border', '1px solid red');
          $('#insertRating').css('border', '1px solid red');
-
          console.log("both no value");
          document.getElementById("inputComment").value = "";
          return false;
@@ -3497,7 +3495,6 @@ Template.findNearby.events({
        if (Session.get("selectedClass") != ""){
          var selectedClassRequestID = Session.get("selectedClass");
        }
-
        //Let's build our comment object
        comment = {
            'classRequestID': selectedClassRequestID,
@@ -3510,7 +3507,7 @@ Template.findNearby.events({
        //Call insert comment method
        Meteor.call("insertComment", comment);
        var old_rateValue=postList.findOne({_id:Session.get("selectedClass")}).rating;
-       var new_rateValue=(old_rateValue+rate)/2;
+       var new_rateValue=(old_rateValue+rate)/;
        console.log(new_rateValue)
        Meteor.call("updatePostRating",new_rateValue, selectedClassRequestID)
 
@@ -3518,15 +3515,16 @@ Template.findNearby.events({
  });
 
  Template.comment.helpers({
-  isRated:function(){
-    var count= Comments.find({$and:[{classRequestID:Session.get('selectedClass')},{user:Meteor.user().username}]}).count();
-    if(count==0){
-      return true;
-    }else{
-      return false;
-    }
-  }
+   isRated:function(){
+     var count= Comments.find({$and:[{classRequestID:Session.get('selectedClass')},{user:Meteor.user().username}]}).count();
+     if(count==0){
+       return true;
+     }else{
+       return false;
+     }
+   }
 })
+
 
 
 Template.reportClass.helpers({
