@@ -841,6 +841,12 @@ border-radius: 5px;
 
 }
 
+#saveReviewBtn{
+  color: #fff;
+  background-color: #82848d;
+  border-color: #82848d;
+}
+
 #bookClassLabel{
   width:100%;
   text-align: center;
@@ -1480,7 +1486,7 @@ section .section-title {
     text-transform: uppercase;
 }
 #footer {
-    background: #af6625 !important
+    background: #e99e5b !important
 }
 #footer h5{
 	padding-left: 10px;
