@@ -1125,7 +1125,7 @@ border-radius: 5px;
 #nnTitle{
   text-align: center;
   font-size:14pt;
-
+  color: #6E4E43;
 }
 
 #reqclasstab{
@@ -1318,7 +1318,6 @@ h1 { font-size: 1.5em; margin: 10px; }
 }
 
 /*commentRatings*/
-@import "compass/css3";
 
 .star_rating {
   position: relative;
@@ -1474,7 +1473,6 @@ h1 { font-size: 1.5em; margin: 10px; }
 }
 
 /* Footer */
-@import url('https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
 section {
     padding: 60px 0;
 }
@@ -1486,7 +1484,7 @@ section .section-title {
     text-transform: uppercase;
 }
 #footer {
-    background: #e99e5b !important
+    background: #573F3F !important
 }
 #footer h5{
 	padding-left: 10px;
