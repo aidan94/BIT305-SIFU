@@ -725,7 +725,7 @@
                       </div>
                     </div>
                     <div class="col-sm-2 col-lg-2">
-                      <button class="btn btn-info"  id="paymentBtn">Accept</button>
+                      <button class="btn btn-info"  id="paymentBtn">Pay</button>
                       <br/>
 
                       <button class="btn btn-danger" id="rejectBtn">Reject</button>
@@ -735,21 +735,6 @@
                   </div>
                   <hr>
                   {{/each}}
-                  {{else}}
-                    <div class="col-sm-12 col-lg-12" style="color:grey">
-
-                      <p class = "textNot"><span class="glyphicon glyphicon-remove-circle"></span>
-                        &nbsp;There is no class to review now.
-                      </p>
-                    </div>
-                    <hr>
-                  {{/if}}
-
-                  <br />
-                  {{#if isreqPostClass}}
-                  <div class="row justify-content-md-center" >
-                    Request that you offer help
-                  </div>
                   {{#each reqPostClass}}
                       <div class="row" id="reqclasstab">
 
@@ -779,13 +764,23 @@
                         </div>
                       </div>
                     {{/each}}
+                  {{else}}
+                    <div class="col-sm-12 col-lg-12" style="color:grey">
 
-                    {{/if}}
+                      <p class = "textNot"><span class="glyphicon glyphicon-remove-circle"></span>
+                        &nbsp;There is no class to review now.
+                      </p>
+                    </div>
+                    <hr>
+                  {{/if}}
 
-                  {{#if isofferhelpCount}}
-                  <div class="row justify-content-md-center" >
+                  <br />
+
+                  <div class="col-sm-12 col-lg-12" id="nnTitle" >
                     Request that you offer help
                   </div>
+                  {{#if isofferhelpCount}}
+
                   {{#each offerhelpCount}}
                       <div class="row" id="reqclasstab">
 
@@ -812,10 +807,17 @@
                         </div>
                         <div class="col-sm-2 col-lg-2">
                           Total price: RM{{totalPrice}} is paid
+                          <button class="btn btn-info" id="dismissBtn">Dismiss</button>
                         </div>
 
                       </div>
                       {{/each}}
+                    {{else}}
+                    <div class="col-sm-12 col-lg-12" style="color:grey">
+                      <p class = "textNot"><span class="glyphicon glyphicon-remove-circle"></span>
+                        &nbsp;There is no class to review now.
+                      </p>
+                    </div>
                     {{/if}}
 
                   {{#if isPostRepCount}}
@@ -1211,7 +1213,7 @@
               <h4>RM {{price}} / Class</h4>
               <p>
                 <a href="/classpage" class=" btn btn-primary " id="moreInfo" role="button">More</a>
-
+                <button class=" btn btn-primary float-right" id="attendBtn">Attended</button>
               </p>
 
 
@@ -1549,7 +1551,7 @@
                       </th>
                       <th>
                       <center>
-                        <span class="glyphicon glyphicon-thumbs-up"></span> {{rating}}/5
+                        <span class="glyphicon glyphicon-thumbs-up"></span> {{rateVal}}/5
                       </center>
                       </th>
 	                </tr>
@@ -3287,6 +3289,7 @@
             <div class="panel panel-white commentPost">
                 <div class="post-footer">
                   {{#if isRated}}
+                  {{#if isEnrolled}}
                   <div class = "jumbotron" id="commentJumbo">
                     <fieldset class="rating" id="insertRating">
                       <input type="radio" id="star5" name="rating" value="5" /><label class = "full" for="star5" title="5 stars"></label>
@@ -3306,6 +3309,7 @@
                        <button class="btn btn-success btn-lg" type="submit" name = "saveReview" id="saveReviewBtn">Post</button>
                    </div>
                   </div>
+                  {{/if}}
                   {{/if}}
                     {{> commentList}}
                 </div>
@@ -3360,20 +3364,15 @@
 
 <template name="recommendClass">
   <div class="recommendbg">
-    <div class="row justify-content-md-center">
-      <h1>Recommend for you</h1>
-    </div>
-    <div id="recBar" class="carousel slide" data-ride="carousel">
 
-        <ul class="carousel-indicators">
-          <li data-target="#recBar" data-slide-to="0" class="active"></li>
-          <li data-target="#recBar" data-slide-to="1"></li>
-          <li data-target="#recBar" data-slide-to="2"></li>
-        </ul>
+    <div id="recBar" class="carousel slide" data-ride="carousel">
 
         <div class="carousel-inner">
           <div class="carousel-item active">
             <div class="container">
+              <div class="row justify-content-md-center">
+                <h1>Recommend for you</h1>
+              </div>
               <div class="row">
                 {{#each recommendClass}}
                 <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="thum-div">
@@ -3391,34 +3390,6 @@
                       <p>
                         <a href="/classpage" class=" btn btn-primary " role="button" id="moreDetails">More</a>
                       </p>
-
-                      <!--Edit Class Modal-->
-                      <div class="container-fluid">
-                            <!-- Trigger the modal with a button -->
-
-
-                            <!-- Modal -->
-                            <div class="modal fade" id="editClass" role="dialog">
-                            <div class="modal-dialog modal-lg">
-
-                              <!-- Modal content-->
-                              <div class="modal-content">
-                                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                              <div class="modal-body">
-                                <!--Content-->
-                                <div class = "container" style = "width: 100%" id="editButton">
-
-                                  {{> editForm}}
-                              </div>
-                              </div>
-                              <div class="modal-footer">
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                              </div>
-                              </div>
-
-                            </div>
-                          </div>
-                        </div>
                     </div>
                   </div>
                 </div>
@@ -3427,17 +3398,45 @@
           </div>
           </div>
 
+          <div class="carousel-item">
+            <div class="container">
+              <div class="row justify-content-md-center">
+                <h1>Someone need your help</h1>
+              </div>
+              <div class="row">
+                {{#each recommendReqClass}}
+                <div class="col-lg-3 col-md-4 col-sm-6 col-xs-12" id="thum-div">
+                  <div class="img-thumbnail" id="image1" >
+                    <div class="img">
+                      <img class = "postClasses{{selectedPost}} img-responsive center-block" src="{{fileSource}}"  alt="{{fileSource}}" width="100%" />
+                    </div>
+                    <div class="caption" id="capImg1">
+
+                      <!--<h3>Rating:{{rating}}</h3>-->
+                      <h3>{{title}}</h3>
+                      <h5>User: <!--<a href="#" id = "user">-->{{owner}}</h5>
+                      <h5>Category: {{skill}}</h5>
+                      <h5>RM {{price}} / Class</h5>
+                      <p>
+                        <a href="/classpage" class=" btn btn-primary " role="button" id="moreDetails">More</a>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                {{/each}}
+            </div>
+          </div>
+          </div>
         </div>
 
+
         <!-- Left and right controls -->
-        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+        <a class="carousel-control-prev" href="#recBar" data-slide="prev">
           <span class="carousel-control-prev-icon"></span>
         </a>
-        <a class="carousel-control-next" href="#demo" data-slide="next">
+        <a class="carousel-control-next" href="#recBar" data-slide="next">
           <span class="carousel-control-next-icon"></span>
         </a>
       </div>
-
   </div>
-
 </template>
