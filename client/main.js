@@ -1589,21 +1589,22 @@ Template.bookReqClass.events({
 Template.bookReqClass.helpers({
   class:function(){
      if(Session.get('selectedRequest')){
+       Session.set('selectBookClass',Session.get('selectedRequest'));
       return requestList.findOne({'_id':Session.get('selectedRequest')});
     }else if( Session.get('selectedAppClass')){
+      Session.set('selectBookClass',Session.get('selectedAppClass'));
       return requestList.findOne({'_id': Session.get('selectedAppClass')});
     }
   },
   location:function(){
     if(Session.get('selectedRequest')){
-      var place= requestList.findOne({"_id": Session.get('selectedRequest')}).location;
+      var place= requestList.findOne({"_id": Session.get('selectBookClass')}).location;
       return place;
       }
   },
   timeAr:function(){
   if(Session.get('selectedRequest')){
-    var daytime= postList.findOne({"_id": Session.get('selectedRequest')}).dayTimeVar;
-    Session.set('selectBookClass',Session.get('selectedRequest'));
+    var daytime= postList.findOne({"_id": Session.get('selectBookClass')}).dayTimeVar;
     return daytime;
     }
   },
@@ -1627,28 +1628,28 @@ Template.bookReqClass.helpers({
 
     }else{
     if(Session.get('selectedRequest')){
-        return requestList.findOne({'_id':Session.get('selectedRequest')}).dayTimeVar;
+        return requestList.findOne({'_id':Session.get('selectBookClass')}).dayTimeVar;
       }
     }
 
   },
   selectedSes:function(){
-    return selectedSes.find({classID:Session.get('selectedRequest')}).fetch();
+    return selectedSes.find({classID:Session.get('selectBookClass')}).fetch();
   },
   sesCount:function(){
-    return selectedSes.find({classID:Session.get('selectedRequest')}).count();
+    return selectedSes.find({classID:Session.get('selectBookClass')}).count();
   },
   totalPayment:function(){
-    var price=requestList.findOne({_id:Session.get('selectedRequest')}).price;
-    var quantity=selectedSes.find({classID:Session.get('selectedRequest')}).count();
+    var price=requestList.findOne({_id:Session.get('selectBookClass')}).price;
+    var quantity=selectedSes.find({classID:Session.get('selectBookClass')}).count();
     Session.set('totalPayment',price*quantity);
     return price*quantity;
   },
   appInfo:function(){
-    return appointment.findOne({$and:[{skillPvd:Meteor.userId()},{classID:Session.get('selectedRequest')}]});
+    return appointment.findOne({$and:[{skillPvd:Meteor.userId()},{classID:Session.get('selectBookClass')}]});
   },
   statusMsg:function(){
-    var status=appointment.findOne({classID:Session.get('selectedRequest')}).status;
+    var status=appointment.findOne({classID:Session.get('selectBookClass')}).status;
     if(status=="pending"){
       return "Your booking is under processing. Please wait patiently."
     }else if(status=="rejected"){
@@ -1657,13 +1658,12 @@ Template.bookReqClass.helpers({
   },
   sesOfApp:function(){
     var userID=Meteor.userId();
-    var status="false";
-    var ses1=appointment.find({$and: [{classID:Session.get('selectedRequest')},{skillSkr:userID},{ispaid:"false"}]}).fetch();
+    var ses1=appointment.find({$and: [{classID:Session.get('selectBookClass')},{status:"processing"},{skillPvd:userID},{ispaid:"false"}]}).fetch();
     return ses1;
   },
   isApproved:function(){
     var userID=Meteor.userId();
-    var ses2=appointment.findOne({classID:Session.get('selectedRequest'),skillSkr:userID,ispaid:"false"}).status;
+    var ses2=appointment.findOne({classID:Session.get('selectBookClass'),skillSkr:userID,ispaid:"false"}).status;
     if(ses2=='approved'){
      return true;
    }else if(ses2=='processing'){
@@ -1672,7 +1672,7 @@ Template.bookReqClass.helpers({
   },
   transID:function(){
     var userID=Meteor.userId();
-    return transaction.findOne({userID:userID,classID:Session.get('selectedRequest'),status:'incoming'});
+    return transaction.findOne({userID:userID,classID:Session.get('selectBookClass'),status:'incoming'});
   },
 });
 
@@ -1901,11 +1901,9 @@ Template.bookClass.helpers({
   timeAr:function(){
     if(Session.get('selectedClass')){
     var daytime= postList.findOne({"_id": Session.get('selectedClass')}).dayTimeVar;
-    Session.set('selectBookClass',Session.get('selectedClass'));
     return daytime;
   }else if(Session.get('selectedRequest')){
   var daytime= postList.findOne({"_id": Session.get('selectedRequest')}).dayTimeVar;
-  Session.set('selectBookClass',Session.get('selectedRequest'));
   return daytime;
     }
   },
@@ -2368,6 +2366,18 @@ Template.classpage.helpers({
 
   enrolledCount:function(){
     return appointment.find({classID:Session.get('selectedClass')}).count();
+  },
+  rateVal:function(){
+    var classID=Session.get("selectedClass");
+    var rateVal=Comments.find({classRequestID:Session.get("selectedClass")}).fetch();
+    var rateCount=Comments.find({classRequestID:Session.get("selectedClass")}).count();
+    var sumRate;
+    rateVal.forEach(function(ele){
+      sumRate=+ele.rating;
+    })
+    var newrating=sumRate/rateCount;
+    Meteor.call("updatePostRating",newrating, classID)
+    return newrating
   }
 });
 
@@ -2378,10 +2388,68 @@ Template.classpage.onRendered(function(){
 Template.classpage.events({
   'click #bookBtn':function(){
     var userID=Meteor.userId();
+    console.log(this._id)
     var approvedApp=appointment.find({$and: [{classID:Session.get('selectBookClass')},{skillSkr:userID},{status:'approved'}]}).count();
     var processApp=appointment.find({$and: [{classID:Session.get('selectBookClass')},{skillSkr:userID},{status:'processing'}]}).count();
     if(approvedApp>0){
       var isPaid1=appointment.find({$and: [{classID:Session.get('selectBookClass')},{skillSkr:userID},{ispaid:"true"},{status:'approved'}]}).count();
+      console.log(isPaid1);
+        if(isPaid1>0){
+          $('#progTab li:eq(4) a').tab('show');
+          document.getElementById("pills-status-tab").style.backgroundColor="#5bc0de";
+          document.getElementById("pills-status-tab").style.color="white";
+          document.getElementById("pills-app-tab").style.backgroundColor="#5bc0de";
+          document.getElementById("pills-app-tab").style.color="white";
+          document.getElementById("pills-payment-tab").style.backgroundColor="#5bc0de";
+          document.getElementById("pills-payment-tab").style.color="white";
+          document.getElementById("pills-success-tab").style.backgroundColor="#5bc0de";
+          document.getElementById("pills-success-tab").style.color="white";
+          document.getElementById("pills-app-tab").style['pointer-events']="none";
+          document.getElementById("pills-booking-tab").style['pointer-events']="none";
+        }else{
+        $('#progTab li:eq(2) a').tab('show');
+        document.getElementById("pills-status-tab").style.backgroundColor="#5bc0de";
+        document.getElementById("pills-status-tab").style.color="white";
+        document.getElementById("pills-app-tab").style.backgroundColor="#5bc0de";
+        document.getElementById("pills-app-tab").style.color="white";
+        document.getElementById("pills-app-tab").style['pointer-events']="none";
+        document.getElementById("pills-booking-tab").style['pointer-events']="none";
+      }
+    }else if(processApp>0){
+      $('#progTab li:eq(1) a').tab('show');
+      document.getElementById("pills-status-tab").style.backgroundColor="#ededed";
+      document.getElementById("pills-status-tab").style.color="#5bc0de";
+      document.getElementById("pills-app-tab").style.backgroundColor="#5bc0de";
+      document.getElementById("pills-app-tab").style.color="white";
+      document.getElementById("pills-booking-tab").style.backgroundColor="#ededed";
+      document.getElementById("pills-booking-tab").style.color="white";
+      document.getElementById("pills-app-tab").style['pointer-events']="none";
+    }else{
+      $('#progTab li:eq(0) a').tab('show');
+      document.getElementById("pills-status-tab").style.backgroundColor="#ededed";
+      document.getElementById("pills-status-tab").style.color="#5bc0de";
+      document.getElementById("pills-app-tab").style.backgroundColor="#ededed";
+      document.getElementById("pills-app-tab").style.color="#5bc0de";
+      document.getElementById("pills-booking-tab").style.backgroundColor="#ededed";
+      document.getElementById("pills-booking-tab").style.color="white";
+      document.getElementById("pills-app-tab").style['pointer-events']="none";
+
+    }
+    var selSes=selectedSes.find().fetch();
+    if(selSes!="" ){
+      selSes.forEach(function(element){
+        selectedSes.remove(element._id);
+      })
+    }
+  },
+
+  'click #bookReqBtn':function(){
+    var classID=this._id;
+    var userID=Meteor.userId();
+    var approvedApp=appointment.find({$and: [{classID:classID},{skillPvd:userID},{status:'approved'}]}).count();
+    var processApp=appointment.find({$and: [{classID:classID},{skillPvd:userID},{status:'processing'}]}).count();
+    if(approvedApp>0){
+      var isPaid1=appointment.find({$and: [{classID:classID},{skillPvd:userID},{ispaid:"true"},{status:'approved'}]}).count();
       console.log(isPaid1);
         if(isPaid1>0){
           $('#progTab li:eq(4) a').tab('show');
@@ -2966,7 +3034,7 @@ Template.inputMessage.events({
 Template.enrolledClass.helpers({
   'enrolled': function () {
     var currentUserId = Meteor.userId();
-    var enrolled=appointment.find({$and:[{skillSkr:currentUserId},{status:"attended"},{ispaid:"true"}]},{sort: {createdTime:-1}}).fetch();
+    var enrolled1=appointment.find({$and:[{skillSkr:currentUserId},{status:"attended"},{ispaid:"true"}]},{sort: {createdTime:-1}}).fetch();
     var allEnroll=[];
     if(enrolled!=""){
       for (var j in enrolled){
@@ -3001,7 +3069,6 @@ Template.enrolledClass.helpers({
    'postClassReq':function(){
      var currentUser= Meteor.userId();
      return appointment.find({$and:[{skillPvd: Meteor.userId()},{type:"post"},{status:"processing"}]}).fetch();
-
    },
    'ispostCount':function(){
      if(appointment.find({$and:[{skillPvd: Meteor.userId()},{type:"post"},{status:"processing"}]}).count()>0){
@@ -3014,9 +3081,13 @@ Template.enrolledClass.helpers({
      var currentUser= Meteor.userId();
      return appointment.find({$and:[{skillSkr:currentUser},{type:"request"},{status:"processing"}]}).fetch();
    },
+   'reqPostClass':function(){
+     return appointment.find({$and:[{skillSkr:Meteor.userId()},{type:"post"},{status:"approved"},{ispaid:'false'}]}).fetch()
+   },
    'isreqCount':function(){
      var currentUser= Meteor.userId();
-     if(appointment.find({$and:[{skillSkr:currentUser},{type:"request"},{status:"processing"}]}).count()>0){
+     if(appointment.find({$and:[{skillSkr:currentUser},{type:"request"},{status:"processing"}]}).count()>0||
+        appointment.find({$and:[{skillSkr:Meteor.userId()},{type:"post"},{status:"approved"},{ispaid:'false'}]}).count()>0){
        return true;
      }else{
        return false;
@@ -3043,24 +3114,11 @@ Template.enrolledClass.helpers({
      }
    },
    offerhelpCount:function(){
-     return appointment.find({$and:[{skillPvd:Meteor.userId()},{type:"request"},{status:"approved"},{ispaid:"true"}]}).fetch()
+     return appointment.find({$and:[{skillPvd:Meteor.userId()},{type:"request"},{status:"approved"},{ispaid:"true"},{dismiss:false}]}).fetch()
    },
    skillSeeker:function(){
      var a= appointment.find({$and:[{skillPvd:Meteor.userId()},{type:"request"},{status:"approved"},{ispaid:"true"}]}).fetch();
      return requestList.findOne({_id:a[0].classID}).owner;
-   },
-
-   isreqPostClass:function(){
-     var currentUser= Meteor.userId();
-     if(appointment.find({$and:[{skillSkr:currentUser},{type:"post"},{status:"approved"},{ispaid:"false"}]}).count()>0){
-       return true;
-     }else{
-       return false;
-     }
-   },
-
-   reqPostClass:function(){
-     return appointment.find({$and:[{skillSkr:Meteor.userId()},{type:"post"},{status:"approved"},{ispaid:'false'}]}).fetch()
    },
    skillProvider:function(){
      var a= appointment.find({$and:[{skillSkr:Meteor.userId()},{type:"post"},{status:"approved"},{ispaid:"false"}]}).fetch();
@@ -3125,11 +3183,16 @@ Template.enrolledClass.helpers({
          });
    },
 
+   'click #dismissBtn':function(){
+     var appID=this._id;
+     console.log(this._id)
+     Meteor.call('dismissFromList',appID)
+   },
+
    'click #acceptBtn':function(){
      event.preventDefault();
      var appID=this._id;
      Meteor.call('approvedAppStatus',appID);
-
    },
    'click #rejectBtn':function(){
      event.preventDefault();
@@ -3330,7 +3393,6 @@ Template.findNearby.events({
           var inputlocation=new google.maps.LatLng(lat, lng);
 
             var locationAr2=requestList.find().fetch();
-
             var locationAr=postList.find().fetch();
 
           var i=0;
@@ -3378,14 +3440,10 @@ Template.findNearby.events({
                     $('#'+this.id).css('transition'," background-color 1s ease-in .2s");
                     prevMarker=this.id;
                   }
-
-
-
                   });
                 }
             }
           }
-
 
           for(var j in locationAr2){
 
@@ -3435,9 +3493,7 @@ Template.findNearby.events({
             }
           }
         });
-
       });//end of searchbox
-
  })
 });
 
@@ -3462,8 +3518,6 @@ Template.findNearby.events({
          document.getElementById('star5').checked = false;
        }
        console.log(rate);
-        //Session.set('rateValue',rate);
-
        //Check if the input is not blanck or there's only a space
        var content = $.trim($('.add_comment').val());
 
@@ -3503,14 +3557,8 @@ Template.findNearby.events({
            'created_at' : new Date(),
            'rating':rate
        };
-
        //Call insert comment method
        Meteor.call("insertComment", comment);
-       var old_rateValue=postList.findOne({_id:Session.get("selectedClass")}).rating;
-       var new_rateValue=(old_rateValue+rate)/;
-       console.log(new_rateValue)
-       Meteor.call("updatePostRating",new_rateValue, selectedClassRequestID)
-
    }
  });
 
@@ -3522,16 +3570,21 @@ Template.findNearby.events({
      }else{
        return false;
      }
-   }
+   },
+   isEnrolled:function(){
+     var classID=this._id;
+     console.log(classID)
+     var count=appointment.find({classID:classID, skillSkr:Meteor.userId(), status:"approved", ispaid:"true" }).count();
+     if(count>0){
+       return true;
+     }else{
+       return false;
+     }
+   },
+
+
 })
 
-
-
-Template.reportClass.helpers({
-  class:function(){
-
-  }
-})
 
  Template.adminpage.helpers({
      'reports':function(){
@@ -3676,7 +3729,6 @@ Template.reportClass.helpers({
       if (radios[i].checked)
       {
         var reportVal=radios[i].value;
-
        Meteor.call('submitReport',currentUser,classType, classID,reportVal, ownerID);
       }
      }
@@ -3693,8 +3745,6 @@ Template.reportClass.helpers({
        }
        var comments = Comments.find({classRequestID: selectedClassRequestID}).fetch();
 
-
-       //$( "[name=r]" ).val( ["10"]);
        return comments;
      },
     rating:function(){
@@ -3734,15 +3784,25 @@ Template.reportClass.helpers({
        var b= appointment.find({$and:[{skillPvd:Meteor.userId()},{status:"approved"},{ispaid:"true"}]})
 
        a.forEach(function(ele){
-         if(classid.includes(ele._id)==false){
-           classid.push(ele._id);
-           array.push(postList.findOne({_id:ele.classID}));
+         if(classid.includes(ele.classID)==false){
+           classid.push(ele.classID);
+           if(postList.find({_id:ele.classID}).count()==1){
+             array.push(postList.findOne({_id:ele.classID}));
+           }
+           if(requestList.find({_id:ele.classID}).count()==1){
+             array.push(requestList.findOne({_id:ele.classID}))
+           }
          }
        })
        b.forEach(function(ele){
-         if(classid.includes(ele._id)==false){
-           classid.push(ele._id);
-           array.push(requestList.findOne({_id:ele.classID}));
+         if(classid.includes(ele.classID)==false){
+           classid.push(ele.classID);
+           if(postList.find({_id:ele.classID}).count()==1){
+             array.push(postList.findOne({_id:ele.classID}));
+           }
+         if(requestList.find({_id:ele.classID}).count()==1){
+             array.push(requestList.findOne({_id:ele.classID}))
+           }
          }
        })
        return array;
@@ -3760,6 +3820,21 @@ Template.reportClass.helpers({
            Session.set('selectedClass', classID);
            delete Session.keys['selectedRequest'];
          }
+     },
+     'click #attendBtn':function(){
+       var classID = this._id;
+       var currentUser=Meteor.userId();
+       var app;
+       if(appointment.find({$and:[{skillPvd:currentUser},{status:"approved"},{classID:classID}]}).count()>0){
+         app=appointment.find({$and:[{skillPvd:currentUser},{status:"approved"},{classID:classID}]}).fetch();
+         console.log(app)
+       }else if(appointment.find({$and:[{skillSkr:currentUser},{status:"approved"},{classID:classID}]}).count()>0){
+         app=appointment.find({$and:[{skillSkr:currentUser},{status:"approved"},{classID:classID}]}).fetch();
+         console.log(app)
+
+       }
+       var appID=app[0]._id;
+       Meteor.call('updateAttend', appID)
      }
    });
 
@@ -3772,12 +3847,11 @@ Template.reportClass.helpers({
          var skill=[]
          var currentUser=Meteor.userId();
          var app=appointment.find({skillSkr:currentUser}).fetch();
-         var post=postList.find().fetch();
 
          app.forEach(function(ele){
            var b=postList.findOne({_id:ele.classID}).skill;
 
-           if(skillArray.includes(b)==false){
+           if(skillArray.includes(b)==false ){
              skill.push(b)
              skillArray.push({"skill":b, "count":1})
            }else{
@@ -3798,19 +3872,71 @@ Template.reportClass.helpers({
          }
          skillArray.sort(compare).slice(0,10);
          skillArray.forEach(function(ele){
-           //topClasses.push( postList.find({type:ele.skill},{rating:{$gt:4}}).fetch())
-         //  topClasses.push( postList.find({$and:[{type:ele.skill},{rating:{$gt:4}}]}).fetch())
-         console.log(ele.skill)
-         var countA= postList.find({skill:ele.skill}).count();
+           var countA= postList.find({skill:ele.skill}).count();
          if(countA==0){
 
          }else{
-           topClasses.push(postList.find({skill:ele.skill}).fetch());
+          for (var i=0; i<app.length;i++){
+            topClasses.push(postList.find({$and:[{_id:{$ne:app[i].classID}},{skill:ele.skill}]}).fetch());
+          }
+         }
+       });
+         return  topClasses[0];
+     },
+
+     recommendReqClass:function(){
+         var array=[];
+         var classID=[];
+         var topClasses=[];
+         var skillArray=[]
+         var skill=[]
+         var currentUser=Meteor.userId();
+         var post=postList.find({createdBy:Meteor.userId()}).fetch();
+         var appAr=appointment.find().fetch();
+
+         post.forEach(function(ele){
+           var b=postList.findOne({_id:ele._id}).skill;
+           if(skillArray.includes(b)==false ){
+             skill.push(b)
+             skillArray.push({"skill":b, "count":1})
+           }else{
+             for (var i in skillArray) {
+               if (skillArray[i].skill == b) {
+                  skillArray[i].count++;
+               }
+             }
+           }
+         });
+
+         function compare(a,b) {
+           if (a.count < b.count)
+             return 1;
+           if (a.count > b.count)
+             return -1;
+           return 0;
+         }
+         skillArray.sort(compare).slice(0,10);
+         skillArray.forEach(function(ele){
+           var countA= requestList.find({skill:ele.skill}).count();
+         if(countA==0){
+             topClasses.push(requestList.find({createdBy:{$ne:currentUser}},{sort: {createdTime:-1}}).fetch());
+         }else{
+           appAr.forEach(function(ele){
+
+           })
+            topClasses.push(requestList.find({$and:[{createdBy:{$ne:currentUser}},{skill:ele.skill}]}).fetch());
 
          }
-
        });
-         console.log(topClasses);
          return  topClasses[0];
      }
    });
+
+Template.recommendClass.events({
+  'click #moreDetails': function(){
+    var classID = this._id;
+    Session.set('selectedClass', classID);
+    delete Session.keys['selectedRequest'];
+
+  },
+})
