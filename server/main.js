@@ -150,6 +150,7 @@ Meteor.methods({
           ispaid:ispaid,
           isread:"false",
           type:type,
+          dismiss:false,
           createdDate:new Date()
         });
       },
@@ -168,6 +169,7 @@ Meteor.methods({
           ispaid:ispaid,
           isread:"false",
           type:type,
+          dismiss:false,
           createdDate:new Date()
         });
       },
@@ -316,10 +318,10 @@ Meteor.methods({
            Comments.insert(comment);
         },
 
-      'updatePostRating':function(new_rateValue, selectedClassRequestID){
+      'updatePostRating':function(newrating, classID){
         postList.update(selectedClassRequestID,{
           $set:{
-            rating: new_rateValue
+            rating: newrating
           }
         })
       },
@@ -345,6 +347,22 @@ Meteor.methods({
                isdelete:"true",
                reason:reason
              }
+           }
+         })
+       },
+
+       'dismissFromList':function(appID){
+         appointment.update(appID,{
+           $set: {
+             dismiss:true,
+           }
+         })
+       },
+
+       'updateAttend':function(appID){
+         appointment.update(appID,{
+           $set:{
+             status:"attended"
            }
          })
        }
